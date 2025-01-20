@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Online</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <!-- Aquí puedes añadir cualquier elemento -->
+            <p>EducaPro</p>
+        
+        </div>
+        <div class="login-container">
+            <input type="text" id="username" placeholder="Usuario">
+            <input type="password" id="password" placeholder="Contraseña">
+            <button id="loginBtn" class="btn">Iniciar sesión</button>
+        </div>
+    </header>
+    <div class="container">
+        <!-- Menú lateral -->
+        <aside class="sidebar">
+            <h2>Menú</h2>
+            <h2>Bienvenido Usuario</h2>
+            <div class="menu-item">
+                <h3>Selecciona una materia</h3>
+                <select id="materias">
+                    <option value="">Elige una materia</option>
+                    <option value="geografía">Geografía</option>
+                    <option value="biología">Biología</option>
+                </select>
+            </div>
+            <div class="menu-item">
+                <h3>Selecciona un test</h3>
+                <select id="tests">
+                    <option value="">Elige un test</option>
+                    <option value="test1">Test 1</option>
+                    <option value="test2">Test 2</option>
+                    <option value="test3">Test 3</option>
+                </select>
+            </div>
+            <button id="loadTest" class="btn">Cargar preguntas</button>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <div id="questions-container" class="questions-container">
+                <!-- Las preguntas aparecerán aquí -->
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

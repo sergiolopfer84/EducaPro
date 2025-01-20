@@ -1,0 +1,107 @@
+# Archivos generales
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven
+*.log
+.mvn/timing.properties
+.mvn/jvm.config
+
+# Archivos temporales de compilación
+**/*.log
+**/*.tmp
+**/*.bak
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# STS (Spring Tool Suite)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+*.metadata
+*.classpath
+*.project
+.settings/
+bin/
+tmp/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code
+.vscode/
+
+# Logs y archivos temporales
+logs/
+*.log
+*.out
+*.pid
+hs_err_pid*
+
+# Archivos de configuración
+application-*.yml
+application-*.properties
+.env
+
+# Base de datos local
+db/
+*.h2.db
+*.mv.db
+
+# Archivos de test
+test-output/
+
+# Archivos de seguridad o credenciales
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
+*.keystore
+*.truststore
+
+# Archivos generados
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de sistema operativo
+Thumbs.db
+.DS_Store
+
+# Docker (si usas contenedores)
+.dockerignore
+docker-compose.override.yml
+.env
+*.env
+
+# Node.js (si integras frontend con npm)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
