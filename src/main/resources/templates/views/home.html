@@ -3,44 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EducaPro - Home</title>
-    <link rel="stylesheet" href="styles2.css">
+    <title>Academia Online</title>
+	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Barra superior -->
-    <header class="top-bar">
-        EducaPro
-            <!-- Contenedor del login -->
-            <div class="login-container">
-                <input type="text" id="username" placeholder="Usuario">
-                <input type="password" id="password" placeholder="Contraseña">
-                <button id="loginBtn" class="btn">Iniciar sesión</button>
-                <button id="loginBtn" class="btn">Regístrate</button>
-            </div>
-    
+    <header>
+        <div class="top-bar">
+            <!-- Aquí puedes añadir cualquier elemento -->
+            <p>EducaPro</p>
+			<h4>Bienvenido Usuario</h4>
+        </div>
     </header>
+    <div class="container">
+        <!-- Menú lateral -->
+        <aside class="sidebar">
+            <h2>Menú</h2>
+            <div class="menu-item">
+                <h3>Selecciona una materia</h3>
+                <select id="materias">
+                    <option value="">Elige una materia</option>
+                    <option value="geografía">Geografía</option>
+                    <option value="biología">Biología</option>
+                </select>
+            </div>
+            <div class="menu-item">
+                <h3>Selecciona un test</h3>
+                <select id="tests">
+                    <option value="">Elige un test</option>
+                    <option value="test1">Test 1</option>
+                    <option value="test2">Test 2</option>
+                    <option value="test3">Test 3</option>
+                </select>
+            </div>
+            <button id="loadTest" class="btn">Cargar preguntas</button>
+        </aside>
 
-    <!-- Contenido principal -->
-    <main class="main-content">
-    
-        <!-- Sección sobre la academia -->
-        <section class="about-section">
-            <h2>¿Qué es EducaPro?</h2>
-            <p>
-                EducaPro es una academia online diseñada para estudiantes de todos los niveles. Ofrecemos contenido interactivo, 
-                ejercicios personalizados y tests que te ayudarán a alcanzar tus objetivos académicos desde la comodidad de tu hogar.
-            </p>
-        </section>
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <div id="questions-container" class="questions-container">
+                <!-- Las preguntas aparecerán aquí -->
+            </div>
+        </main>
+    </div>
 
-        <!-- Sección de localización -->
-        <section class="location-section">
-            <h2>¿Dónde estamos?</h2>
-            <p>Estamos disponibles online 24/7, pero nuestro centro principal está ubicado en:</p>
-            <p><strong>Industrial José Sánchez Peñate, s/n, 35001 Las Palmas de Gran Canaria, Las Palmas</strong></p>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3518.626260833984!2d-15.449318323875708!3d28.12741740683795!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc40951c8a18a0f3%3A0x142cb0d09763a325!2sIES%20El%20Rinc%C3%B3n!5e0!3m2!1ses!2ses!4v1737324540594!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        
-        </section>
-    </main>
+    <script src="js/script.js"></script>
 </body>
 </html>
