@@ -23,14 +23,10 @@ public class SecurityConfiguration {
             			    "/bootstrap/**",
             			    "/img/**",
             			    "/js/**",
-            			    "/login",
+            			    "/index",
             			    "/",
-            			    "/home",
             			    "/public/**"
             			).permitAll()
-
-                .requestMatchers("/", "/home", "/public/**").permitAll()
-                // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
 
