@@ -65,5 +65,5 @@ document.getElementById('loginBtn').addEventListener('click', () => {
     }
 
     // Aquí puedes manejar el proceso de login
-    alert(`Usuario: ${username}\nContraseña: ${password}`);
+   // alert(`Usuario: ${username}\nContraseña: ${password}`);
 });

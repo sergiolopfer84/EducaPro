@@ -1,4 +1,6 @@
-/* General Styles */
+/* --------------------------------
+   Estilos Generales
+--------------------------------- */
 * {
     margin: 0;
     padding: 0;
@@ -9,11 +11,18 @@ body {
     font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background-color: #f4f4f9;
+    /* Se unifican 'height: 100vh;' y 'min-height: 100vh;':
+       usar min-height es más flexible para que el contenido pueda crecer */
+    min-height: 100vh;
+    /* Mezclamos el color base #f4f4f9 con el degradado hacia #e6e6e6
+       y mantenemos color: #333 del segundo CSS */
+    background: linear-gradient(to bottom, #f4f4f9, #e6e6e6);
+    color: #333;
 }
 
-/* Header */
+/* --------------------------------
+   Header
+--------------------------------- */
 header {
     background-color: #1e90ff;
     display: flex;
@@ -21,23 +30,26 @@ header {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Espacio reservado en la parte superior */
+/* --------------------------------
+   Barra Superior
+--------------------------------- */
 .top-bar {
-    background: linear-gradient(to bottom, #ffffff, #1d5ca4), url('texture.png'); /* Degradado marrón claro a negro + textura */
-    background-size: cover; /* Ajustar la textura */
-    background-blend-mode: overlay; /* Mezclar la textura con el degradado */
+    background: linear-gradient(to bottom, #ffffff, #1d5ca4), url('texture.png');
+    background-size: cover;
+    background-blend-mode: overlay;
     color: #050505;
     text-align: left;
     font-weight: bolder;
     font-family: 'Courier New', Courier, monospace;
     padding: 10px 20px;
     font-size: 3rem;
-    border-radius: 5px; /* Opcional: bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Opcional: sombra */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-
-/* Login container */
+/* --------------------------------
+   Login
+--------------------------------- */
 .login-container {
     display: flex;
     justify-content: flex-end;
@@ -73,14 +85,18 @@ header {
     background: #002f66;
 }
 
-/* Contenedor principal */
+/* --------------------------------
+   Contenedor Principal
+--------------------------------- */
 .container {
     display: flex;
     flex-grow: 1;
     width: 100%;
 }
 
-/* Sidebar */
+/* --------------------------------
+   Sidebar
+--------------------------------- */
 .sidebar {
     width: 25%;
     background: #1e90ff;
@@ -112,7 +128,9 @@ select {
     font-size: 1rem;
 }
 
-/* Botones */
+/* --------------------------------
+   Botones (Generales)
+--------------------------------- */
 .btn {
     background: #004a99;
     color: white;
@@ -128,47 +146,100 @@ select {
     background: #003366;
 }
 
-/* Contenido principal */
+/* --------------------------------
+   Contenido Principal
+--------------------------------- */
+/* Se fusionan las propiedades:
+   - Degradado + textura del primer CSS
+   - display: flex, gap, align-items del segundo */
 .main-content {
     flex: 1;
     padding: 20px;
-    background: linear-gradient(to bottom, #ffffff, #080808), url('texture.png'); /* Degradado + textura */
-    background-size: cover; /* Ajustar la textura */
-    background-blend-mode: overlay; /* Mezclar la textura con el degradado */
-    border-radius: 10px; /* Bordes redondeados opcionales */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra opcional */
-}
-
-
-.questions-container {
+    background: linear-gradient(to bottom, #ffffff, #080808), url('texture.png');
+    background-size: cover;
+    background-blend-mode: overlay;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 40px;
+    align-items: center;
 }
-/* Contenedor de las preguntas */
+
+/* --------------------------------
+   Sección "Acerca de la Academia"
+--------------------------------- */
+.about-section {
+    max-width: 800px;
+    text-align: center;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.about-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.about-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #666;
+}
+
+/* --------------------------------
+   Sección "Localización"
+--------------------------------- */
+.location-section {
+    max-width: 800px;
+    text-align: center;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.location-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.location-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* --------------------------------
+   Contenedor de Preguntas
+--------------------------------- */
 .questions-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
     padding: 20px;
-    background: #f9f9f9; /* Fondo claro */
-    border: 1px solid #ddd; /* Borde sutil */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
-    max-width: 800px; /* Ancho máximo */
-    margin: 0 auto; /* Centrado */
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 /* Cada pregunta */
 .question {
-    background: white; /* Fondo blanco */
+    background: white;
     padding: 15px;
     border-radius: 8px;
     border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Título de cada pregunta */
 .question h3 {
     font-size: 1.2rem;
     color: #333;
@@ -197,7 +268,7 @@ select {
 /* Botón de enviar respuestas */
 #submitAnswers {
     display: block;
-    margin: 20px auto; /* Centrado */
+    margin: 20px auto;
     background: #1e90ff;
     color: white;
     padding: 10px 20px;
