@@ -1,65 +1,85 @@
 package es.prw.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+import es.prw.daos.UserDao;
+import es.prw.models.Usuario;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+@CrossOrigin(origins = "http://localhost:8080")
 @Configuration
 public class SecurityConfiguration {
+	 private final UserDao userDao;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            // 1. Autorización de peticiones
-            .authorizeHttpRequests(auth -> auth
-                // Permitimos el acceso a la raíz, /home y /public/**
-            		.requestMatchers(
-            			    "/styles/**",
-            			    "/bootstrap/**",
-            			    "/img/**",
-            			    "/js/**",
-            			    "/index",
-            			    "/",
-            			    "/public/**"
-            			).permitAll()
-                .anyRequest().authenticated()
-            )
+	    public SecurityConfiguration(@Lazy UserDao userDao) {
+	        this.userDao = userDao;
+	    }
 
-            // 2. Configuración del formulario de login
-            .formLogin(form -> form
-            .defaultSuccessUrl("/home",true)
-                // Ruta al formulario de inicio de sesión
-               // .loginPage("/login")
-                // Permitir acceso a todos para que puedan ver el formulario
-                .permitAll()
-            )
+	    @Bean
+	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	        http
+	        .cors() // Habilitar CORS
+            .and()
+            .csrf()
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .and()
+            //.csrf().disable()
+            .authorizeHttpRequests(authorize -> authorize
+	                .requestMatchers(
+	                    "/styles/**",
+	                    "/bootstrap/**",
+	                    "/img/**",
+	                    "/js/**",
+	                    "/index",
+	                    "/register",
+	                    "/"
+	                ).permitAll() // Permitir acceso a recursos estáticos y la página de inicio
+	                .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
+	            )
+	            .formLogin(form -> form
+	                .defaultSuccessUrl("/home", true) // Redirigir a /home después del inicio de sesión
+	                .permitAll() // Permitir acceso a todos para que puedan ver el formulario de inicio de sesión
+	            )
+	            .logout(logout -> logout.permitAll()); // Permitir acceso a todos para cerrar sesión
 
-            // 3. Configuración del logout
-            .logout(logout -> logout.permitAll());
+	        return http.build();
+	    }
 
-        // 4. Deshabilitar CSRF si fuese necesario (por ejemplo, para APIs),
-        // pero no lo hagas en aplicaciones web si no es necesario.
-        // http.csrf().disable();
+	    @Bean
+	    public UserDetailsService userDetailsService() {
+	        return username -> {
+	            Usuario appUser  = userDao.findByEmail(username)
+	                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+	            return User.withUsername(appUser .getEmail())
+	                .password(appUser.getPass()) // La contraseña debe estar codificada
+	                .build();
+	        };
+	    }
 
-        // Construimos el objeto de seguridad
-        return http.build();
-    }
+	    @Bean
+	    public PasswordEncoder passwordEncoder() {
+	        return new BCryptPasswordEncoder();
+	    }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        // Ejemplo de usuario en memoria:
-        @SuppressWarnings("deprecation")
-		UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password") // en uso real: usar contraseñas encriptadas
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+	    @Bean
+	    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+	        AuthenticationManagerBuilder authenticationManagerBuilder = 
+	            http.getSharedObject(AuthenticationManagerBuilder.class);
+	        authenticationManagerBuilder.userDetailsService(userDetailsService())
+	            .passwordEncoder(passwordEncoder());
+	        return authenticationManagerBuilder.build();
+	    }
 }
