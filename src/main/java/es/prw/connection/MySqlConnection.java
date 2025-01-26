@@ -57,11 +57,7 @@ public class MySqlConnection {
 	    this.nameDB = dotenv.get("DB_NAME");
 	    this.usuario = dotenv.get("DB_USER");
 	    this.password = dotenv.get("DB_PASSWORD");
-	    System.out.println("DB_HOST: " + this.host);
-	    System.out.println("DB_PORT: " + this.puerto);
-	    System.out.println("DB_NAME: " + this.nameDB);
-	    System.out.println("DB_USER: " + this.usuario);
-		
+	
 	}
 
 	public MySqlConnection(boolean _autocomit) {
@@ -73,11 +69,7 @@ public class MySqlConnection {
 	    this.nameDB = dotenv.get("DB_NAME");
 	    this.usuario = dotenv.get("DB_USER");
 	    this.password = dotenv.get("DB_PASSWORD");
-	    System.out.println("1 Host: " + this.host + ", Puerto: " + this.puerto);
-	    System.out.println("DB_HOST: " + this.host);
-	    System.out.println("DB_PORT: " + this.puerto);
-	    System.out.println("DB_NAME: " + this.nameDB);
-	    System.out.println("DB_USER: " + this.usuario);
+	
 	}
 
 	// Constructor que permite indicar esquema por defecto
@@ -85,14 +77,12 @@ public class MySqlConnection {
 		this._initialize();
 		this.nameDB = _nameDB;
 		this.autocomit = true;
-		  System.out.println("4 Host: " + this.host + ", Puerto: " + this.puerto);
 	}
 
 	public MySqlConnection(String _nameDB, boolean _autocomit) {
 		this._initialize();
 		this.nameDB = _nameDB;
 		this.autocomit = _autocomit;
-		  System.out.println("6 Host: " + this.host + ", Puerto: " + this.puerto);
 	}
 
 	// Constructor que permite conectar a cualquier base de datos MySql
@@ -104,7 +94,6 @@ public class MySqlConnection {
 		this.usuario = _usuario;
 		this.password = _password;
 		this.autocomit = true;
-		System.out.println("2 Host: " + this.host + ", Puerto: " + this.puerto);
 
 	}
 
@@ -117,7 +106,6 @@ public class MySqlConnection {
 		this.usuario = _usuario;
 		this.password = _password;
 		this.autocomit = _autocomit;
-		System.out.println("3 Host: " + this.host + ", Puerto: " + this.puerto);
 
 	}
 
@@ -128,21 +116,17 @@ public class MySqlConnection {
 	        this._initializeError();
 	        if ((this.connection == null) || (this.connection != null && this.connection.isClosed())) {
 	            Class.forName("com.mysql.cj.jdbc.Driver");
-	            System.out.println("Intentando conectar a la base de datos...");
 	            this.connection = DriverManager.getConnection(
 	                "jdbc:mysql://" + this.host + ":" + this.puerto + "/" + this.nameDB,
 	                this.usuario, this.password
 	            );
-	            System.out.println("Conexión a la base de datos establecida."); // Asegúrate de que esto se imprima
 	        }
 	    } catch (ClassNotFoundException ex) {
 	        this.flagError = true;
 	        this.msgError = "Error al registrar el driver. +Info: " + ex.getMessage();
-	        System.out.println(this.msgError); // Imprime el mensaje de error
 	    } catch (SQLException ex) {
 	        this.flagError = true;
 	        this.msgError = "Error en Open. +Info: " + ex.getMessage();
-	        System.out.println(this.msgError); // Imprime el mensaje de error
 	    }
 	}
 
@@ -199,14 +183,8 @@ public class MySqlConnection {
 
 	            ///stmt.executeUpdate();
 	            int rowsAffected = stmt.executeUpdate();
-	            if (rowsAffected == 0) {
-	                System.out.println("No se insertó ninguna fila.");
-	            }
 	            // Verifica si hay claves generadas
 	            ResultSet rs = stmt.getGeneratedKeys();
-	            if (rs != null && rs.next()) {
-	                System.out.println("Generated Key: " + rs.getLong(1));  // Imprime la clave generada
-	            }
 	            
 	            return rs;
 	        } else {
