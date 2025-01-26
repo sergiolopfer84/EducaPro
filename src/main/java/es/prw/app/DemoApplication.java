@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages="es.prw")
+@ComponentScan(basePackages = "es.prw")
 public class DemoApplication {
 
 	public static void main(String[] args) {

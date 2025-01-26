@@ -1,19 +1,24 @@
 package es.prw.models;
 
-public class Usuario {
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+public class Usuario  {
 	private Integer idUsuario; 
 	private String nombre; 
-	private String password; 	
+	private String pass; 	
 	private String email;
 	public Usuario() {
 		super();
 		
 	}
-	public Usuario(Integer idUsuario, String nombre, String password, String email) {
+	public Usuario(Integer idUsuario, String nombre, String pass, String email) {
 		super();
 		this.idUsuario = idUsuario;
 		this.nombre = nombre;
-		this.password = password;
+		this.pass = pass;
 		this.email = email;
 	}
 	public Integer getIdUsuario() {
@@ -28,11 +33,11 @@ public class Usuario {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public String getPassword() {
-		return password;
+	public String getPass() {
+		return pass;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPass(String pass) {
+		this.pass = pass;
 	}
 	public String getEmail() {
 		return email;
@@ -40,9 +45,7 @@ public class Usuario {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	
-	
+		
 	
 	
 }
