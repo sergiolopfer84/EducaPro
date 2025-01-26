@@ -21,7 +21,6 @@ public class UserDao {
     
     @Autowired
     public UserDao(PasswordEncoder passwordEncoder) {
-    	System.out.println("UserDao inicializado");
         objMySqlConnection = new MySqlConnection(false);
         this.passwordEncoder = passwordEncoder;
     }
@@ -29,12 +28,8 @@ public class UserDao {
     // Método para registrar un nuevo usuario
     public Optional<Usuario> registerUser (String nombre, String email, String pass) throws SQLException {
         // Validar que el email no esté ya registrado
-    	System.out.println("Entrando en registerUser ");
-    	System.out.println(nombre);
-    	System.out.println(email);
-    	System.out.println(pass);
+    
         if (isEmailTaken(email)) {
-        	System.out.println("email emptyy");
             return Optional.empty(); // Retorna vacío si el email ya está en uso
         }
 
@@ -46,9 +41,7 @@ public class UserDao {
         newUser.setNombre(nombre);
         newUser.setEmail(email);
         newUser.setPass(encodedPassword);
-        System.out.println("newUser "+newUser.getEmail());
-        System.out.println("newUser "+newUser.getNombre());
-        System.out.println("newUser "+newUser.getPass());
+    
         // Guardar el usuario en la base de datos
         saveUser(newUser);
 
@@ -59,7 +52,7 @@ public class UserDao {
     private void saveUser (Usuario user) throws SQLException {
     	
         String sql = "INSERT INTO usuario (nombre, email, pass) VALUES (?, ?, ?)";
-       System.out.println("enn saveUser");
+     
         objMySqlConnection.open();
 
         if (!objMySqlConnection.isError()) {
@@ -70,10 +63,7 @@ public class UserDao {
                 ResultSet generatedKeys = objMySqlConnection.executeInsert(sql, user.getNombre(), user.getEmail(), user.getPass());
                 if (generatedKeys != null && generatedKeys.next()) {
                     user.setIdUsuario(generatedKeys.getInt(1)); // Asignar el ID generado al usuario
-                } else {
-                   System.out.println("No se generaron claves al insertar el usuario.");
-                }
-               
+                } 
                     objMySqlConnection.commit();
                
             } catch (SQLException e) {
@@ -90,7 +80,6 @@ public class UserDao {
 
     // Método para verificar si el email ya está en uso
     private boolean isEmailTaken(String email) {
-    	System.out.println("en emailtaken");
     	boolean emailExists = false;
         objMySqlConnection.open();
         
@@ -107,8 +96,6 @@ public class UserDao {
             } finally {
                 objMySqlConnection.close();
             }
-        }else {
-        	System.out.println("en emailtaken no hay conexion");
         }
         return emailExists;
     }

@@ -30,7 +30,6 @@ public class MainController {
     // Controlador para cargar la página index.html
 	 @GetMapping("/")
 	    public String index( Model model, CsrfToken csrfToken) {
-		 System.out.println("Entrando en index getmapping");
 	            model.addAttribute("csrfToken", csrfToken);
 	        return "views/index";  // Debe existir un template llamado "index.html"
 	    }
@@ -43,12 +42,7 @@ public class MainController {
 
 	    @PostMapping("/register")
 	    public ResponseEntity<String> register(@RequestBody Usuario usuario) {
-	    
-	   	 System.out.println("Entrando en register en mainController");
-	   	 System.out.println(usuario);
-	   	 System.out.println(usuario.getNombre());
-	   	 System.out.println(usuario.getEmail());
-	   	 System.out.println(usuario.getPass());
+	
 	    	try {
 	        
 	           Optional<Usuario> newUser = userDao.registerUser(usuario.getNombre(), usuario.getEmail(), usuario.getPass());
