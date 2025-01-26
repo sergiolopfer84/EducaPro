@@ -71,12 +71,8 @@ $(document).ready(function() {
     // Manejar el clic en el botón de registro
     $('#registerBtn').click(function() {
         const name = $('#registerName').val();
-		console.log(name)
         const email = $('#registerEmail').val();
-		console.log(email)
         const password = $('#registerPassword').val();
-		console.log(password)
-		console.log("entrando en registro")
         if (!name || !email || !password) {
             alert('Por favor, completa todos los campos.');
             return;
@@ -89,8 +85,6 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({ nombre: name, email: email, pass: password }),
 			beforeSend: function(xhr) {
-				console.log(name, email, password)
-				console.log("JSON.stringify({ nombre: name, email: email, pass: password }) ",JSON.stringify({ nombre: name, email: email, pass: password }))
 				if (window.csrf.headerName && window.csrf.token) { // Verifica que no sean null
 				            xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
 				        } else {
@@ -98,8 +92,6 @@ $(document).ready(function() {
 				        }
 			        },
             success: function(response) {
-				console.log(response)
-                alert('Registro exitoso');
                 $('#authModal').modal('hide'); // Cerrar el modal
             },
             error: function(xhr) {

@@ -28,7 +28,8 @@ public class SecurityConfiguration {
 	        this.userDao = userDao;
 	    }
 
-	    @Bean
+	    @SuppressWarnings("removal")
+		@Bean
 	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	        http
 	        .cors() // Habilitar CORS
