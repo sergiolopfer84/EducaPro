@@ -1,15 +1,20 @@
 $(document).ready(function() {
-	const csrfToken = window.csrf.token;
-	const csrfHeader = window.csrf.headerName;
-    // Manejar el clic en el botón de carga de preguntas
-    $('#loadTest').click(function() {
-        const materia = $('#materias').val();
-        const test = $('#tests').val();
-        const questionsContainer = $('#questions-container');
+	
+	$.get("/api/current-user", function(usuario) {
+	         // Aquí cambiamos el texto "Bienvenido Usuario" por "Bienvenido + nombre del usuario"
+	         $("#welcome-text").text("Bienvenido " + usuario.nombre);
+	     }).fail(function() {
+	         console.error("Error al obtener datos del usuario");
+	     });
 
-        // Limpiar preguntas previas
+    // ================== PARTE DE CARGAR PREGUNTAS ==================
+	$('#loadTest').click(function() {
+	    console.log("Botón de cargar test clickeado");
+	    const materia = $('#materias').val();
+	    const test = $('#tests').val();
+
+
         questionsContainer.empty();
-
         if (!materia || !test) {
             alert('Por favor, selecciona una materia y un test.');
             return;
@@ -31,44 +36,64 @@ $(document).ready(function() {
             questionsContainer.append(questionDiv);
         }
 
-        // Agregar botón de enviar respuestas si no existe
+        // Botón de enviar respuestas
         if (!$('#submitAnswers').length) {
             const submitButton = $('<button id="submitAnswers" class="btn btn-primary">Enviar respuestas</button>');
             questionsContainer.append(submitButton);
-
             submitButton.click(function() {
                 alert('Respuestas enviadas. ¡Gracias por participar!');
             });
         }
     });
 
-    // Manejar el clic en el botón de inicio de sesión
-    $('#loginBtn').click(function() {
-        const username = $('#loginUsername').val();
-        const password = $('#loginPassword').val();
 
-        if (!username || !password) {
-            alert('Por favor, introduce usuario y contraseña.');
+    // ================== LOGIN FORM-BASED ==================
+    $('#loginBtn').click(function(e) {
+        e.preventDefault(); // Evita un submit accidental si es <button type="submit">
+
+        // Usaremos username y password,
+        // OJO: si en tu input usas "loginUsername" e "loginPassword"
+        // y en Security config .usernameParameter("username"), .passwordParameter("password")
+        // entonces "username" y "password" deben matchear
+        const email = $('#loginUsername').val();
+        const password = $('#loginPassword').val();
+		console.log(email,password)
+
+
+        if (!email || !password) {
+            alert('Por favor, completa todos los campos.');
             return;
         }
 
-        // Enviar solicitud de inicio de sesión
+        // Enviar solicitud de inicio de sesión con parámetros tipo "form-data"
         $.ajax({
-            url: '/login', // Cambia esto a la URL de tu endpoint de inicio de sesión
+            url: '/login',  // loginProcessingUrl en SecurityConfiguration
             type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ username, password }),
-            success: function(response) {
-                alert('Inicio de sesión exitoso');
-                window.location.href = '/home'; // Cambia esto a la URL de tu página de inicio
+            data: {
+                email: email, // .usernameParameter("username")
+                password: password  // .passwordParameter("password")
+            },
+            beforeSend: function(xhr) {
+				console.log(email,password)
+                // Adjuntar cabecera CSRF si es necesario
+                if (window.csrf.headerName && window.csrf.token) {
+                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+                }
+            },
+            success: function() {
+                // Si las credenciales son correctas, Spring redirige a /home.
+                // Pero como es AJAX, forzamos la redirección:
+                window.location.href = '/home';
             },
             error: function(xhr) {
-                alert('Error al iniciar sesión: ' + xhr.responseText);
+                // Si credenciales inválidas => 401 o 403
+                alert('Error al iniciar sesión.');
             }
         });
     });
 
-    // Manejar el clic en el botón de registro
+
+    // ================== REGISTRO (JSON) ==================
     $('#registerBtn').click(function() {
         const name = $('#registerName').val();
         const email = $('#registerEmail').val();
@@ -78,31 +103,31 @@ $(document).ready(function() {
             return;
         }
 
-        // Enviar solicitud de registro
-        $.ajax({			
-            url: '/register', // Cambia esto a la URL de tu endpoint de registro
+        // Enviar solicitud de registro (esto es tu endpoint custom, /register)
+        // Aquí sí podemos usar JSON
+        $.ajax({
+            url: '/register',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ nombre: name, email: email, pass: password }),
-			beforeSend: function(xhr) {
-				if (window.csrf.headerName && window.csrf.token) { // Verifica que no sean null
-				            xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-				        } else {
-				            console.error("CSRF header or token is null");
-				        }
-			        },
+            beforeSend: function(xhr) {
+                if (window.csrf.headerName && window.csrf.token) {
+                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+                }
+            },
             success: function(response) {
                 $('#authModal').modal('hide'); // Cerrar el modal
             },
             error: function(xhr) {
-				console.error("Error al registrarse: ", xhr); // Imprime el objeto xhr completo
-				    const errorMessage = xhr.responseText || 'Error al registrarse.';
-				    $('#error-message').text(errorMessage).removeClass('d-none');
+                console.error("Error al registrarse: ", xhr);
+                const errorMessage = xhr.responseText || 'Error al registrarse.';
+                alert(errorMessage);
             }
         });
     });
 
-    // Alternar entre formularios de inicio de sesión y registro
+
+    // ================== MOSTRAR/OCULTAR formularios del modal ==================
     $('#showRegister').click(function() {
         $('#loginForm').hide();
         $('#registerForm').show();

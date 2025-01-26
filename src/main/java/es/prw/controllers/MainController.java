@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 
 import es.prw.daos.UserDao;
 import es.prw.models.Usuario;
@@ -57,4 +60,22 @@ public class MainController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar el usuario: " + e.getMessage());
 	        }
 	    }
+	    
+	    @RestController
+	    public class UserInfoController {
+
+	        @Autowired
+	        private UserDao userDao;
+
+	        @GetMapping("/api/current-user")
+	        public Usuario getCurrentUser(Authentication authentication) {
+	            // authentication.getName() será el email con el que se autenticó
+	            String email = authentication.getName();
+	            return userDao.findByEmail(email)
+	                    .orElseThrow(() -> new RuntimeException("No se encontró el usuario"));
+	        }
+	    }
+
+	
+
 }
