@@ -34,7 +34,7 @@ header {
    Barra Superior
 --------------------------------- */
 .top-bar {
-    background: linear-gradient(to bottom, #ffffff, #1d5ca4), url('texture.png');
+    background: linear-gradient(to bottom, #ffffff, #1d5ca4);
     background-size: cover;
     background-blend-mode: overlay;
     color: #050505;
@@ -155,7 +155,7 @@ select {
 .main-content {
     flex: 1;
     padding: 20px;
-    background: linear-gradient(to bottom, #ffffff, #080808), url('texture.png');
+    background: linear-gradient(to bottom, #ffffff, #080808);
     background-size: cover;
     background-blend-mode: overlay;
     border-radius: 10px;

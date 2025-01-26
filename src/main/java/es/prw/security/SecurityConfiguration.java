@@ -29,46 +29,55 @@ public class SecurityConfiguration {
 	    }
 
 	    @SuppressWarnings("removal")
-		@Bean
+	    @Bean
 	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	        http
-	        .cors() // Habilitar CORS
-            .and()
-            .csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .and()
-            //.csrf().disable()
-            .authorizeHttpRequests(authorize -> authorize
-	                .requestMatchers(
-	                    "/styles/**",
-	                    "/bootstrap/**",
-	                    "/img/**",
-	                    "/js/**",
-	                    "/index",
-	                    "/register",
-	                    "/"
-	                ).permitAll() // Permitir acceso a recursos estáticos y la página de inicio
-	                .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
+	            .csrf(csrf -> csrf
+	                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+	            )
+	            .authorizeHttpRequests(auth -> auth
+	                // Rutas públicas
+	                .requestMatchers("/", "/register", "/styles/**", "/img/**", "/js/**").permitAll()
+	                // Cualquier otra requiere autenticación
+	                .anyRequest().authenticated()
 	            )
 	            .formLogin(form -> form
-	                .defaultSuccessUrl("/home", true) // Redirigir a /home después del inicio de sesión
-	                .permitAll() // Permitir acceso a todos para que puedan ver el formulario de inicio de sesión
+	                // Indica dónde está tu “formulario” (tu página custom con el modal)
+	                .loginPage("/")                       // aquí se renderea tu index.html
+
+	                // Indica la URL a la que se hace POST para loguear
+	                .loginProcessingUrl("/login")         // Spring recibirá las credenciales por aquí
+
+	                // El nombre de parámetro que usas para el usuario
+	                // (si en tu formulario pones `name="username"`)
+	                .usernameParameter("email")
+
+	                // El nombre de parámetro que usas para la contraseña
+	                .passwordParameter("password")
+
+	                // Dónde redirigir tras login exitoso
+	                .defaultSuccessUrl("/home", true)
+
+	                .permitAll() // permite a todos acceder al formulario
 	            )
-	            .logout(logout -> logout.permitAll()); // Permitir acceso a todos para cerrar sesión
+	            .logout(logout -> logout.permitAll());
 
 	        return http.build();
 	    }
 
+
 	    @Bean
 	    public UserDetailsService userDetailsService() {
-	        return username -> {
-	            Usuario appUser  = userDao.findByEmail(username)
-	                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
-	            return User.withUsername(appUser .getEmail())
-	                .password(appUser.getPass()) // La contraseña debe estar codificada
-	                .build();
-	        };
+	    	return email -> {
+	    	    var appUser = userDao.findByEmail(email)
+	    	        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+	    	    return User.withUsername(appUser.getEmail())
+	    	        .password(appUser.getPass())
+	    	        .build();
+	    	};
+
 	    }
+
 
 	    @Bean
 	    public PasswordEncoder passwordEncoder() {
