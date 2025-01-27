@@ -13,6 +13,13 @@
             <!-- Aquí puedes añadir cualquier elemento -->
             <p>EducaPro</p>
             <h4 id="welcome-text">Bienvenido Usuario</h4> <!-- le pongo un id para manipularlo -->
+			
+			<li class="nav-item">
+						        <a th:href="@{logout}" class="nav-link text-dark font-italic">
+						                  <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>
+						                  Salir
+						              </a>
+						      </li>
         </div>
     </header>
     <div class="container">
@@ -20,21 +27,12 @@
         <aside class="sidebar">
             <h2>Menú</h2>
             <div class="menu-item">
-                <h3>Selecciona una materia</h3>
-                <select id="materias">
-                    <option value="">Elige una materia</option>
-                    <option value="geografía">Geografía</option>
-                    <option value="biología">Biología</option>
-                </select>
+				<h3>Selecciona una materia</h3>
+				<select id="materias"></select>
             </div>
             <div class="menu-item">
                 <h3>Selecciona un test</h3>
-                <select id="tests">
-                    <option value="">Elige un test</option>
-                    <option value="test1">Test 1</option>
-                    <option value="test2">Test 2</option>
-                    <option value="test3">Test 3</option>
-                </select>
+                <select id="tests"></select>
             </div>
             <button id="loadTest" class="btn">Cargar preguntas</button>
         </aside>
@@ -49,7 +47,7 @@
 
     <!-- Asegúrate de cargar jQuery antes de tu script.js -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+	<script src="js/script.js"></script>
 
 </body>
 </html>

@@ -87,6 +87,7 @@ public class UserDao {
         if (!objMySqlConnection.isError()) {
             String sql = "SELECT COUNT(*) FROM usuario WHERE email = ?";
             ResultSet result = objMySqlConnection.executeSelect(sql, email); // Llama al método de MySqlConnection
+          
             try {
                 if (result != null && result.next()) {
                     emailExists = result.getInt(1) > 0; // Si el conteo es mayor que 0, el email ya está en uso

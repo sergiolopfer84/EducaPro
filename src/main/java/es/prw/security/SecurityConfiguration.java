@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import es.prw.daos.UserDao;
@@ -60,7 +61,14 @@ public class SecurityConfiguration {
 
 	                .permitAll() // permite a todos acceder al formulario
 	            )
-	            .logout(logout -> logout.permitAll());
+	            .logout(logout -> logout
+	                    .logoutUrl("/logout")
+	                    .logoutSuccessUrl("/login?logout")
+	                    .invalidateHttpSession(true)
+	                    .clearAuthentication(true)
+	                    .permitAll()
+	                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+	                );
 
 	        return http.build();
 	    }
@@ -68,7 +76,9 @@ public class SecurityConfiguration {
 
 	    @Bean
 	    public UserDetailsService userDetailsService() {
+	    	
 	    	return email -> {
+	    		System.out.println( userDao.findByEmail(email));
 	    	    var appUser = userDao.findByEmail(email)
 	    	        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 	    	    return User.withUsername(appUser.getEmail())
