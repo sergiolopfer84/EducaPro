@@ -45,7 +45,50 @@ $(document).ready(function() {
             });
         }
     });
+	//==============CARGA DE DATOS EN LOS SELECT =================
+	
+		
+	$.ajax({
+	       url: '/materias',
+	       type: 'GET',
+		   success: function(data) {
+		       let options = '<option value="">Elige una materia</option>'; // Opción inicial
+		       data.forEach(materia => {
+		           options += `<option value="${materia.idMateria}">${materia.materia}</option>`;
+		       });
+		       $('#materias').html(options); // Carga las opciones en el select
+		   },
+	       error: function(xhr, status, error) {
+	           console.error('Error al cargar las materias:', error);
+	       }
+	   });
+		
+	   $('#materias').on('change', function () {
+	           const idMateria = $(this).val(); // Obtener el valor seleccionado
+	           if (!idMateria) {
+	               // Si no se selecciona una materia, vaciar el select de tests
+	               $('#tests').html('<option value="">Elige un test</option>');
+	               return;
+	           }
 
+	           // Hacer una petición AJAX para cargar los tests de la materia seleccionada
+	           $.ajax({
+	               url: '/tests', // Endpoint en el backend
+	               type: 'GET',
+	               data: { idMateria: idMateria }, // Parámetro idMateria enviado al backend
+	               success: function (data) {
+	                   let options = '<option value="">Elige un test</option>';
+	                   data.forEach(test => {
+	                       options += `<option value="${test.idTest}">${test.test}</option>`;
+	                   });
+	                   $('#tests').html(options); // Cargar los tests en el select
+	               },
+	               error: function (xhr, status, error) {
+	                   console.error('Error al cargar los tests:', error);
+	               }
+	           });
+	       });
+	
 
     // ================== LOGIN FORM-BASED ==================
     $('#loginBtn').click(function(e) {
@@ -57,7 +100,6 @@ $(document).ready(function() {
         // entonces "username" y "password" deben matchear
         const email = $('#loginUsername').val();
         const password = $('#loginPassword').val();
-		console.log(email,password)
 
 
         if (!email || !password) {
@@ -90,7 +132,7 @@ $(document).ready(function() {
                 alert('Error al iniciar sesión.');
             }
         });
-    });
+
 
 
     // ================== REGISTRO (JSON) ==================
@@ -137,4 +179,5 @@ $(document).ready(function() {
         $('#registerForm').hide();
         $('#loginForm').show();
     });
+});
 });

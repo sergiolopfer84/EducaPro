@@ -37,11 +37,7 @@ public class MainController {
 	        return "views/index";  // Debe existir un template llamado "index.html"
 	    }
 
-	    @GetMapping("/home")
-	    public String home(CsrfToken csrfToken, Model model) {
-	            model.addAttribute("csrfToken", csrfToken);
-	        return "views/home";   // Debe existir un template llamado "home.html"
-	    }
+	   
 
 	    @PostMapping("/register")
 	    public ResponseEntity<String> register(@RequestBody Usuario usuario) {
@@ -75,7 +71,7 @@ public class MainController {
 	                    .orElseThrow(() -> new RuntimeException("No se encontró el usuario"));
 	        }
 	    }
-
+	    
 	
 
 }

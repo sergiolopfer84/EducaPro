@@ -145,28 +145,33 @@ public class MySqlConnection {
 
 	// Método que retorna el resultado de cualquier consulta sql en un ResultSet
 	public ResultSet executeSelect(String sql, Object... params) {
-        try {
-            this._initializeError();
-            if (this.connection != null && !this.connection.isClosed()) {
-                PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                
-                // Establecer los parámetros
-                for (int i = 0; i < params.length; i++) {
-                    stmt.setObject(i + 1, params[i]);
-                }
+	    try {
+	        this._initializeError(); // Inicializar cualquier error previo
+	        if (this.connection != null && !this.connection.isClosed()) {
+	            // Crear el PreparedStatement
+	            PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            
+	            // Establecer los parámetros si existen
+	            if (params != null) { 
+	                for (int i = 0; i < params.length; i++) {
+	                    stmt.setObject(i + 1, params[i]);
+	                }
+	            }
+	            
+	            // Ejecutar la consulta
+	            return stmt.executeQuery();
+	        } else {
+	            this.flagError = true;
+	            this.msgError = "Error en ExecuteSelect. +Info: Conexión cerrada.";
+	        }
+	    } catch (SQLException ex) {
+	        this.flagError = true;
+	        this.msgError = "Error en ExecuteSelect. +Info: " + ex.getMessage();
+	    }
 
-                return stmt.executeQuery();
-            } else {
-                this.flagError = true;
-                this.msgError = "Error en ExecuteSelect. +Info: Conexión cerrada.";
-            }
-        } catch (SQLException ex) {
-            this.flagError = true;
-            this.msgError = "Error en ExecuteSelect. +Info: " + ex.getMessage();
-        }
+	    return null; // Retornar null si hubo un error
+	}
 
-        return null;
-    }
 
 	// Método para ejecutar un insert. Devuelve la/s claves primarias generadas en
 	// un record set.
@@ -175,12 +180,12 @@ public class MySqlConnection {
 	        this._initializeError();
 	        if (this.connection != null && !this.connection.isClosed()) {
 	            PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-	            
+	            if (params != null) {
 	            // Establecer los parámetros
 	            for (int i = 0; i < params.length; i++) {
 	                stmt.setObject(i + 1, params[i]);
 	            }
-
+	            }
 	            ///stmt.executeUpdate();
 	            int rowsAffected = stmt.executeUpdate();
 	            // Verifica si hay claves generadas
@@ -207,12 +212,12 @@ public class MySqlConnection {
 	            this._initializeError();
 	            if (this.connection != null && !this.connection.isClosed()) {
 	                PreparedStatement stmt = this.connection.prepareStatement(sql);
-	                
+	                if (params != null) {
 	                // Establecer los parámetros
 	                for (int i = 0; i < params.length; i++) {
 	                    stmt.setObject(i + 1, params[i]);
 	                }
-
+	                }
 	                numRows = stmt.executeUpdate();
 	            } else {
 	                this.flagError = true;
