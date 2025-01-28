@@ -44,6 +44,29 @@ $(document).ready(function() {
 			}
 		});
 	});
+	
+	//Logout 
+
+	$('#logoutBtn').click(function (e) {
+	    e.preventDefault(); // Evita el comportamiento por defecto del botón
+
+	    $.ajax({
+	        url: '/logout',
+	        type: 'POST',
+	        beforeSend: function (xhr) {
+	            // Agregar el token CSRF
+	            if (window.csrf && window.csrf.headerName && window.csrf.token) {
+	                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	            }
+	        },
+	        success: function () {
+	            window.location.href = '/login'; // Redirigir tras el logout
+	        },
+	        error: function (xhr) {
+	            alert('Error al cerrar sesión: ' + xhr.status);
+	        }
+	    });
+	});
 
 
 	// ================== REGISTRO (JSON) ==================
