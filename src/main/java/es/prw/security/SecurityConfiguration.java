@@ -1,5 +1,4 @@
 package es.prw.security;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -21,73 +20,86 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 @CrossOrigin(origins = "http://localhost:8080")
 @Configuration
 public class SecurityConfiguration {
-	private final UserDao userDao;
+	 private final UserDao userDao;
 
-	public SecurityConfiguration(@Lazy UserDao userDao) {
-		this.userDao = userDao;
-	}
+	    public SecurityConfiguration(@Lazy UserDao userDao) {
+	        this.userDao = userDao;
+	    }
 
-	@SuppressWarnings("removal")
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-				.authorizeHttpRequests(auth -> auth
-						// Rutas públicas
-						.requestMatchers("/", "/register", "/styles/**", "/img/**", "/js/**").permitAll()
-						// Cualquier otra requiere autenticación
-						.anyRequest().authenticated())
-				.formLogin(form -> form
-						// Indica dónde está tu “formulario” (tu página custom con el modal)
-						.loginPage("/") // aquí se renderea tu index.html
+	    @SuppressWarnings("removal")
+	    @Bean
+	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	        http
+	            .csrf(csrf -> csrf
+	                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+	            )
+	            .authorizeHttpRequests(auth -> auth
+	                // Rutas públicas
+	                .requestMatchers("/", "/register", "/styles/**", "/img/**", "/js/**").permitAll()
+	                // Cualquier otra requiere autenticación
+	                .anyRequest().authenticated()
+	            )
+	            .formLogin(form -> form
+	                // Indica dónde está tu “formulario” (tu página custom con el modal)
+	                .loginPage("/")                       // aquí se renderea tu index.html
 
-						// Indica la URL a la que se hace POST para loguear
-						.loginProcessingUrl("/login") // Spring recibirá las credenciales por aquí
+	                // Indica la URL a la que se hace POST para loguear
+	                .loginProcessingUrl("/login")         // Spring recibirá las credenciales por aquí
 
-						// El nombre de parámetro que usas para el usuario
-						// (si en tu formulario pones `name="username"`)
-						.usernameParameter("email")
+	                // El nombre de parámetro que usas para el usuario
+	                // (si en tu formulario pones `name="username"`)
+	                .usernameParameter("email")
 
-						// El nombre de parámetro que usas para la contraseña
-						.passwordParameter("password")
+	                // El nombre de parámetro que usas para la contraseña
+	                .passwordParameter("password")
 
-						// Dónde redirigir tras login exitoso
-						.defaultSuccessUrl("/home", true)
+	                // Dónde redirigir tras login exitoso
+	                .defaultSuccessUrl("/home", true)
 
-						.permitAll() // permite a todos acceder al formulario
-				)
-				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout")
-						.invalidateHttpSession(true).clearAuthentication(true).permitAll()
-						.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")));
+	                .permitAll() // permite a todos acceder al formulario
+	            )
+	            .logout(logout -> logout
+	                    .logoutUrl("/logout")
+	                    .logoutSuccessUrl("/login?logout")
+	                    .invalidateHttpSession(true)
+	                    .clearAuthentication(true)
+	                    .permitAll()
+	                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+	                );
 
-		return http.build();
-	}
+	        return http.build();
+	    }
 
-	@Bean
-	public UserDetailsService userDetailsService() {
 
-		return email -> {
+	    @Bean
+	    public UserDetailsService userDetailsService() {
+	    	
+	    	return email -> {
+	    		System.out.println( userDao.findByEmail(email));
+	    	    var appUser = userDao.findByEmail(email)
+	    	        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+	    	    return User.withUsername(appUser.getEmail())
+	    	        .password(appUser.getPass())
+	    	        .build();
+	    	};
 
-			var appUser = userDao.findByEmail(email)
-					.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-			return User.withUsername(appUser.getEmail()).password(appUser.getPass()).build();
-		};
+	    }
 
-	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+	    @Bean
+	    public PasswordEncoder passwordEncoder() {
+	        return new BCryptPasswordEncoder();
+	    }
 
-	@Bean
-	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-		AuthenticationManagerBuilder authenticationManagerBuilder = http
-				.getSharedObject(AuthenticationManagerBuilder.class);
-		authenticationManagerBuilder.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
-		return authenticationManagerBuilder.build();
-	}
+	    @Bean
+	    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+	        AuthenticationManagerBuilder authenticationManagerBuilder = 
+	            http.getSharedObject(AuthenticationManagerBuilder.class);
+	        authenticationManagerBuilder.userDetailsService(userDetailsService())
+	            .passwordEncoder(passwordEncoder());
+	        return authenticationManagerBuilder.build();
+	    }
 }
