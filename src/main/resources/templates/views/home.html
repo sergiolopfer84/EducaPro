@@ -16,12 +16,9 @@
 			<p>EducaPro</p>
 			<h4 id="welcome-text">Bienvenido Usuario</h4> <!-- le pongo un id para manipularlo -->
 
-			<li class="nav-item">
-				<a th:href="@{logout}" class="nav-link text-dark font-italic">
-					<i class="fa fa-th-large mr-3 text-primary fa-fw"></i>
-					Salir
-				</a>
-			</li>
+			<button id= "logoutBtn" class="btn">
+			       Salir
+			   </button>
 		</div>
 	</header>
 	<div class="container">
@@ -50,7 +47,13 @@
 	<!-- Asegúrate de cargar jQuery antes de tu script.js -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="js/script.js"></script>
-
+	<script>
+		    window.csrf = {
+		        token: '[[${csrfToken.token}]]',
+		        headerName: '[[${csrfToken.headerName}]]'
+		    };
+		    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+		</script>
 </body>
 
 </html>

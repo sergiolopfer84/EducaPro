@@ -59,9 +59,15 @@ public class SecurityConfiguration {
 
 						.permitAll() // permite a todos acceder al formulario
 				)
-				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout")
-						.invalidateHttpSession(true).clearAuthentication(true).permitAll()
-						.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")));
+				.logout(logout -> logout
+					    .logoutUrl("/logout")
+					    .logoutSuccessUrl("/login?logout")
+					    .invalidateHttpSession(true)
+					    .clearAuthentication(true)
+					    .permitAll()
+					    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+					);
+
 
 		return http.build();
 	}
