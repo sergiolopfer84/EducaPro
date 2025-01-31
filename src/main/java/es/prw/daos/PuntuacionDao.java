@@ -89,7 +89,10 @@ public class PuntuacionDao {
     // Método para obtener la última puntuación de un usuario en un test específico
  // Método para obtener la última puntuación de un usuario en un test específico
     public Optional<Puntuacion> getUltimaPuntuacion(int idUsuario, int idTest) {
+    	
         String sql = "SELECT * FROM puntuacion WHERE id_usuario = ? AND id_test = ? ORDER BY fecha DESC LIMIT 1";
+        
+        System.out.println(" sql "+ sql);
         Puntuacion puntuacion = null;
 
         objMySqlConnection.open();

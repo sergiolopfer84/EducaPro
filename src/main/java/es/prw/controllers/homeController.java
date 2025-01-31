@@ -122,6 +122,9 @@ public class homeController {
 	public ResponseEntity<Map<String, Object>> getUltimaPuntuacion(
 	        @SessionAttribute(name = "usuario", required = false) Usuario usuario,
 	        @RequestParam("idTest") int idTest) {
+		
+		System.out.println(" id usuario cont "+ usuario);
+		System.out.println(" id test cont "+ idTest);
 
 	    Map<String, Object> response = new HashMap<>();
 

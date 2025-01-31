@@ -44,28 +44,28 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
+
 	//==================== LOGOUT ============================================= 
 
-	$('#logoutBtn').click(function (e) {
-	    e.preventDefault(); // Evita el comportamiento por defecto del botón
+	$('#logoutBtn').click(function(e) {
+		e.preventDefault(); // Evita el comportamiento por defecto del botón
 
-	    $.ajax({
-	        url: '/logout',
-	        type: 'POST',
-	        beforeSend: function (xhr) {
-	            // Agregar el token CSRF
-	            if (window.csrf && window.csrf.headerName && window.csrf.token) {
-	                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-	            }
-	        },
-	        success: function () {
-	            window.location.href = '/login'; // Redirigir tras el logout
-	        },
-	        error: function (xhr) {
-	            alert('Error al cerrar sesión: ' + xhr.status);
-	        }
-	    });
+		$.ajax({
+			url: '/logout',
+			type: 'POST',
+			beforeSend: function(xhr) {
+				// Agregar el token CSRF
+				if (window.csrf && window.csrf.headerName && window.csrf.token) {
+					xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+				}
+			},
+			success: function() {
+				window.location.href = '/login'; // Redirigir tras el logout
+			},
+			error: function(xhr) {
+				alert('Error al cerrar sesión: ' + xhr.status);
+			}
+		});
 	});
 
 
@@ -136,6 +136,7 @@ $(document).ready(function() {
 	// ================== Lógica para /home.html ==================
 	if (currentPath === '/home') {
 
+		// ==================  MATERIAS  ==================
 		$.ajax({
 			url: '/materias',
 			type: 'GET',
@@ -159,7 +160,7 @@ $(document).ready(function() {
 				$('#tests').html('<option value="">Elige un test</option>');
 				return;
 			}
-
+			// ================== TESTS DE MATERIA ==================
 			// Hacer una petición AJAX para cargar los tests de la materia seleccionada
 			$.ajax({
 				url: '/tests', // Endpoint en el backend
@@ -178,30 +179,14 @@ $(document).ready(function() {
 			});
 		});
 
-		// Evento para cargar preguntas cuando se selecciona un test
+		// ================== CONTENIDO DEL TEST ==================
 		$('#tests').on('change', function() {
 			const idTest = $(this).val(); // Obtener el test seleccionado
 			if (!idTest) {
 				$('#questions-container').html(''); // Limpiar si no hay test seleccionado
 				return;
 			}
-			
-			$.ajax({
-			       url: '/ultimaPuntuacion',
-			       type: 'GET',
-			       data: { idTest: idTest },
-			       success: function (response) {
-			           console.log("Última nota recibida:", response.nota);
-			           if (response.nota !== null) {
-			               $('#ultima-nota').html(`<p>Última nota obtenida: <strong>${response.nota}</strong></p>`);
-			           } else {
-			               $('#ultima-nota').html(`<p>No hay registros previos de este test.</p>`);
-			           }
-			       },
-			       error: function (xhr, status, error) {
-			           console.error("Error al obtener la última puntuación:", status, error);
-			       }
-			   });
+
 			// Hacer una petición AJAX al backend
 			$.ajax({
 				url: '/preguntas',
@@ -236,55 +221,84 @@ $(document).ready(function() {
 					});
 					questionsHTML += `<button type='submit' id='finalizar'>Finalizar</button>`;
 
-					  $('#questions-container').html(questionsHTML); // Mostrar las preguntas y respuestas
-					 
+					$('#questions-container').html(questionsHTML); // Mostrar las preguntas y respuestas
+
 				},
 				error: function(xhr, status, error) {
 					console.error('Error al cargar las preguntas:', error);
 				}
 			});
+			
+			
+			// ================== PUNTUACIÓN ==================
+				$.ajax({
+					url: '/ultimaPuntuacion',
+					type: 'GET',
+					data: { idTest: idTest },
+					success: function(response) {
+						console.log("Última nota recibida:", response.nota);
+						if (response.nota !== null) {
+							$('#ultima-nota').html(`<p>Última nota obtenida: <strong>${response.nota}</strong></p>`);
+							$('#nota-obtenida').html(`<p>Test pendiente de finalizar.</p>`);
+						} else {
+							$('#ultima-nota').html(`<p>No hay registros previos de este test.</p>`);
+							$('#nota-obtenida').html(`<p>Test pendiente de finalizar.</p>`);
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error("Error al obtener la última puntuación:", status, error);
+					}
+				});
+
+			
+			
 		});
-		
-		
-		
+
+	
 
 	}
-	
-	
+
+
+	//================== FINALIZAR TEST ===========================================
 	$(document).on('click', '#finalizar', function() {
-	    let respuestasSeleccionadas = [];
-	    let idTest = $('#tests').val();
+		let respuestasSeleccionadas = [];
+		let idTest = $('#tests').val();
+		
+		// Recoger las respuestas seleccionadas
+		$('input[type=radio]:checked').each(function() {
+			respuestasSeleccionadas.push(parseInt($(this).val()));
+		});
 
-	    // Recoger las respuestas seleccionadas
-	    $('input[type=radio]:checked').each(function() {
-	        respuestasSeleccionadas.push(parseInt($(this).val()));
-	    });
+		console.log("Datos que se enviarán:", { idTest: idTest, respuestas: respuestasSeleccionadas });
 
-	    console.log("Datos que se enviarán:", { idTest: idTest, respuestas: respuestasSeleccionadas });
-
-	    // Enviar datos al backend
-	    $.ajax({
-	        url: '/calcularNota',
-	        type: 'POST',
-	        contentType: 'application/json',
-	        data: JSON.stringify({
-	            idTest: idTest,
-	            respuestas: respuestasSeleccionadas
-	        }),
-	        success: function(response) {
-	            console.log("Respuesta del servidor:", response);
-				$('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${response.nota}</p>`);
-	        },
-	        error: function(xhr, status, error) {
-	            console.error("Error en la petición AJAX:", status, error);
-	            console.error("Detalles del error:", xhr.responseText);
-	        }
-	    });
+		// Enviar datos al backend
+		$.ajax({
+			url: '/calcularNota',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({
+				idTest: idTest,
+				respuestas: respuestasSeleccionadas
+			}),
+			success: function(response) {
+				console.log("Respuesta del servidor:", response);
+				if (response.nota !== null) {
+											$('#nota-obtenida').html(`<strong>Nota obtenida en este test:</strong> ${response.nota}</p>`);
+										} else {
+											$('#nota-obtenida').html(`<p>Test pendiente de finalizar.</p>`);
+										}
+				//$('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${response.nota}</p>`);
+			},
+			error: function(xhr, status, error) {
+				console.error("Error en la petición AJAX:", status, error);
+				console.error("Detalles del error:", xhr.responseText);
+			}
+		});
 	});
 
-	
-	
-	
+
+
+
 });
 
 
