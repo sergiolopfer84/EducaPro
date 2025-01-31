@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import es.prw.daos.MateriaDao;
 import es.prw.daos.PreguntaDao;
@@ -33,14 +34,17 @@ import es.prw.models.Puntuacion;
 import es.prw.models.Respuesta;
 import es.prw.models.Test;
 import es.prw.models.Usuario;
+import jakarta.servlet.http.HttpSession;
+
+@SessionAttributes({"usuario", "ultima_puntuacion", "respuestas", "sessionKey","nota"})
 
 @Controller
 public class homeController {
-	 @Autowired
-	    private RespuestaDao respuestaDao; 
-	 @Autowired
-	    private PuntuacionDao puntuacionDao; 
-	 
+	@Autowired
+	private RespuestaDao respuestaDao;
+	@Autowired
+	private PuntuacionDao puntuacionDao;
+
 	@GetMapping("/home")
 	public String home(CsrfToken csrfToken, Model model) {
 
@@ -61,17 +65,19 @@ public class homeController {
 		TestDao testDao = new TestDao();
 		return testDao.getTests(idMateria);
 	}
-	
+
 	@GetMapping("/preguntas")
 	@ResponseBody
-	public List<Pregunta> getPreguntasConRespuestas(@RequestParam("idTest") int idTest) {
+	public List<Pregunta> getPreguntasConRespuestas(@RequestParam("idTest") int idTest, HttpSession session) {
 	    PreguntaDao preguntaDao = new PreguntaDao();
-	    return preguntaDao.getPreguntasConRespuestas(idTest);
+	    return preguntaDao.getPreguntasConRespuestas(idTest, session);
 	}
-	
+
+
+
 	@PostMapping("/calcularNota")
 	public ResponseEntity<Map<String, Object>> calcularNota(@RequestBody EvaluacionDTO evaluacion,
-	                                                        @SessionAttribute(name = "usuario", required = false) Usuario usuario) {
+	        @SessionAttribute(name = "usuario", required = false) Usuario usuario, HttpSession session) throws SQLException {
 	    Map<String, Object> response = new HashMap<>();
 
 	    // Verificar si el usuario está autenticado
@@ -80,51 +86,62 @@ public class homeController {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	    }
 
-	    // Obtener respuestas desde el DAO y calcular la nota
-	    double notaTotal = 0.0;
-	    try {
-	        List<Respuesta> respuestas = respuestaDao.getRespuestasByIds(evaluacion.getRespuestas());
+	    // Calcular la nota total usando las respuestas almacenadas en sesión o BD
+	    double notaTotal = calcularNotaTotal(evaluacion, session);
 
-	        if (respuestas.isEmpty()) {
-	            response.put("error", "No se encontraron respuestas para los IDs proporcionados");
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-	        }
+	    // Crear el objeto de Puntuacion
+	    Puntuacion nuevaPuntuacion = new Puntuacion(null, notaTotal, usuario.getIdUsuario(), evaluacion.getIdTest(),
+	            new java.util.Date());
 
-	        notaTotal = respuestas.stream()
-	                .mapToDouble(Respuesta::getNota)
-	                .sum();
-	        System.out.println("nota total  "+ notaTotal);
-	    } catch (Exception e) {
-	        response.put("error", "Error al obtener las respuestas: " + e.getMessage());
+	    // Guardar la puntuación en la base de datos
+	    Optional<Puntuacion> puntuacionGuardada = puntuacionDao.savePuntuacion(nuevaPuntuacion, session);
+
+	    if (puntuacionGuardada.isPresent()) {
+	        Puntuacion ultimaPuntuacion = puntuacionGuardada.get();
+	        String sessionKey = "ultima_puntuacion_" + evaluacion.getIdTest();
+	        
+	        // ✅ Actualizar la sesión con la nueva puntuación
+	        session.setAttribute(sessionKey, ultimaPuntuacion);
+
+	        response.put("nota", ultimaPuntuacion.getNotaConseguida());
+	        return ResponseEntity.ok(response);
+	    } else {
+	        response.put("error", "Error al guardar puntuación");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
-	    // Guardar la puntuación en la base de datos usando el DAO
-	    try {
-	        Puntuacion nuevaPuntuacion = new Puntuacion();
-	        nuevaPuntuacion.setIdUsuario(usuario.getIdUsuario());
-	        nuevaPuntuacion.setIdTest(evaluacion.getIdTest());
-	        nuevaPuntuacion.setNotaConseguida(notaTotal);
-	        nuevaPuntuacion.setFecha(new java.util.Date()); // Fecha actual
-
-	        puntuacionDao.savePuntuacion(nuevaPuntuacion);
-	    } catch (SQLException e) {
-	        response.put("error", "Error al guardar la puntuación: " + e.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
-
-	    // Respuesta exitosa con la nota obtenida
-	    response.put("nota", notaTotal);
-	    return ResponseEntity.ok(response);
 	}
-	
+
+
+
+	private double calcularNotaTotal(EvaluacionDTO evaluacion, HttpSession session) {
+	    if (evaluacion == null || evaluacion.getRespuestas() == null || evaluacion.getRespuestas().isEmpty()) {
+	        System.err.println("Error: La evaluación o la lista de respuestas es nula o vacía.");
+	        return 0.0; // Retornamos 0 si no hay respuestas
+	    }
+
+	    List<Respuesta> respuestas = respuestaDao.getRespuestasByIds(evaluacion.getRespuestas(), session);
+	    
+	    if (respuestas == null || respuestas.isEmpty()) {
+	        System.err.println("Error: No se encontraron respuestas en la base de datos.");
+	        return 0.0; // Evita `NullPointerException`
+	    }
+
+	    return respuestas.stream().mapToDouble(Respuesta::getNota).sum();
+	}
+
+
+	@GetMapping("/limpiarSesion")
+	public ResponseEntity<String> limpiarSesion(HttpSession session) {
+		session.invalidate();
+		return ResponseEntity.ok("Sesión limpiada");
+	}
+
 	@GetMapping("/ultimaPuntuacion")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> getUltimaPuntuacion(
 	        @SessionAttribute(name = "usuario", required = false) Usuario usuario,
-	        @RequestParam("idTest") int idTest) {
-		
-		System.out.println(" id usuario cont "+ usuario);
-		System.out.println(" id test cont "+ idTest);
+	        @RequestParam("idTest") int idTest,
+	        HttpSession session) {
 
 	    Map<String, Object> response = new HashMap<>();
 
@@ -133,15 +150,23 @@ public class homeController {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	    }
 
-	    Optional<Puntuacion> ultimaPuntuacion = puntuacionDao.getUltimaPuntuacion(usuario.getIdUsuario(), idTest);
+	    List<Double> notas = puntuacionDao.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest, session);
 
-	    if (ultimaPuntuacion.isPresent()) {
-	        response.put("nota", ultimaPuntuacion.get().getNotaConseguida());
-	        return ResponseEntity.ok(response);
+	    if (notas.isEmpty()) {
+	        response.put("ultimaNota", null);
+	        response.put("penultimaNota", null);
+	    } else if (notas.size() == 1) {
+	        response.put("ultimaNota", notas.get(0));
+	        response.put("penultimaNota", null);
 	    } else {
-	        response.put("nota", null);
-	        return ResponseEntity.ok(response); // No hay puntuación previa
+	        response.put("ultimaNota", notas.get(0));
+	        response.put("penultimaNota", notas.get(1));
 	    }
+
+	    return ResponseEntity.ok(response);
 	}
+
+
+
 
 }

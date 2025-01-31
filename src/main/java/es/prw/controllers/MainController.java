@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import es.prw.daos.UserDao;
 import es.prw.models.Usuario;
 
+@SessionAttributes({"usuario", "ultima_puntuacion", "respuestas", "sessionKey"})
 
 @Controller
 public class MainController {
