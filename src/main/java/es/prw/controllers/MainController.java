@@ -6,7 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +17,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.prw.daos.UserDao;
 import es.prw.models.Usuario;
+import es.prw.services.LoginAttemptService;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @Controller
@@ -56,6 +62,37 @@ public class MainController {
 					.body("Error al registrar el usuario: " + e.getMessage());
 		}
 	}
+	@RestController
+	@RequestMapping("/login")
+	public class LoginController {
+
+	    @Autowired
+	    private AuthenticationManager authenticationManager;
+
+	    @Autowired
+	    private LoginAttemptService loginAttemptService;
+
+	    @PostMapping
+	    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
+	        if (loginAttemptService.isBlocked(email)) {
+	            long remainingTime = loginAttemptService.getRemainingLockTime(email);
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                .body("Cuenta bloqueada durante " + remainingTime + " segundos.");
+	        }
+
+	        try {
+	            Authentication auth = authenticationManager.authenticate(
+	                new UsernamePasswordAuthenticationToken(email, password)
+	            );
+	            loginAttemptService.loginSucceeded(email);
+	            return ResponseEntity.ok("Inicio de sesión exitoso.");
+	        } catch (AuthenticationException ex) {
+	            loginAttemptService.loginFailed(email);
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body("Credenciales incorrectas.");
+	        }
+	    }
+	}
 
 	@RestController
 	public class UserInfoController {
@@ -70,5 +107,6 @@ public class MainController {
 			return userDao.findByEmail(email).orElseThrow(() -> new RuntimeException("No se encontró el usuario"));
 		}
 	}
+	
 
 }
