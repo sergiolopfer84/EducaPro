@@ -96,4 +96,6 @@ public class SecurityConfiguration {
 		authenticationManagerBuilder.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
 		return authenticationManagerBuilder.build();
 	}
+	
+	
 }

@@ -15,6 +15,7 @@
 			<!-- Aquí puedes añadir cualquier elemento -->
 			<p>EducaPro</p>
 			<h4 id="welcome-text">Bienvenido Usuario</h4> <!-- le pongo un id para manipularlo -->
+			<div id="usuario-data" data-usuario="${usuario}"></div>
 
 			<button id= "logoutBtn" class="btn">
 			       Salir
@@ -38,6 +39,9 @@
 
 		<!-- Contenido principal -->
 		<main class="main-content">
+			<div id="ultima-nota"></div> <!-- Aquí se muestra la última nota obtenida -->
+			<div id="nota-obtenida"></div>
+			   
 			<div id="questions-container" class="questions-container">
 				<!-- Las preguntas aparecerán aquí -->
 			</div>
