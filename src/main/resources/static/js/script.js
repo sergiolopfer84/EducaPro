@@ -1,138 +1,100 @@
-$(document).ready(function() {
+$(document).ready(function () {
+    // ================== LOGIN FORM-BASED ==================
+    $('#loginBtn').click(function (e) {
+        e.preventDefault();
+        const email = $('#loginUsername').val();
+        const password = $('#loginPassword').val();
 
-	// ================== LOGIN FORM-BASED ==================
-		
-		let lockTimer = null;
+        if (!email || !password) {
+            alert('Por favor, completa todos los campos.');
+            return;
+        }
 
-		function blockLogin(seconds) {
-		    $('#loginButton').prop('disabled', true); // Desactiva el botón
-		    lockTimer = setInterval(() => {
-		        seconds--;
-		        $('#loginButton').text(`Bloqueado (${seconds}s)`);
+        $.ajax({
+            url: '/login',
+            type: 'POST',
+            data: { email: email, password: password },
+            beforeSend: function (xhr) {
+                if (window.csrf.headerName && window.csrf.token) {
+                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+                }
+            },
+            success: function () {
+                window.location.href = '/home';
+            },
+            error: function (xhr) {
+                alert('Error al iniciar sesión.');
+            }
+        });
+    });
 
-		        if (seconds <= 0) {
-		            clearInterval(lockTimer);
-		            $('#loginButton').prop('disabled', false).text('Iniciar sesión');
-		        }
-		    }, 1000); // Actualiza cada segundo
-		}
-		$('#loginBtn').click(function(e) {
-			e.preventDefault(); // Evita un submit accidental si es <button type="submit">
+    // ================== LOGOUT ==================
+    $('#logoutBtn').click(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/logout',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                if (window.csrf.headerName && window.csrf.token) {
+                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+                }
+            },
+            success: function () {
+                window.location.href = '/login';
+            },
+            error: function (xhr) {
+                alert('Error al cerrar sesión.');
+            }
+        });
+    });
 
-			// Usaremos username y password,
-			// OJO: si en tu input usas "loginUsername" e "loginPassword"
-			// y en Security config .usernameParameter("username"), .passwordParameter("password")
-			// entonces "username" y "password" deben matchear
-			const email = $('#loginUsername').val();
-			const password = $('#loginPassword').val();
+	// ================== FORZAR QUE EL MODAL SIEMPRE SE ABRA EN INICIO DE SESIÓN ==================
+	$('#authModal').on('show.bs.modal', function () {
+	    $('#registerForm').hide();
+	    $('#loginForm').show();
+	});
 
+	// ================== REGISTRO ==================
+	$('#registerBtn').click(function () {
+	    const name = $('#registerName').val();
+	    const email = $('#registerEmail').val();
+	    const password = $('#registerPassword').val();
 
-			if (!email || !password) {
-				alert('Por favor, completa todos los campos.');
-				return;
-			}
+	    if (!name || !email || !password) {
+	        alert('Por favor, completa todos los campos.');
+	        return;
+	    }
 
-			// Enviar solicitud de inicio de sesión con parámetros tipo "form-data"
-			$('#loginButton').on('click', function () {
-			    const email = $('#email').val(); // Captura el email ingresado por el usuario
-			    const password = $('#password').val(); // Captura la contraseña ingresada
+	    $.ajax({
+	        url: '/register',
+	        type: 'POST',
+	        contentType: 'application/json',
+	        data: JSON.stringify({ nombre: name, email: email, pass: password }),
+	        beforeSend: function (xhr) {
+	            if (window.csrf.headerName && window.csrf.token) {
+	                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	            }
+	        },
+	        success: function () {
 
-			    $.ajax({
-			        url: '/login',  // URL del controlador de login en el backend
-			        type: 'POST',   // Tipo de petición
-			        data: {
-			            email: email,
-			            password: password
-			        },
-			        beforeSend: function (xhr) {
-			            // Adjuntar cabecera CSRF si es necesario
-			            if (window.csrf?.headerName && window.csrf?.token) {
-			                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-			            }
-			        },
-			        success: function () {
-			            // Si las credenciales son correctas
-			            window.location.href = '/home'; // Redirigir al usuario a /home
-			        },
-			        error: function (xhr) {
-			            // Manejo de errores
-			            if (xhr.status === 403) {
-			                // Caso en que la cuenta esté bloqueada
-			                const match = xhr.responseText.match(/(\d+) segundos/); // Busca el tiempo en el mensaje
-			                const seconds = match ? parseInt(match[1], 10) : 30;   // Usa el tiempo o por defecto 30s
-			                blockLogin(seconds); // Bloquea el botón durante el tiempo especificado
-			                alert(xhr.responseText); // Muestra el mensaje recibido del backend
-			            } else if (xhr.status === 401) {
-			                // Caso de credenciales incorrectas
-			                alert('Credenciales incorrectas. Intenta nuevamente.');
-			            } else {
-			                // Otros errores (por ejemplo, problemas en el servidor)
-			                alert('Error al intentar iniciar sesión.');
-			            }
-			        }
-			    });
-			});
+	            // 🔹 Mostrar formulario de inicio de sesión después del registro
+	            $('#registerForm').hide();
+	            $('#loginForm').show();
 
-		
-		//Logout 
+	            // 🔹 Vaciar los campos de registro
+	            $('#registerName').val('');
+	            $('#registerEmail').val('');
+	            $('#registerPassword').val('');
+	        },
+	        error: function (xhr) {
+	            console.error("Error al registrarse:", xhr);
+	            alert(xhr.responseText || 'Error al registrarse.');
+	        }
+	    });
+	});
 
-		$('#logoutBtn').click(function (e) {
-		    e.preventDefault(); // Evita el comportamiento por defecto del botón
-
-		    $.ajax({
-		        url: '/logout',
-		        type: 'POST',
-		        beforeSend: function (xhr) {
-		            // Agregar el token CSRF
-		            if (window.csrf && window.csrf.headerName && window.csrf.token) {
-		                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-		            }
-		        },
-		        success: function () {
-		            window.location.href = '/login'; // Redirigir tras el logout
-		        },
-		        error: function (xhr) {
-		            alert('Error al cerrar sesión: ' + xhr.status);
-		        }
-		    });
-		});
-
-
-		// ================== REGISTRO (JSON) ==================
-		$('#registerBtn').click(function() {
-			const name = $('#registerName').val();
-			const email = $('#registerEmail').val();
-			const password = $('#registerPassword').val();
-			if (!name || !email || !password) {
-				alert('Por favor, completa todos los campos.');
-				return;
-			}
-
-			// Enviar solicitud de registro (esto es tu endpoint custom, /register)
-			// Aquí sí podemos usar JSON
-			$.ajax({
-				url: '/register',
-				type: 'POST',
-				contentType: 'application/json',
-				data: JSON.stringify({ nombre: name, email: email, pass: password }),
-				beforeSend: function(xhr) {
-					if (window.csrf.headerName && window.csrf.token) {
-						xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-					}
-				},
-				success: function(response) {
-					$('#authModal').modal('hide'); // Cerrar el modal
-				},
-				error: function(xhr) {
-					console.error("Error al registrarse: ", xhr);
-					const errorMessage = xhr.responseText || 'Error al registrarse.';
-					alert(errorMessage);
-				}
-			});
-		});
-
-
-		// ================== MOSTRAR/OCULTAR formularios del modal ==================
+	
+	// ================== MOSTRAR/OCULTAR formularios del modal ==================
 		$('#showRegister').click(function() {
 			$('#loginForm').hide();
 			$('#registerForm').show();
@@ -162,101 +124,155 @@ $(document).ready(function() {
 			});
 		}
 
-		// ================== Lógica para /home.html ==================
 		if (currentPath === '/home') {
+    // ================== SELECCIÓN DE MATERIAS ==================
+    $.ajax({
+        url: '/materias',
+        type: 'GET',
+        success: function (data) {
+            let options = '<option value="">Elige una materia</option>';
+            data.forEach(materia => {
+                options += `<option value="${materia.idMateria}">${materia.materia}</option>`;
+            });
+            $('#materias').html(options);
+        },
+        error: function (xhr) {
+            console.error('Error al cargar las materias:', xhr);
+        }
+    });
 
-			$.ajax({
-				url: '/materias',
-				type: 'GET',
-				success: function(data) {
-					let options = '<option value="">Elige una materia</option>'; // Opción inicial
-					data.forEach(materia => {
-						options += `<option value="${materia.idMateria}">${materia.materia}</option>`;
-					});
-					$('#materias').html(options); // Carga las opciones en el select
-				},
-				error: function(xhr, status, error) {
-					console.error('Error al cargar las materias:', error);
-				}
-			});
+    // ================== CARGAR TESTS ==================
 
-			// Evento para cargar tests cuando se selecciona una materia
-			$('#materias').on('change', function() {
-				const idMateria = $(this).val(); // Obtener el valor seleccionado
-				if (!idMateria) {
-					// Si no se selecciona una materia, vaciar el select de tests
-					$('#tests').html('<option value="">Elige un test</option>');
-					return;
-				}
+	
+	        // ================== CARGAR TESTS ==================
+	        $('#materias').on('change', function () {
+	            const idMateria = $(this).val();
+	            if (!idMateria) {
+	                $('#tests').html('<option value="">Elige un test</option>');
+	                return;
+	            }
 
-				// Hacer una petición AJAX para cargar los tests de la materia seleccionada
-				$.ajax({
-					url: '/tests', // Endpoint en el backend
-					type: 'GET',
-					data: { idMateria: idMateria }, // Parámetro idMateria enviado al backend
-					success: function(data) {
-						let options = '<option value="">Elige un test</option>';
-						data.forEach(test => {
-							options += `<option value="${test.idTest}">${test.test}</option>`;
-						});
-						$('#tests').html(options); // Cargar los tests en el select
-					},
-					error: function(xhr, status, error) {
-						console.error('Error al cargar los tests:', error);
-					}
-				});
-			});
+	            $.ajax({
+	                url: '/tests',
+	                type: 'GET',
+	                data: { idMateria: idMateria },
+	                success: function (data) {
+	                    let options = '<option value="">Elige un test</option>';
+	                    data.forEach(test => {
+	                        options += `<option value="${test.idTest}">${test.test}</option>`;
+	                    });
+	                    $('#tests').html(options);
+	                },
+	                error: function (xhr) {
+	                    console.error('Error al cargar los tests:', xhr);
+	                }
+	            });
+	        });
 
-			// Evento para cargar preguntas cuando se selecciona un test
-			$('#tests').on('change', function() {
-				const idTest = $(this).val(); // Obtener el test seleccionado
-				if (!idTest) {
-					$('#questions-container').html(''); // Limpiar si no hay test seleccionado
-					return;
-				}
+	        // ================== CARGAR PREGUNTAS ==================
+	        $('#tests').on('change', function () {
+	            const idTest = $(this).val();
+	            if (!idTest) {
+	                $('#questions-container').html('');
+	                return;
+	            }
 
-				// Hacer una petición AJAX al backend
-				$.ajax({
-					url: '/preguntas',
-					type: 'GET',
-					data: { idTest: idTest },
-					success: function(data) {
+	            // 🔴 LIMPIAR NOTA AL CAMBIAR DE TEST
+	            $('#nota-obtenida').html(''); 
+	            $('#ultima-nota').html('');
 
-						let questionsHTML = '';
-						data.forEach(pregunta => {
-							questionsHTML += `
-						                    <div class="question">
-						                        <h3>${pregunta.pregunta}</h3>
-						                        <div class="options">
-						                `;
+	            $.ajax({
+	                url: '/preguntas',
+	                type: 'GET',
+	                data: { idTest: idTest },
+	                success: function (data) {
+	                    let questionsHTML = '';
+	                    data.forEach(pregunta => {
+	                        questionsHTML += `
+	                            <div class="question">
+	                                <h3>${pregunta.pregunta}</h3>
+	                                <div class="options">`;
 
-							pregunta.respuestas.forEach(respuesta => {
+	                        pregunta.respuestas.forEach(respuesta => {
+	                            questionsHTML += `
+	                                <label>
+	                                    <input type="radio" name="pregunta${pregunta.idPregunta}" value="${respuesta.idRespuesta}">
+	                                    ${respuesta.respuesta}
+	                                </label>`;
+	                        });
 
-								questionsHTML += `
-						                        <label>
-						                            <input type="radio" name="pregunta${pregunta.idPregunta}" value="${respuesta.idRespuesta}">
-						                            ${respuesta.respuesta}
-						                        </label>
-						                    `;
-							});
+	                        questionsHTML += `
+	                                </div>
+	                            </div>`;
+	                    });
+	                    questionsHTML += `<button type='submit' id='finalizar'>Finalizar</button>`;
+	                    $('#questions-container').html(questionsHTML);
+	                },
+	                error: function (xhr) {
+	                    console.error('Error al cargar las preguntas:', xhr);
+	                }
+	            });
 
-							questionsHTML += `
-						                        </div>
-						                    </div>
-						                `;
-						});
+	            // ================== CARGAR ÚLTIMA PUNTUACIÓN ==================
+	            $.ajax({
+	                url: '/ultimaPuntuacion',
+	                type: 'GET',
+	                data: { idTest: idTest },
+	                success: function (response) {
+	                    let ultimaNota = response.ultimaNota ?? 'Sin registros previos';
 
-						$('#questions-container').html(questionsHTML); // Mostrar las preguntas y respuestas
-					},
-					error: function(xhr, status, error) {
-						console.error('Error al cargar las preguntas:', error);
-					}
-				});
-			});
+	                    $('#ultima-nota').html(`
+	                        <p><strong>Última nota obtenida:</strong> ${ultimaNota}</p>
+	                    `);
+	                },
+	                error: function (xhr) {
+	                    console.error("Error al obtener la última puntuación:", xhr);
+	                }
+	            });
+	        });
 
-		}
+	        // ================== FINALIZAR TEST ==================
+	        $(document).on('click', '#finalizar', function() {
+	            let respuestasSeleccionadas = [];
+	            let idTest = $('#tests').val();
+
+	            $('input[type=radio]:checked').each(function() {
+	                respuestasSeleccionadas.push(parseInt($(this).val()));
+	            });
+
+	            if (!idTest || respuestasSeleccionadas.length === 0) {
+	                alert("Error: Debes seleccionar un test y al menos una respuesta.");
+	                return;
+	            }
+
+	            $.ajax({
+	                url: '/calcularNota',
+	                type: 'POST',
+	                contentType: 'application/json',
+	                data: JSON.stringify({
+	                    idTest: idTest,
+	                    respuestas: respuestasSeleccionadas
+	                }),
+	                success: function(response) {
+	                    let notaObtenida = response.nota;
+
+	                    // ✅ Mostrar la nota solo después de finalizar el test
+	                    $.ajax({
+	                        url: '/ultimaPuntuacion',
+	                        type: 'GET',
+	                        data: { idTest: idTest },
+	                        success: function(response) {
+	                            let notaAnterior = response.penultimaNota !== null ? response.penultimaNota : 'Sin registros previos';
+
+	                            $('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`);
+	                            $('#ultima-nota').html(`<p><strong>Nota anterior:</strong> ${notaAnterior}</p>`);
+	                        }
+	                    });
+	                },
+	                error: function(xhr) {
+	                    console.error("Error en la petición AJAX:", xhr.responseText);
+	                }
+	            });
+	        });
+	    }
 	});
-
-});
-
-

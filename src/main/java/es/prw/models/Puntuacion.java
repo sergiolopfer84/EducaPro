@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Puntuacion {
 	private Integer idPuntuacion;
-	private String notaConseguida;
+	private double notaConseguida;
 	private Integer idUsuario;
 	private Integer idTest;
 	private Date fecha;
@@ -14,7 +14,7 @@ public class Puntuacion {
 
 	}
 
-	public Puntuacion(Integer idPuntuacion, String notaConseguida, Integer idUsuario, Integer idTest, Date fecha) {
+	public Puntuacion(Integer idPuntuacion, double notaConseguida, Integer idUsuario, Integer idTest, Date fecha) {
 		super();
 		this.idPuntuacion = idPuntuacion;
 		this.notaConseguida = notaConseguida;
@@ -31,12 +31,12 @@ public class Puntuacion {
 		this.idPuntuacion = idPuntuacion;
 	}
 
-	public String getNotaConseguida() {
+	public double getNotaConseguida() {
 		return notaConseguida;
 	}
 
-	public void setNotaConseguida(String notaConseguida) {
-		this.notaConseguida = notaConseguida;
+	public void setNotaConseguida(double notaTotal) {
+		this.notaConseguida = notaTotal;
 	}
 
 	public Integer getIdUsuario() {
