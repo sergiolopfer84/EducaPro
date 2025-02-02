@@ -47,14 +47,16 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario de inicio de sesión -->
-					<div id="loginForm">
+					<!-- Formulario de inicio de sesión -->
+					<!-- Formulario de inicio de sesión (dentro del modal) -->
+					<form id="loginForm" onsubmit="return false;">
 					    <h6>Iniciar sesión</h6>
 					    <input type="text" id="loginUsername" placeholder="Usuario" class="form-control mb-2">
 					    <input type="password" id="loginPassword" placeholder="Contraseña" class="form-control mb-2">
-					    <button id="loginBtn" class="btn btn-primary">Iniciar sesión</button>
+					    <button id="loginBtn" class="btn btn-primary" type="button">Iniciar sesión</button>
+					    <div id="loginError" class="mt-2"></div> <!-- Mensajes de error aparecerán aquí -->
 					    <p class="mt-2">¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate aquí</a></p>
-					</div>
+					</form>
 
                     <!-- Formulario de registro -->
 				

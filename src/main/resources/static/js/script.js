@@ -1,32 +1,55 @@
 $(document).ready(function () {
-    // ================== LOGIN FORM-BASED ==================
-    $('#loginBtn').click(function (e) {
-        e.preventDefault();
-        const email = $('#loginUsername').val();
-        const password = $('#loginPassword').val();
+	// ================== LOGIN FORM-BASED ==================
+	$('#loginBtn').click(function (e) {
+	    e.preventDefault();
+	    const email = $('#loginUsername').val();
+	    const password = $('#loginPassword').val();
 
-        if (!email || !password) {
-            alert('Por favor, completa todos los campos.');
-            return;
-        }
+	    // Verificar campos vacíos
+	    if (!email || !password) {
+	        $('#loginError').html('<span style="color: red;">Por favor, completa todos los campos.</span>');
+	        return;
+	    }
 
-        $.ajax({
-            url: '/login',
-            type: 'POST',
-            data: { email: email, password: password },
-            beforeSend: function (xhr) {
-                if (window.csrf.headerName && window.csrf.token) {
-                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-                }
-            },
-            success: function () {
-                window.location.href = '/home';
-            },
-            error: function (xhr) {
-                alert('Error al iniciar sesión.');
-            }
-        });
-    });
+	    $.ajax({
+	        url: '/login',           // La URL donde Spring Security escucha
+	        type: 'POST',            // Petición POST
+	        data: { email: email, password: password },
+	        beforeSend: function (xhr) {
+	            // CSRF Token si fuera necesario
+	            if (window.csrf.headerName && window.csrf.token) {
+	                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	            }
+	        },
+	        success: function () {
+	            // Si el login es exitoso, redirigimos a /home
+	            window.location.href = '/home';
+	        },
+	        error: function (xhr) {
+	            // Manejar diferentes errores
+	            if (xhr.status === 401) {
+	                // Usuario/contraseña incorrectos
+	                $('#loginError').html(
+	                  '<span style="color: red;">Nombre o contraseña incorrectos</span>'
+	                );
+	            } else if (xhr.status === 403) {
+	                // Cuenta bloqueada
+	                $('#loginError').html(
+	                  '<span style="color: red;">Cuenta bloqueada. Inténtalo más tarde.</span>'
+	                );
+	            } else {
+	                // Error genérico
+	                $('#loginError').html(
+	                  '<span style="color: red;">Error al iniciar sesión.</span>'
+	                );
+	            }
+
+	            // ⛔ EVITAR QUE SE CIERRE EL MODAL
+	            // Volvemos a forzar la apertura para asegurarnos de que se quede en pantalla.
+	            $('#authModal').modal({ backdrop: 'static', keyboard: false });
+	        }
+	    });
+	});
 
     // ================== LOGOUT ==================
     $('#logoutBtn').click(function (e) {
