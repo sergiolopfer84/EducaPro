@@ -11,10 +11,18 @@
 </head>
 <body>
     <!-- Barra superior -->
-    <header class="top-bar">
-        EducaPro
-        <button class="btn btn-primary" data-toggle="modal" data-target="#authModal">Iniciar sesión / Registrarse</button>
-    </header>
+	<header class="top-bar">
+	    EducaPro
+	    <!-- Lo mostramos por defecto, pero lo ocultaremos con JS si el usuario ya está logueado -->
+	    <button id="loginTrigger" class="btn btn-primary" data-toggle="modal" data-target="#authModal">
+	        Iniciar sesión / Registrarse
+	    </button>
+
+	    <!-- Lo ocultamos inicialmente -->
+	    <button id="logoutBtn" class="btn btn-primary" style="display: none;">
+	        Salir
+	    </button>
+	</header>
 
     <!-- Contenido principal -->
     <main class="main-content">
