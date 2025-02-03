@@ -7,6 +7,8 @@
 	<title>Academia Online</title>
 	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 </head>
 
 <body>
@@ -17,9 +19,14 @@
 			<h4 id="welcome-text">Bienvenido Usuario</h4> <!-- le pongo un id para manipularlo -->
 			<div id="usuario-data" data-usuario="${usuario}"></div>
 
-			<button id= "logoutBtn" class="btn">
-			       Salir
-			   </button>
+			<div class="auth-buttons">
+			       <a href="/index" id="Inicio" class="btn">
+			           <i class="fas fa-home"></i> <!-- Ícono de casa -->
+			       </a>
+			       <button id="logoutBtn" class="btn">
+			           Cerrar sesión
+			       </button>
+			   </div>
 		</div>
 	</header>
 	<div class="container">
