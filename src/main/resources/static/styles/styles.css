@@ -340,3 +340,25 @@ select {
 .auth-buttons .btn-danger:hover {
     background: #c82333;
 }
+/* Estilos para el botón "Finalizar" */
+.btn-finalizar {
+    background: #007bff; /* Azul */
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+/* Efecto al pasar el ratón */
+.btn-finalizar:hover {
+    background: #0056b3; /* Azul más oscuro */
+}
+
+/* Efecto al hacer clic */
+.btn-finalizar:active {
+    transform: scale(0.95);
+}
+
