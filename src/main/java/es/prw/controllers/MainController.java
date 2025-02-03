@@ -39,7 +39,7 @@ public class MainController {
 	}
 
 	// Controlador para cargar la página index.html
-	@GetMapping("/")
+	@GetMapping({"/","/index"})
 
     public String index(Model model, Authentication authentication, CsrfToken csrfToken) {
         if (authentication != null && authentication.isAuthenticated()) {

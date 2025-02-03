@@ -12,16 +12,13 @@
 <body>
     <!-- Barra superior -->
 	<header class="top-bar">
-	    EducaPro
-	    <!-- Lo mostramos por defecto, pero lo ocultaremos con JS si el usuario ya está logueado -->
-	    <button id="loginTrigger" class="btn btn-primary" data-toggle="modal" data-target="#authModal">
-	        Iniciar sesión / Registrarse
-	    </button>
+	    <span class="brand">EducaPro</span>
 
-	    <!-- Lo ocultamos inicialmente -->
-	    <button id="logoutBtn" class="btn btn-primary" style="display: none;">
-	        Salir
-	    </button>
+	    <div class="auth-buttons">
+			<a href="/home" class="btn btn-secondary">Ir a Tests</a>
+	        <button id="loginTrigger" class="btn btn-primary" data-toggle="modal" data-target="#authModal">Iniciar sesión / Registrarse</button>
+	        <button id="logoutBtn" class="btn btn-danger" style="display: none;">Cerrar sesión</button>
+	    </div>
 	</header>
 
     <!-- Contenido principal -->

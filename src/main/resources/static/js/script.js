@@ -74,6 +74,17 @@ $(document).ready(function () {
 
 	// ================== FORZAR QUE EL MODAL SIEMPRE SE ABRA EN INICIO DE SESIÓN ==================
 	$('#authModal').on('show.bs.modal', function () {
+		
+		   // Limpiar campos de login
+		   $('#loginUsername').val('');
+		   $('#loginPassword').val('');
+		   $('#loginError').html('');
+
+		   // Limpiar campos de registro
+		   $('#registerName').val('');
+		   $('#registerEmail').val('');
+		   $('#registerPassword').val('');
+		   $('#registerError').html('');
 	    $('#registerForm').hide();
 	    $('#loginForm').show();
 	});
@@ -142,6 +153,7 @@ $(document).ready(function () {
 
 
 	// ================== MOSTRAR/OCULTAR formularios del modal ==================
+	
 	$('#showRegister').click(function() {
 	    $('#loginForm').hide();
 	    $('#registerForm').show();
@@ -163,26 +175,53 @@ $(document).ready(function () {
 	    $('#registerError').html('');
 	});
 
-		// ================== BIENVENIDA ==================
-		$.get("/api/current-user", function(usuario) {
-			// Aquí cambiamos el texto "Bienvenido Usuario" por "Bienvenido + nombre del usuario"
-			$("#welcome-text").text("Bienvenido/a " + usuario.nombre);
-		}).fail(function() {
-			console.error("Error al obtener datos del usuario");
-		});
+	// ================== BIENVENIDA ==================
+	$.get("/api/current-user", function(usuario) {
+	    // Aquí cambiamos el texto "Bienvenido Usuario" por "Bienvenido + nombre del usuario"
+	    $("#welcome-text").text("Bienvenido/a " + usuario.nombre);
 
-		const currentPath = window.location.pathname; // Obtener la ruta actual
+	    // Si el usuario está logueado, ocultamos "Iniciar sesión" y mostramos "Cerrar sesión"
+	    if (usuario && usuario.nombre) {
+	        $("#loginTrigger").hide();
+	        $("#logoutBtn").show();
+	    }
+	}).fail(function() {
+	    console.error("Error al obtener datos del usuario.");
+	});
 
-		// Configuración global para el token CSRF
-		if (window.csrf && window.csrf.token && window.csrf.headerName) {
-			$.ajaxSetup({
-				beforeSend: function(xhr) {
-					xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-				},
-			});
-		}
+	const currentPath = window.location.pathname; // Obtener la ruta actual
 
-		if (currentPath === '/home') {
+	// Configuración global para el token CSRF
+	if (window.csrf && window.csrf.token && window.csrf.headerName) {
+	    $.ajaxSetup({
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	        },
+	    });
+	}
+
+	// Acción para cerrar sesión
+	$('#logoutBtn').click(function (e) {
+	    e.preventDefault();
+	    $.ajax({
+	        url: '/logout',
+	        type: 'POST',
+	        beforeSend: function (xhr) {
+	            if (window.csrf.headerName && window.csrf.token) {
+	                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	            }
+	        },
+	        success: function () {
+	            window.location.href = '/login';
+	        },
+	        error: function (xhr) {
+	            alert('Error al cerrar sesión.');
+	        }
+	    });
+	});
+
+	if (currentPath === '/home') {
+
     // ================== SELECCIÓN DE MATERIAS ==================
     $.ajax({
         url: '/materias',
