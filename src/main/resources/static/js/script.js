@@ -302,7 +302,7 @@ $(document).ready(function () {
 	                                </div>
 	                            </div>`;
 	                    });
-	                    questionsHTML += `<button type='submit' id='finalizar'>Finalizar</button>`;
+						questionsHTML += `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
 	                    $('#questions-container').html(questionsHTML);
 	                },
 	                error: function (xhr) {
@@ -329,47 +329,54 @@ $(document).ready(function () {
 	        });
 
 	        // ================== FINALIZAR TEST ==================
-	        $(document).on('click', '#finalizar', function() {
-	            let respuestasSeleccionadas = [];
-	            let idTest = $('#tests').val();
+			$(document).on('click', '#finalizar', function() {
+			    let respuestasSeleccionadas = [];
+			    let idTest = $('#tests').val();
 
-	            $('input[type=radio]:checked').each(function() {
-	                respuestasSeleccionadas.push(parseInt($(this).val()));
-	            });
+			    $('input[type=radio]:checked').each(function() {
+			        respuestasSeleccionadas.push(parseInt($(this).val()));
+			    });
 
-	            if (!idTest || respuestasSeleccionadas.length === 0) {
-	                alert("Error: Debes seleccionar un test y al menos una respuesta.");
-	                return;
-	            }
+			    // Validar si el usuario ha seleccionado al menos una respuesta
+			    if (!idTest || respuestasSeleccionadas.length === 0) {
+			   
+			        
+			        // Volver a la parte superior de la página de forma suave
+			        window.scrollTo({ top: 0, behavior: 'smooth' });
+			        
+			        return;
+			    }
 
-	            $.ajax({
-	                url: '/calcularNota',
-	                type: 'POST',
-	                contentType: 'application/json',
-	                data: JSON.stringify({
-	                    idTest: idTest,
-	                    respuestas: respuestasSeleccionadas
-	                }),
-	                success: function(response) {
-	                    let notaObtenida = response.nota;
+			    $.ajax({
+			        url: '/calcularNota',
+			        type: 'POST',
+			        contentType: 'application/json',
+			        data: JSON.stringify({
+			            idTest: idTest,
+			            respuestas: respuestasSeleccionadas
+			        }),
+			        success: function(response) {
+						window.scrollTo({ top: 0, behavior: 'smooth' });
+			            let notaObtenida = response.nota;
 
-	                    // ✅ Mostrar la nota solo después de finalizar el test
-	                    $.ajax({
-	                        url: '/ultimaPuntuacion',
-	                        type: 'GET',
-	                        data: { idTest: idTest },
-	                        success: function(response) {
-	                            let notaAnterior = response.penultimaNota !== null ? response.penultimaNota : 'Sin registros previos';
+			            // ✅ Mostrar la nota solo después de finalizar el test
+			            $.ajax({
+			                url: '/ultimaPuntuacion',
+			                type: 'GET',
+			                data: { idTest: idTest },
+			                success: function(response) {
+			                    let notaAnterior = response.penultimaNota !== null ? response.penultimaNota : 'Sin registros previos';
 
-	                            $('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`);
-	                            $('#ultima-nota').html(`<p><strong>Nota anterior:</strong> ${notaAnterior}</p>`);
-	                        }
-	                    });
-	                },
-	                error: function(xhr) {
-	                    console.error("Error en la petición AJAX:", xhr.responseText);
-	                }
-	            });
-	        });
+			                    $('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`);
+			                    $('#ultima-nota').html(`<p><strong>Nota anterior:</strong> ${notaAnterior}</p>`);
+			                }
+			            });
+			        },
+			        error: function(xhr) {
+			            console.error("Error en la petición AJAX:", xhr.responseText);
+			        }
+			    });
+			});
+
 	    }
 	});
