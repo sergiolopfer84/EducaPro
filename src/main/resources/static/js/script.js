@@ -1,32 +1,55 @@
 $(document).ready(function () {
-    // ================== LOGIN FORM-BASED ==================
-    $('#loginBtn').click(function (e) {
-        e.preventDefault();
-        const email = $('#loginUsername').val();
-        const password = $('#loginPassword').val();
+	// ================== LOGIN FORM-BASED ==================
+	$('#loginBtn').click(function (e) {
+	    e.preventDefault();
+	    const email = $('#loginUsername').val();
+	    const password = $('#loginPassword').val();
 
-        if (!email || !password) {
-            alert('Por favor, completa todos los campos.');
-            return;
-        }
+	    // Verificar campos vacíos
+	    if (!email || !password) {
+	        $('#loginError').html('<span style="color: red;">Por favor, completa todos los campos.</span>');
+	        return;
+	    }
 
-        $.ajax({
-            url: '/login',
-            type: 'POST',
-            data: { email: email, password: password },
-            beforeSend: function (xhr) {
-                if (window.csrf.headerName && window.csrf.token) {
-                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-                }
-            },
-            success: function () {
-                window.location.href = '/home';
-            },
-            error: function (xhr) {
-                alert('Error al iniciar sesión.');
-            }
-        });
-    });
+	    $.ajax({
+	        url: '/login',           // La URL donde Spring Security escucha
+	        type: 'POST',            // Petición POST
+	        data: { email: email, password: password },
+	        beforeSend: function (xhr) {
+	            // CSRF Token si fuera necesario
+	            if (window.csrf.headerName && window.csrf.token) {
+	                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	            }
+	        },
+	        success: function () {
+	            // Si el login es exitoso, redirigimos a /home
+	            window.location.href = '/home';
+	        },
+	        error: function (xhr) {
+	            // Manejar diferentes errores
+	            if (xhr.status === 401) {
+	                // Usuario/contraseña incorrectos
+	                $('#loginError').html(
+	                  '<span style="color: red;">Nombre o contraseña incorrectos</span>'
+	                );
+	            } else if (xhr.status === 403) {
+	                // Cuenta bloqueada
+	                $('#loginError').html(
+	                  '<span style="color: red;">Cuenta bloqueada. Inténtalo más tarde.</span>'
+	                );
+	            } else {
+	                // Error genérico
+	                $('#loginError').html(
+	                  '<span style="color: red;">Error al iniciar sesión.</span>'
+	                );
+	            }
+
+	            // ⛔ EVITAR QUE SE CIERRE EL MODAL
+	            // Volvemos a forzar la apertura para asegurarnos de que se quede en pantalla.
+	            $('#authModal').modal({ backdrop: 'static', keyboard: false });
+	        }
+	    });
+	});
 
     // ================== LOGOUT ==================
     $('#logoutBtn').click(function (e) {
@@ -56,15 +79,35 @@ $(document).ready(function () {
 
 	// ================== REGISTRO ==================
 	$('#registerBtn').click(function () {
-	    const name = $('#registerName').val();
-	    const email = $('#registerEmail').val();
-	    const password = $('#registerPassword').val();
+	    // Limpiar cualquier mensaje de error anterior
+	    $('#registerError').html('');
 
+	    // Recogemos los valores de los inputs
+	    const name = $('#registerName').val().trim();
+	    const email = $('#registerEmail').val().trim();
+	    const password = $('#registerPassword').val().trim();
+
+	    // 1. Comprobar si falta algún campo
 	    if (!name || !email || !password) {
-	        alert('Por favor, completa todos los campos.');
+	        $('#registerError').html('<span style="color: red;">Faltan campos por rellenar</span>');
+	        return;  // Salimos sin hacer el AJAX
+	    }
+
+	    // 2. Validar el email (debe contener al menos una "@" y un ".")
+	    if (!email.includes('@') || !email.includes('.')) {
+	        $('#registerError').html('<span style="color: red;">Inserte un email válido</span>');
 	        return;
 	    }
 
+	    // 3. Validar la contraseña
+	    // Debe tener entre 4 y 12 caracteres, al menos una mayúscula y al menos un número
+	    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{4,12}$/;
+	    if (!passwordRegex.test(password)) {
+	        $('#registerError').html('<span style="color: red;">La contraseña debe contener una mayúscula y un número</span>');
+	        return;
+	    }
+
+	    // Si pasa todas las validaciones, continuamos con la petición AJAX
 	    $.ajax({
 	        url: '/register',
 	        type: 'POST',
@@ -76,24 +119,26 @@ $(document).ready(function () {
 	            }
 	        },
 	        success: function () {
-
-	            // 🔹 Mostrar formulario de inicio de sesión después del registro
+	            // Aquí podemos mostrar el login o un mensaje de éxito
 	            $('#registerForm').hide();
 	            $('#loginForm').show();
 
-	            // 🔹 Vaciar los campos de registro
+	            // Limpiar campos
 	            $('#registerName').val('');
 	            $('#registerEmail').val('');
 	            $('#registerPassword').val('');
+	            $('#registerError').html(''); // Limpiamos el error al registrar correctamente
 	        },
 	        error: function (xhr) {
+	            // En caso de error, podríamos mostrarlo también aquí
 	            console.error("Error al registrarse:", xhr);
-	            alert(xhr.responseText || 'Error al registrarse.');
+	            $('#registerError').html(
+	                `<span style="color: red;">${xhr.responseText || 'Error al registrarse.'}</span>`
+	            );
 	        }
 	    });
 	});
 
-	
 	// ================== MOSTRAR/OCULTAR formularios del modal ==================
 		$('#showRegister').click(function() {
 			$('#loginForm').hide();
