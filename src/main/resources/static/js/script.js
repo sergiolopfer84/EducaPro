@@ -70,6 +70,7 @@ $(document).ready(function () {
             }
         });
     });
+	
 
 	// ================== FORZAR QUE EL MODAL SIEMPRE SE ABRA EN INICIO DE SESIÓN ==================
 	$('#authModal').on('show.bs.modal', function () {
@@ -139,16 +140,28 @@ $(document).ready(function () {
 	    });
 	});
 
-	// ================== MOSTRAR/OCULTAR formularios del modal ==================
-		$('#showRegister').click(function() {
-			$('#loginForm').hide();
-			$('#registerForm').show();
-		});
 
-		$('#showLogin').click(function() {
-			$('#registerForm').hide();
-			$('#loginForm').show();
-		});
+	// ================== MOSTRAR/OCULTAR formularios del modal ==================
+	$('#showRegister').click(function() {
+	    $('#loginForm').hide();
+	    $('#registerForm').show();
+
+	    // Limpiamos los campos de login
+	    $('#loginUsername').val('');
+	    $('#loginPassword').val('');
+	    $('#loginError').html('');
+	});
+
+	$('#showLogin').click(function() {
+	    $('#registerForm').hide();
+	    $('#loginForm').show();
+
+	    // Limpiamos los campos de registro
+	    $('#registerName').val('');
+	    $('#registerEmail').val('');
+	    $('#registerPassword').val('');
+	    $('#registerError').html('');
+	});
 
 		// ================== BIENVENIDA ==================
 		$.get("/api/current-user", function(usuario) {
