@@ -66,12 +66,14 @@
 					    <input type="text" id="registerEmail" placeholder="Email" class="form-control mb-2">
 					    <input type="password" id="registerPassword" placeholder="Contraseña" class="form-control mb-2">
 					    <button id="registerBtn" class="btn btn-primary">Registrarse</button>
-					    <p class="mt-2">¿Ya tienes una cuenta? <a href="#" id="showLogin">Inicia sesión aquí</a></p>
+
+					    <!-- DIV para mostrar errores de validación en rojo -->
+					    <div id="registerError" class="mt-2"></div>
+
+					    <p class="mt-2">¿Ya tienes una cuenta? 
+					       <a href="#" id="showLogin">Inicia sesión aquí</a>
+					    </p>
 					</div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Cargar jQuery y Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
