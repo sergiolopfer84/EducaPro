@@ -11,14 +11,36 @@
 </head>
 <body>
     <!-- Barra superior -->
-	<header class="top-bar">
-	    <span class="brand">EducaPro</span>
+	<header>
+	  <div class="top-bar">
+	    <!-- Elemento que quedará a la izquierda -->
+	    <p>EducaPro</p>
 
-	    <div class="auth-buttons">
-			<a href="/home" class="btn btn-secondary">Ir a Tests</a>
-	        <button id="loginTrigger" class="btn btn-primary" data-toggle="modal" data-target="#authModal">Iniciar sesión / Registrarse</button>
-	        <button id="logoutBtn" class="btn btn-danger" style="display: none;">Cerrar sesión</button>
-	    </div>
+	    <!-- Aquí colocamos los botones que queremos a la derecha -->
+		<div class="auth-buttons">
+		    <!-- Solo mostrar "Ir a Tests" si hay un usuario autenticado -->
+		    <a th:if="${usuario != null}"
+		       href="/home"
+		       class="btn btn-secondary">
+		       Ir a Tests
+		    </a>
+
+		    <!-- Solo mostrar el botón "Iniciar sesión / Registrarse" si NO hay usuario -->
+		    <button th:if="${usuario == null}"
+		            id="loginTrigger"
+		            class="btn btn-primary"
+		            data-toggle="modal" data-target="#authModal">
+		       Iniciar sesión / Registrarse
+		    </button>
+
+		    <!-- Solo mostrar "Cerrar sesión" si hay un usuario autenticado -->
+		    <button th:if="${usuario != null}"
+		            id="logoutBtn"
+		            class="btn btn-danger">
+		       Cerrar sesión
+		    </button>
+		</div>
+	  </div>
 	</header>
 
     <!-- Contenido principal -->
