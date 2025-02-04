@@ -1,4 +1,9 @@
 $(document).ready(function() {
+	
+	$('#perfilBtn').click(function () {
+						
+						window.location.href = 'perfil';
+						});
 	// ================== LOGIN FORM-BASED ==================
 	$('#loginBtn').click(function(e) {
 		e.preventDefault();
@@ -70,7 +75,6 @@ $(document).ready(function() {
 			}
 		});
 	});
-
 
 	// ================== FORZAR QUE EL MODAL SIEMPRE SE ABRA EN INICIO DE SESIÓN ==================
 	$('#authModal').on('show.bs.modal', function() {
@@ -200,25 +204,7 @@ $(document).ready(function() {
 		});
 	}
 
-	// Acción para cerrar sesión
-	$('#logoutBtn').click(function(e) {
-		e.preventDefault();
-		$.ajax({
-			url: '/logout',
-			type: 'POST',
-			beforeSend: function(xhr) {
-				if (window.csrf.headerName && window.csrf.token) {
-					xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-				}
-			},
-			success: function() {
-				window.location.href = '/login';
-			},
-			error: function(xhr) {
-				alert('Error al cerrar sesión.');
-			}
-		});
-	});
+
 
 	if (currentPath === '/home') {
 
@@ -238,7 +224,6 @@ $(document).ready(function() {
 			}
 		});
 
-		// ================== CARGAR TESTS ==================
 
 
 		// ================== CARGAR TESTS ==================
@@ -267,14 +252,13 @@ $(document).ready(function() {
 		});
 
 		// ================== CARGAR PREGUNTAS ==================
-		// ================== CARGAR PREGUNTAS ==================
 		$('#tests').on('change', function() {
 			const idTest = $(this).val();
 			if (!idTest) {
 				$('#questions-container').html('');
 				return;
 			}
-
+			$('#questions-container').html('');
 			// 🔴 LIMPIAR NOTA AL CAMBIAR DE TEST
 			$('#nota-obtenida').html('');
 			$('#ultima-nota').html('');
@@ -335,90 +319,89 @@ $(document).ready(function() {
 
 		// ================== FINALIZAR TEST ==================
 		$(document).on('click', '#finalizar', function() {
-		    let respuestasSeleccionadas = [];
-		    let idTest = $('#tests').val();
+			let respuestasSeleccionadas = [];
+			let idTest = $('#tests').val();
 
-		    $('input[type=radio]:checked').each(function() {
-		        respuestasSeleccionadas.push(parseInt($(this).val()));
-		    });
+			$('input[type=radio]:checked').each(function() {
+				respuestasSeleccionadas.push(parseInt($(this).val()));
+			});
 
-		    // Validar si el usuario ha seleccionado al menos una respuesta
-		    if (!idTest || respuestasSeleccionadas.length === 0) {
-		        window.scrollTo({ top: 0, behavior: 'smooth' });
-		        return;
-		    }
+			// Validar si el usuario ha seleccionado al menos una respuesta
+			if (!idTest || respuestasSeleccionadas.length === 0) {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+				return;
+			}
 
-		    $.ajax({
-		        url: '/calcularNota',
-		        type: 'POST',
-		        contentType: 'application/json',
-		        data: JSON.stringify({ idTest: idTest, respuestas: respuestasSeleccionadas }),
-		        success: function(response) {
-		            window.scrollTo({ top: 0, behavior: 'smooth' });
-		            let notaObtenida = response.nota;
+			$.ajax({
+				url: '/calcularNota',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({ idTest: idTest, respuestas: respuestasSeleccionadas }),
+				success: function(response) {
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+					let notaObtenida = response.nota;
 
-		            // ✅ Mostrar la nota
-		            $.ajax({
-		                url: '/ultimaPuntuacion',
-		                type: 'GET',
-		                data: { idTest: idTest },
-		                success: function(response) {
-		                    let notaAnterior = response.penultimaNota !== null ? response.penultimaNota : 'Sin registros previos';
+					// ✅ Mostrar la nota
+					$.ajax({
+						url: '/ultimaPuntuacion',
+						type: 'GET',
+						data: { idTest: idTest },
+						success: function(response) {
+							let notaAnterior = response.penultimaNota !== null ? response.penultimaNota : 'Sin registros previos';
 
-		                    $('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`);
-		                    $('#ultima-nota').html(`<p><strong>Nota anterior:</strong> ${notaAnterior}</p>`);
-		                }
-		            });
+							$('#nota-obtenida').html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`);
+							$('#ultima-nota').html(`<p><strong>Nota anterior:</strong> ${notaAnterior}</p>`);
+						}
+					});
 
-		            // ✅ Obtener respuestas correctas
-		            $.ajax({
-		                url: '/obtenerRespuestasSesion',
-		                type: 'GET',
-		                data: { idTest: idTest },
-		                success: function(data) {
-		                    let respuestasCorrectas = [];
+					// ✅ Obtener respuestas correctas
+					$.ajax({
+						url: '/obtenerRespuestasSesion',
+						type: 'GET',
+						data: { idTest: idTest },
+						success: function(data) {
+							let respuestasCorrectas = [];
 
-		                    data.forEach(respuesta => {
-		                        if (respuesta.nota === 1) {
-		                            respuestasCorrectas.push(respuesta.idRespuesta);
-		                        }
-		                    });
+							data.forEach(respuesta => {
+								if (respuesta.nota === 1) {
+									respuestasCorrectas.push(respuesta.idRespuesta);
+								}
+							});
 
-		                    // ✅ Aplicar estilos y mostrar explicaciones
-		                    $('.respuesta').each(function() {
-		                        let input = $(this).find('input[type=radio]');
-		                        let explicacion = $(this).find('.explicacion'); // Captura el div de explicación
-		                        let respuestaId = parseInt(input.val());
+							// ✅ Aplicar estilos y mostrar explicaciones
+							$('.respuesta').each(function() {
+								let input = $(this).find('input[type=radio]');
+								let explicacion = $(this).find('.explicacion'); // Captura el div de explicación
+								let respuestaId = parseInt(input.val());
 
-		                        if (respuestasSeleccionadas.includes(respuestaId)) {
-		                            if (respuestasCorrectas.includes(respuestaId)) {
-		                                $(this).addClass('respuesta-correcta');
-		                            } else {
-		                                $(this).addClass('respuesta-incorrecta');
-		                                respuestasCorrectas.forEach(idCorrecto => {
-		                                    let correcta = $(`input[value="${idCorrecto}"]`).closest('.respuesta');
-		                                    correcta.addClass('respuesta-correcta');
-		                                    correcta.find('.explicacion').show();
-		                                });
-		                            }
-		                            explicacion.show();
-		                        }
-		                    });
-		                },
-		                error: function(xhr) {
-		                    console.error("Error en la petición AJAX:", xhr.responseText);
-		                }
-		            });
-		        },
-		        error: function(xhr) {
-		            console.error("Error en la petición AJAX:", xhr.responseText);
-		        }
-		    });
+								if (respuestasSeleccionadas.includes(respuestaId)) {
+									if (respuestasCorrectas.includes(respuestaId)) {
+										$(this).addClass('respuesta-correcta');
+									} else {
+										$(this).addClass('respuesta-incorrecta');
+										/*respuestasCorrectas.forEach(idCorrecto => {
+											let correcta = $(`input[value="${idCorrecto}"]`).closest('.respuesta');
+											correcta.addClass('respuesta-correcta');
+											correcta.find('.explicacion').show();
+										});*/
+									}
+									explicacion.show();
+								}
+							});
+						},
+						error: function(xhr) {
+							console.error("Error en la petición AJAX:", xhr.responseText);
+						}
+					});
+				},
+				error: function(xhr) {
+					console.error("Error en la petición AJAX:", xhr.responseText);
+				}
+			});
 		});
+		
 
-
-
-
-		//=======================
 	}
+
+
 });

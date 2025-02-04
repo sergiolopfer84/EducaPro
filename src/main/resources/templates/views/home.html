@@ -13,21 +13,23 @@
 
 <body>
 	<header>
-		<div class="top-bar">
-			<!-- Aquí puedes añadir cualquier elemento -->
-			<p>EducaPro</p>
-			<h4 id="welcome-text">Bienvenido Usuario</h4> <!-- le pongo un id para manipularlo -->
-			<div id="usuario-data" data-usuario="${usuario}"></div>
+	    <div class="top-bar">
+	        <p>EducaPro</p>
+	        <h4 id="welcome-text">Bienvenido Usuario</h4> 
+	        <div id="usuario-data" data-usuario="${usuario}"></div>
 
-			<div class="auth-buttons">
-			       <a href="/index" id="Inicio" class="btn">
-			           <i class="fas fa-home"></i> <!-- Ícono de casa -->
-			       </a>
-			       <button id="logoutBtn" class="btn">
-			           Cerrar sesión
-			       </button>
-			   </div>
-		</div>
+	        <div class="auth-buttons">
+	            <a href="/index" id="Inicio" class="btn">
+	                <i class="fas fa-home"></i>
+	            </a>
+	            <button id="perfilBtn" class="btn">
+	                <i class="fas fa-user"></i> Perfil
+	            </button>
+	            <button id="logoutBtn" class="btn">
+	                Cerrar sesión
+	            </button>
+	        </div>
+	    </div>
 	</header>
 	<div class="container">
 		<!-- Menú lateral -->
