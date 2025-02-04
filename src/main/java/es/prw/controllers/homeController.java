@@ -3,6 +3,7 @@ package es.prw.controllers;
 import java.security.Timestamp;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,17 @@ public class homeController {
 	@ResponseBody
 	public List<Pregunta> getPreguntasConRespuestas(@RequestParam("idTest") int idTest, HttpSession session) {
 	    PreguntaDao preguntaDao = new PreguntaDao();
-	    return preguntaDao.getPreguntasConRespuestas(idTest, session);
+	    List<Pregunta> preguntas = preguntaDao.getPreguntasConRespuestas(idTest, session);
+
+	    // 🔹 Almacenar todas las respuestas en sesión para usarlas luego
+	    List<Respuesta> todasLasRespuestas = new ArrayList<>();
+	    for (Pregunta pregunta : preguntas) {
+	        todasLasRespuestas.addAll(pregunta.getRespuestas());
+	    }
+
+	    session.setAttribute("respuestas_" + idTest, todasLasRespuestas);
+	    
+	    return preguntas;
 	}
 
 
@@ -127,6 +138,14 @@ public class homeController {
 	    }
 
 	    return respuestas.stream().mapToDouble(Respuesta::getNota).sum();
+	}
+
+	
+	@GetMapping("/obtenerRespuestasSesion")
+	@ResponseBody
+	public List<Respuesta> obtenerRespuestasSesion(@RequestParam("idTest") int idTest, HttpSession session) {
+	    List<Respuesta> respuestas = (List<Respuesta>) session.getAttribute("respuestas_" + idTest);
+	    return respuestas != null ? respuestas : new ArrayList<>();
 	}
 
 

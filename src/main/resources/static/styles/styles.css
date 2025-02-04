@@ -362,3 +362,23 @@ select {
     transform: scale(0.95);
 }
 
+.respuesta-correcta {
+    border: 2px solid green;
+    background-color: #d4edda; /* Verde claro */
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.respuesta-incorrecta {
+    border: 2px solid red;
+    background-color: #f8d7da; /* Rojo claro */
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.explicacion {
+    font-size: 14px;
+    color: #333;
+    margin-top: 5px;
+    display: none; /* Oculta todas las explicaciones por defecto */
+}
