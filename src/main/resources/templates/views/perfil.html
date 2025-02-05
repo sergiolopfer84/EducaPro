@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="/styles/profileStyles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería para gráficas -->
+</head>
+<body>
+
+<header>
+    <div class="top-bar">
+        <p>EducaPro</p>
+        <h4 id="welcome-text">Perfil de Usuario</h4>
+        <div class="auth-buttons">
+            <a href="/home" class="btn">Volver al Inicio</a>
+        </div>
+    </div>
+</header>
+
+<div class="container perfil-container">
+    <h2>Información Personal</h2>
+    <p><strong>Nombre:</strong> <span id="perfil-nombre"></span></p>
+    <p><strong>Email:</strong> <span id="perfil-email"></span></p>
+    <p><strong>Rol:</strong> <span id="perfil-rol"></span></p>
+
+    <h2>Cambiar Contraseña</h2>
+    <form id="changePasswordForm">
+        <label>Nueva Contraseña:</label>
+        <input type="password" id="newPassword">
+        <label>Confirmar Contraseña:</label>
+        <input type="password" id="confirmPassword">
+        <button type="submit" class="btn">Actualizar Contraseña</button>
+        <p id="passwordMessage"></p>
+    </form>
+
+    <h2>Progreso en Materias</h2>
+    <div id="materia-progresos"></div>
+
+    <h2>Historial de Notas</h2>
+    <div id="graficos-container"></div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/perfil.js"></script> 
+
+</body>
+</html>

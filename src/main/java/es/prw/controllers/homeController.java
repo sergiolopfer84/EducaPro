@@ -1,8 +1,7 @@
 package es.prw.controllers;
 
-import java.security.Timestamp;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,136 +36,184 @@ import es.prw.models.Usuario;
 import jakarta.servlet.http.HttpSession;
 
 @SessionAttributes({"usuario", "ultima_puntuacion", "respuestas", "sessionKey","nota"})
-
 @Controller
 public class homeController {
-	@Autowired
-	private RespuestaDao respuestaDao;
-	@Autowired
-	private PuntuacionDao puntuacionDao;
 
-	@GetMapping("/home")
-	public String home(CsrfToken csrfToken, Model model) {
+    @Autowired
+    private RespuestaDao respuestaDao;
 
-		model.addAttribute("csrfToken", csrfToken);
-		return "views/home";
-	}
+    @Autowired
+    private PuntuacionDao puntuacionDao;
 
-	@GetMapping("/materias")
-	@ResponseBody
-	public List<Materia> getMaterias() {
-		MateriaDao materiaDao = new MateriaDao();
-		return materiaDao.getMaterias();
-	}
+    @GetMapping("/home")
+    public String home(CsrfToken csrfToken, Model model) {
+        model.addAttribute("csrfToken", csrfToken);
+        return "views/home";
+    }
 
-	@GetMapping("/tests")
-	@ResponseBody
-	public List<Test> getTests(@RequestParam("idMateria") int idMateria) {
-		TestDao testDao = new TestDao();
-		return testDao.getTests(idMateria);
-	}
+    @GetMapping("/materias")
+    @ResponseBody
+    public List<Materia> getMaterias() {
+        MateriaDao materiaDao = new MateriaDao();
+        return materiaDao.getMaterias();
+    }
 
-	@GetMapping("/preguntas")
-	@ResponseBody
-	public List<Pregunta> getPreguntasConRespuestas(@RequestParam("idTest") int idTest, HttpSession session) {
-	    PreguntaDao preguntaDao = new PreguntaDao();
-	    return preguntaDao.getPreguntasConRespuestas(idTest, session);
-	}
+    @GetMapping("/tests")
+    @ResponseBody
+    public List<Test> getTests(@RequestParam("idMateria") int idMateria) {
+        TestDao testDao = new TestDao();
+        return testDao.getTests(idMateria);
+    }
 
+    /**
+     * Carga las preguntas de un test y sus respuestas. Para evitar duplicaciones,
+     * guardamos TODAS las respuestas en una sola lista en la sesión, con una
+     * clave única: "respuestasTest_{idTest}".
+     */
+    @GetMapping("/preguntas")
+    @ResponseBody
+    public List<Pregunta> getPreguntasConRespuestas(@RequestParam("idTest") int idTest, HttpSession session) {
+        PreguntaDao preguntaDao = new PreguntaDao();
+        List<Pregunta> preguntas = preguntaDao.getPreguntasConRespuestas(idTest, session);
 
+        // Almacenar todas las respuestas en sesión para su posterior consulta
+        List<Respuesta> todasLasRespuestas = new ArrayList<>();
+        for (Pregunta pregunta : preguntas) {
+            todasLasRespuestas.addAll(pregunta.getRespuestas());
+        }
 
-	@PostMapping("/calcularNota")
-	public ResponseEntity<Map<String, Object>> calcularNota(@RequestBody EvaluacionDTO evaluacion,
-	        @SessionAttribute(name = "usuario", required = false) Usuario usuario, HttpSession session) throws SQLException {
-	    Map<String, Object> response = new HashMap<>();
+        // Usamos una sola clave para todo el test
+        session.setAttribute("respuestasTest_" + idTest, todasLasRespuestas);
 
-	    // Verificar si el usuario está autenticado
-	    if (usuario == null) {
-	        response.put("error", "Usuario no autenticado");
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	    }
+        return preguntas;
+    }
 
-	    // Calcular la nota total usando las respuestas almacenadas en sesión o BD
-	    double notaTotal = calcularNotaTotal(evaluacion, session);
+    /**
+     * Calcula la nota total comparando las respuestas seleccionadas por el usuario
+     * con las respuestas correctas (almacenadas en la sesión).
+     */
+    @PostMapping("/calcularNota")
+    public ResponseEntity<Map<String, Object>> calcularNota(
+            @RequestBody EvaluacionDTO evaluacion,
+            @SessionAttribute(name = "usuario", required = false) Usuario usuario,
+            HttpSession session) throws SQLException {
 
-	    // Crear el objeto de Puntuacion
-	    Puntuacion nuevaPuntuacion = new Puntuacion(null, notaTotal, usuario.getIdUsuario(), evaluacion.getIdTest(),
-	            new java.util.Date());
+        Map<String, Object> response = new HashMap<>();
 
-	    // Guardar la puntuación en la base de datos
-	    Optional<Puntuacion> puntuacionGuardada = puntuacionDao.savePuntuacion(nuevaPuntuacion, session);
+        // Verificar que el usuario está autenticado
+        if (usuario == null) {
+            response.put("error", "Usuario no autenticado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
 
-	    if (puntuacionGuardada.isPresent()) {
-	        Puntuacion ultimaPuntuacion = puntuacionGuardada.get();
-	        String sessionKey = "ultima_puntuacion_" + evaluacion.getIdTest();
-	        
-	        // ✅ Actualizar la sesión con la nueva puntuación
-	        session.setAttribute(sessionKey, ultimaPuntuacion);
+        double notaTotal = calcularNotaTotal(evaluacion, session);
 
-	        response.put("nota", ultimaPuntuacion.getNotaConseguida());
-	        return ResponseEntity.ok(response);
-	    } else {
-	        response.put("error", "Error al guardar puntuación");
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
-	}
+        // Guardar la puntuación en la base de datos
+        Puntuacion nuevaPuntuacion = new Puntuacion(
+                null,
+                notaTotal,
+                usuario.getIdUsuario(),
+                evaluacion.getIdTest(),
+                new java.util.Date()
+        );
 
+        Optional<Puntuacion> puntuacionGuardada = puntuacionDao.savePuntuacion(nuevaPuntuacion, session);
 
+        if (puntuacionGuardada.isPresent()) {
+            Puntuacion ultimaPuntuacion = puntuacionGuardada.get();
+            // Se actualiza en sesión solo la nota del test actual
+            String sessionKey = "ultima_puntuacion_" + evaluacion.getIdTest();
+            session.setAttribute(sessionKey, ultimaPuntuacion);
 
-	private double calcularNotaTotal(EvaluacionDTO evaluacion, HttpSession session) {
-	    if (evaluacion == null || evaluacion.getRespuestas() == null || evaluacion.getRespuestas().isEmpty()) {
-	        System.err.println("Error: La evaluación o la lista de respuestas es nula o vacía.");
-	        return 0.0; // Retornamos 0 si no hay respuestas
-	    }
+            response.put("nota", ultimaPuntuacion.getNotaConseguida());
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "Error al guardar puntuación");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
-	    List<Respuesta> respuestas = respuestaDao.getRespuestasByIds(evaluacion.getRespuestas(), session);
-	    
-	    if (respuestas == null || respuestas.isEmpty()) {
-	        System.err.println("Error: No se encontraron respuestas en la base de datos.");
-	        return 0.0; // Evita `NullPointerException`
-	    }
+    /**
+     * Cálculo de la nota total: recuperamos de la sesión TODAS las respuestas
+     * (respuestasTest_{idTest}), filtramos solo las que el usuario haya marcado
+     * y sumamos sus notas.
+     */
+    private double calcularNotaTotal(EvaluacionDTO evaluacion, HttpSession session) {
+        if (evaluacion == null || evaluacion.getRespuestas() == null || evaluacion.getRespuestas().isEmpty()) {
+            System.err.println("Error: evaluación o lista de respuestas vacía.");
+            return 0.0;
+        }
 
-	    return respuestas.stream().mapToDouble(Respuesta::getNota).sum();
-	}
+        // Respuestas que el usuario seleccionó
+        List<Integer> idsSeleccionados = evaluacion.getRespuestas();
 
+        // Recuperamos TODAS las respuestas del test desde la sesión
+        List<Respuesta> respuestasDelTest = (List<Respuesta>)
+                session.getAttribute("respuestasTest_" + evaluacion.getIdTest());
 
-	@GetMapping("/limpiarSesion")
-	public ResponseEntity<String> limpiarSesion(HttpSession session) {
-		session.invalidate();
-		return ResponseEntity.ok("Sesión limpiada");
-	}
+        // Si no hubiera nada en sesión (error o test no cargado)
+        if (respuestasDelTest == null || respuestasDelTest.isEmpty()) {
+            System.err.println("No se encontraron respuestas en sesión para el test: " + evaluacion.getIdTest());
+            return 0.0;
+        }
 
-	@GetMapping("/ultimaPuntuacion")
-	@ResponseBody
-	public ResponseEntity<Map<String, Object>> getUltimaPuntuacion(
-	        @SessionAttribute(name = "usuario", required = false) Usuario usuario,
-	        @RequestParam("idTest") int idTest,
-	        HttpSession session) {
+        // Filtramos solo las que coincidan con las seleccionadas por el usuario
+        double sumaNotas = respuestasDelTest.stream()
+                .filter(r -> idsSeleccionados.contains(r.getIdRespuesta()))
+                .mapToDouble(Respuesta::getNota)
+                .sum();
 
-	    Map<String, Object> response = new HashMap<>();
+        return sumaNotas;
+    }
 
-	    if (usuario == null) {
-	        response.put("error", "Usuario no autenticado");
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	    }
+    /**
+     * Devuelve todas las respuestas del test (almacenadas en la sesión),
+     * para marcarlas como correctas/incorrectas en el front.
+     */
+    @GetMapping("/obtenerRespuestasSesion")
+    @ResponseBody
+    public List<Respuesta> obtenerRespuestasSesion(@RequestParam("idTest") int idTest, HttpSession session) {
+        List<Respuesta> respuestas = (List<Respuesta>) session.getAttribute("respuestasTest_" + idTest);
+        return (respuestas != null) ? respuestas : new ArrayList<>();
+    }
 
-	    List<Double> notas = puntuacionDao.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest, session);
+    @GetMapping("/limpiarSesion")
+    public ResponseEntity<String> limpiarSesion(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Sesión limpiada");
+    }
 
-	    if (notas.isEmpty()) {
-	        response.put("ultimaNota", null);
-	        response.put("penultimaNota", null);
-	    } else if (notas.size() == 1) {
-	        response.put("ultimaNota", notas.get(0));
-	        response.put("penultimaNota", null);
-	    } else {
-	        response.put("ultimaNota", notas.get(0));
-	        response.put("penultimaNota", notas.get(1));
-	    }
+    /**
+     * Retorna la última nota y la penúltima nota del usuario en este test, si existen.
+     */
+    @GetMapping("/ultimaPuntuacion")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getUltimaPuntuacion(
+            @SessionAttribute(name = "usuario", required = false) Usuario usuario,
+            @RequestParam("idTest") int idTest,
+            HttpSession session) {
 
-	    return ResponseEntity.ok(response);
-	}
+        Map<String, Object> response = new HashMap<>();
 
+        if (usuario == null) {
+            response.put("error", "Usuario no autenticado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
 
+        List<Double> notas = puntuacionDao.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest, session);
 
+        if (notas.isEmpty()) {
+            response.put("ultimaNota", null);
+            response.put("penultimaNota", null);
+        } else if (notas.size() == 1) {
+            response.put("ultimaNota", notas.get(0));
+            response.put("penultimaNota", null);
+        } else {
+            response.put("ultimaNota", notas.get(0));
+            response.put("penultimaNota", notas.get(1));
+        }
+
+        return ResponseEntity.ok(response);
+    }
 
 }

@@ -32,4 +32,3 @@ public class EvaluacionDTO {
         this.respuestas = respuestas;
     }
 }
-
