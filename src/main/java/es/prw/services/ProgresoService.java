@@ -62,7 +62,7 @@ public class ProgresoService {
                     FROM puntuacion p
                     JOIN test t ON p.id_test = t.id_test
                     WHERE p.id_usuario = ?
-                    ORDER BY p.fecha DESC
+                    ORDER BY p.fecha ASC
                     """;
 
             ResultSet rs = connection.executeSelect(sql, idUsuario);

@@ -14,31 +14,51 @@
 	<header>
 	  <div class="top-bar">
 	    <!-- Elemento que quedará a la izquierda -->
-	    <p>EducaPro</p>
+		<div class="logo-wrapper">
+		    <a href="/" class="logo-container">
+		        <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
+		    </a>
+		    <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
+		    <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+		    <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
+		</div>
 
 	    <!-- Aquí colocamos los botones que queremos a la derecha -->
 		<div class="auth-buttons">
 		    <!-- Solo mostrar "Ir a Tests" si hay un usuario autenticado -->
-		    <a th:if="${usuario != null}"
-		       href="/home"
-		       class="btn btn-secondary">
-		       Ir a Tests
-		    </a>
+			<a th:if="${usuario != null}"
+			   href="/home"
+			   class="btn btn-test">
+			   Ir a Tests
+			</a>
 
 		    <!-- Solo mostrar el botón "Iniciar sesión / Registrarse" si NO hay usuario -->
-		    <button th:if="${usuario == null}"
-		            id="loginTrigger"
-		            class="btn btn-primary"
-		            data-toggle="modal" data-target="#authModal">
-		       Iniciar sesión / Registrarse
-		    </button>
+			<!-- Botón con imagen en lugar de texto, mismas condiciones y mismo modal -->
+			<!-- Solo se muestra si NO hay usuario autenticado -->
+			<!--<button th:if="${usuario == null}"
+			        id="loginTrigger"
+			        style="background: none; border: none; cursor: pointer;"
+			        th:attr="data-toggle='modal', data-target='#authModal'">
+			    
+			    <img th:src="@{/images/LoginImage.png}" alt="Login" width="32" height="32">
+			</button> -->
+
+			<div th:if="${usuario == null}"
+					        id="loginTrigger"
+					        style="background: none; border: none; cursor: pointer;"
+					        th:attr="data-toggle='modal', data-target='#authModal'">
+					    
+							<img th:src="@{/img/LoginImage.png}" alt="Login" class="login-icon">
+					</div>
 
 		    <!-- Solo mostrar "Cerrar sesión" si hay un usuario autenticado -->
-		    <button th:if="${usuario != null}"
-		            id="logoutBtn"
-		            class="btn btn-danger">
-		       Cerrar sesión
-		    </button>
+			<div th:if="${usuario != null}" id="logoutTrigger">
+			    <form th:action="@{/logout}" method="post" style="display: inline;">
+			        <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0;">
+			            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
+			        </button>
+			    </form>
+			</div>
 		</div>
 	  </div>
 	</header>

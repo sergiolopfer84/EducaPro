@@ -14,27 +14,39 @@
 <body>
 	<header>
 	    <div class="top-bar">
-	        <p>EducaPro</p>
-	        <h4 id="welcome-text">Bienvenido Usuario</h4> 
-	        <div id="usuario-data" data-usuario="${usuario}"></div>
+			<div class="logo-wrapper">
+				    <a href="/" class="logo-container">
+				        <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
+				    </a>
+				    <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
+				    <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+				    <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
+				</div>
+	
 
 	        <div class="auth-buttons">
 	            <a href="/index" id="Inicio" class="btn">
 	                <i class="fas fa-home"></i>
 	            </a>
-	            <button id="perfilBtn" class="btn">
+	            <button id="perfilBtn" class="btn btn-profile">
 	                <i class="fas fa-user"></i> Perfil
 	            </button>
-	            <button id="logoutBtn" class="btn">
-	                Cerrar sesión
-	            </button>
+				<div th:if="${usuario != null}" id="logoutTrigger">
+							    <form th:action="@{/logout}" method="post">
+							        <button type="submit" style="background: none; border: none; cursor: pointer;">
+							            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
+							        </button>
+							    </form>
 	        </div>
 	    </div>
 	</header>
 	<div class="container">
 		<!-- Menú lateral -->
 		<aside class="sidebar">
+			<h4 id="welcome-text">Bienvenido Usuario</h4> 
+			 <div id="usuario-data" data-usuario="${usuario}"></div>
 			<h2>Menú</h2>
+		
 			<div class="menu-item">
 				<h3>Selecciona una materia</h3>
 				<select id="materias"></select>
@@ -47,7 +59,7 @@
 		</aside>
 
 		<!-- Contenido principal -->
-		<main class="main-content">
+		<main class="main-content-home">
 			<div id="ultima-nota"></div> <!-- Aquí se muestra la última nota obtenida -->
 			<div id="nota-obtenida"></div>
 			   
