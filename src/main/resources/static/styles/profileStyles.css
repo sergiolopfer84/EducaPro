@@ -86,3 +86,30 @@ form {
     max-width: 100%;
     height: auto;
 }
+
+#graficos-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+
+
+
+.materia-wrapper {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.materia-wrapper h2 {
+    width: 100%;
+    border-bottom: 2px solid #000;
+    padding-bottom: 5px;
+}
+
+.grafico-wrapper {
+    width: 48%; 
+    margin-bottom: 20px; 
+    display: inline-block;
+    vertical-align: top;
+}

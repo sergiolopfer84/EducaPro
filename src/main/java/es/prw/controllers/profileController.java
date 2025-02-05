@@ -82,10 +82,11 @@ public class profileController {
     }
 
     @GetMapping("/api/progresoTests")
-    public ResponseEntity<Map<String, List<Double>>> obtenerProgresoTests(@RequestParam int idUsuario) {
-        Map<String, List<Double>> progresoTests = progresoService.obtenerProgresoTests(idUsuario);
+    public ResponseEntity<Map<String, Map<String, List<Double>>>> obtenerProgresoTests(@RequestParam int idUsuario) {
+        Map<String, Map<String, List<Double>>> progresoTests = progresoService.obtenerProgresoTests(idUsuario);
         return ResponseEntity.ok(progresoTests);
     }
+
 
 
 	

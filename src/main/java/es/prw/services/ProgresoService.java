@@ -53,27 +53,35 @@ public class ProgresoService {
         return progresoMaterias;
     }
 
-    public Map<String, List<Double>> obtenerProgresoTests(int idUsuario) {
-        Map<String, List<Double>> historialNotas = new HashMap<>();
+    public Map<String, Map<String, List<Double>>> obtenerProgresoTests(int idUsuario) {
+        Map<String, Map<String, List<Double>>> historialNotas = new HashMap<>();
         MySqlConnection connection = new MySqlConnection();
 
         try {
             connection.open();
             String sql = """
-                    SELECT t.nombre_test, p.nota_obtenida
+                    SELECT m.nombre_materia, t.nombre_test, p.nota_obtenida
                     FROM puntuacion p
                     JOIN test t ON p.id_test = t.id_test
+                    JOIN materia m ON t.id_materia = m.id_materia
                     WHERE p.id_usuario = ?
-                    ORDER BY p.fecha ASC
+                    ORDER BY m.nombre_materia ASC, t.nombre_test ASC, p.fecha ASC
                     """;
 
             ResultSet rs = connection.executeSelect(sql, idUsuario);
             while (rs.next()) {
+                String materiaNombre = rs.getString("nombre_materia");
                 String testNombre = rs.getString("nombre_test");
                 double nota = rs.getDouble("nota_obtenida");
 
-                historialNotas.putIfAbsent(testNombre, new ArrayList<>());
-                historialNotas.get(testNombre).add(nota);
+                // Asegurar que la materia existe en el mapa
+                historialNotas.putIfAbsent(materiaNombre, new HashMap<>());
+
+                // Asegurar que el test existe dentro de la materia
+                historialNotas.get(materiaNombre).putIfAbsent(testNombre, new ArrayList<>());
+
+                // Agregar la nota al test correspondiente
+                historialNotas.get(materiaNombre).get(testNombre).add(nota);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,5 +91,6 @@ public class ProgresoService {
 
         return historialNotas;
     }
+
 
 }
