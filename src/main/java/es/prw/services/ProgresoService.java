@@ -23,20 +23,22 @@ public class ProgresoService {
         try {
             connection.open();
             String sql = """
-                    SELECT m.nombre_materia, COUNT(t.id_test) AS total_tests,
-                           SUM(CASE WHEN p.nota_obtenida >= 5 THEN 1 ELSE 0 END) AS tests_aprobados
-                    FROM test t
-                    JOIN materia m ON t.id_materia = m.id_materia
-                    LEFT JOIN puntuacion p ON t.id_test = p.id_test AND p.id_usuario = ?
-                    GROUP BY m.nombre_materia
+                     SELECT  m.nombre_materia, COUNT(DISTINCT t.id_test) AS total_tests_materia, 
+            			COUNT(DISTINCT CASE WHEN p.nota_obtenida >= 5 THEN t.id_test END) AS tests_aprobados
+            			FROM materia m LEFT JOIN test t ON m.id_materia = t.id_materia LEFT JOIN (
+            			SELECT p1.id_test, p1.nota_obtenida FROM puntuacion p1 JOIN (
+            				SELECT id_test, MAX(fecha) AS ultima_fecha FROM puntuacion
+            				WHERE id_usuario = ? GROUP BY id_test) p2 ON p1.id_test = p2.id_test 
+            				AND p1.fecha = p2.ultima_fecha WHERE p1.id_usuario = ? ) p 
+            				ON t.id_test = p.id_test GROUP BY m.nombre_materia
                     """;
             
-            ResultSet rs = connection.executeSelect(sql, idUsuario);
+            ResultSet rs = connection.executeSelect(sql, idUsuario, idUsuario);
             
             
             while (rs.next()) {
                 String materia = rs.getString("nombre_materia");  // <--- Corrección aquí
-                int totalTests = rs.getInt("total_tests");
+                int totalTests = rs.getInt("total_tests_materia");
                 int aprobados = rs.getInt("tests_aprobados");
 
 

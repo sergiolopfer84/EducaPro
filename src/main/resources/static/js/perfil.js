@@ -98,7 +98,7 @@ $(document).ready(function () {
 	                new Chart(ctx, {
 	                    type: 'line',
 	                    data: {
-	                        labels: data[testNombre].map((_, i) => `Intento ${i + 1}`),
+	                        labels: data[testNombre].map((_, i) => `Nota ${i + 1}`),
 	                        datasets: [{
 	                            label: `Notas de ${testNombre}`,
 	                            data: data[testNombre],
