@@ -464,7 +464,7 @@ select {
 }
 
 /* Estilos para el botón "Finalizar" */
-.btn-finalizar {
+.btn-finalizar, #resetTest {
 	background: #007bff;
 	/* Azul */
 	color: white;
