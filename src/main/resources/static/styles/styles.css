@@ -27,7 +27,8 @@ header {
     background: linear-gradient(to right, #1e3148, #3b82f6);
 	display: flex;
 	flex-direction: column;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 2);
+	border-radius: 10px;
 }
 
 
@@ -37,7 +38,8 @@ header {
 .logo-wrapper {
     display: flex;
     align-items: center;
-    gap: 100px; /* Espacio entre las dos imágenes */
+    gap: 300px; /* Espacio entre las dos imágenes */
+
 }
 
 .logo {
@@ -47,14 +49,9 @@ header {
     transition: transform 0.3s ease, filter 0.3s ease;
 }
 
+
 .header-img .tuacademia-img {
-    max-height: 60px; /* Ajusta el tamaño de la segunda imagen */
-    width: auto;
-	margin-left: 20%;
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
-.header-img .tuacademia-img {
-    max-height: 60px; /* Ajusta el tamaño de la segunda imagen */
+    max-height: 80px; /* Ajusta el tamaño de la segunda imagen */
     width: auto;
 	margin-left: 20%;
     transition: transform 0.3s ease, filter 0.3s ease;
@@ -62,10 +59,10 @@ header {
 .chavalada-img {
 	max-height: 160px; /* Ajusta el tamaño de la segunda imagen */
 	margin-top: 0px;
-	margin-left: 80px;
+
 	   width: auto;
 	   transition: transform 0.3s ease, filter 0.3s ease;
-	   box-shadow: 10px 10px 25px rgb(255, 128, 0);
+	   box-shadow: 10px 10px 25px rgb(0, 0, 0);
 	
 	}
 
@@ -152,6 +149,133 @@ header {
 .login-container .btn:hover {
 	background: #002f66;
 }
+/* ============================
+   🚀 Estilo Moderno para el Modal de Login 
+   ============================ */
+
+   /* Posición inicial del modal (fuera de la pantalla arriba a la derecha) */
+   .modal.fade .modal-dialog {
+       position: fixed;
+       top: 10%;
+       right: -50%; /* Sale desde fuera de la pantalla a la derecha */
+       transform: translate(50%, -50%);
+       opacity: 0;
+       transition: transform 2s ease-out, opacity 0.4s ease-out;
+   }
+
+   /* Cuando el modal se muestra, se desplaza hacia el centro */
+   .modal.show .modal-dialog {
+       top: 20%;
+       right: 1000px;
+       transform: translate(50%, -50%);
+       opacity: 1;
+}
+/* Cuerpo del Modal */
+.modal-content {
+    background: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px); /* Efecto desenfoque */
+    border: none;
+}
+
+/* Cabecera del Modal */
+.modal-header {
+    background: #1e3148;
+    color: #fff;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Botón de cierre */
+.modal-header .close {
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.modal-header .close:hover {
+    opacity: 1;
+}
+
+/* Cuerpo del Modal */
+.modal-body {
+    padding: 20px;
+}
+
+/* Formulario de Login */
+#loginForm, #registerForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Inputs del formulario */
+.modal-body input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s ease-in-out;
+}
+
+/* Efecto en los inputs al hacer foco */
+.modal-body input:focus {
+    border-color: #1e90ff;
+    box-shadow: 0 0 5px rgba(30, 144, 255, 0.5);
+}
+
+/* Botón de Login */
+#loginBtn, #registerBtn {
+    background: linear-gradient(to right, #1e90ff, #004a99);
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Hover y efecto de click */
+#loginBtn:hover, #registerBtn:hover {
+    background: linear-gradient(to right, #004a99, #1e90ff);
+    transform: scale(1.05);
+}
+
+#loginBtn:active, #registerBtn:active {
+    transform: scale(0.95);
+}
+
+/* Enlaces de "Regístrate aquí" */
+.modal-body a {
+    color: #1e90ff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease-in-out;
+}
+
+.modal-body a:hover {
+    color: #004a99;
+}
+
+/* Enlaces de "Regístrate aquí" */
+.modal-body a {
+    color: #1e90ff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease-in-out;
+}
+
+.modal-body a:hover {
+    color: #004a99;
+}
+
 
 /* --------------------------------
    Contenedor Principal
@@ -274,23 +398,27 @@ select {
 /* --------------------------------
    Sección "Acerca de la Academia"
 --------------------------------- */
+
+
 .about-section {
-	max-width: 800px;
-	text-align: center;
-	padding: 20px;
-	background: #f9f9f9;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    max-width: 800px;
+    text-align: center;
+    padding: 20px;
+    background: rgb(244, 244, 244);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
 }
 
+
 .about-section h2 {
-	font-size: 1.8rem;
+	font-size: 2.5rem;
 	margin-bottom: 15px;
-	color: #444;
+	color:#f5b029
 }
 
 .about-section p {
-	font-size: 1.1rem;
+	font-size: 1.6rem;
 	line-height: 1.6;
 	color: #666;
 }
@@ -409,12 +537,15 @@ select {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	margin-top: 80px;
+	margin-bottom: 20px;
 }
 
 /* Estilos de los botones */
 .auth-buttons .btn {
 	padding: 10px 15px;
 	font-size: 1rem;
+
 	border-radius: 5px;
 	cursor: pointer;
 }
@@ -620,3 +751,26 @@ input {
     transform: scale(1.1);
    
 }
+
+/* Video de index */
+
+.video-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px;
+    height: 950px; /* Ajusta la altura según tu necesidad */
+    overflow: hidden;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+	border-radius: 15px;
+}
+
+.video-section video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+
+
