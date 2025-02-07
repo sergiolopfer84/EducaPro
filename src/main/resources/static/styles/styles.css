@@ -290,14 +290,37 @@ header {
    Sidebar
 --------------------------------- */
 .sidebar {
-	width: 18%;
-	background: rgb(0, 64, 128);
-	color: white;
-	padding: 20px;
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 18%;
+    color: #fff; 
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    /* 
+       1) Degradado principal
+       2) Textura superpuesta (imagen en repeat)
+       3) Mezcla con background-blend-mode
+    */
+    background: 
+      /* Gradiente (ajusta colores y dirección) */
+      linear-gradient(90deg, rgb(23, 55, 79) 40%, #0099cc 100%), 
+      /* Imagen de textura (cambia la URL por la tuya) */
+      url('https://via.placeholder.com/300x300.png?text=Textura') repeat;
+    
+    /* Asegura que la textura cubra el área o se repita adecuadamente */
+    background-size: cover, auto; 
+
+    /*
+      overlay = La textura se mezcla con el degradado;
+      otros modos: multiply, screen, soft-light, etc.
+    */
+    background-blend-mode: overlay;
+
+    /* Opcional: Bordes redondeados, si quieres */
+border-radius: 5px;
+
 }
 
 .sidebar h2 {
@@ -306,6 +329,8 @@ header {
 
 .menu-item {
 	margin-bottom: 20px;
+	margin-top: 60px;
+	
 }
 
 .menu-item h3 {
@@ -320,6 +345,50 @@ select {
 	border: none;
 	font-size: 1rem;
 }
+
+/* Estilos "modernos" para los <select> */
+.modern-select {
+    /* Ajusta el ancho y el padding a tu gusto */
+    width: 100%;
+    padding: 12px 14px;
+    border: 3px solid #ddd;
+    border-radius: 6px;
+
+    /* Quita la flecha nativa de los navegadores */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Flechita personalizada usando un icono en SVG (o Font Awesome) */
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 448 512' width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23444' d='M207.029 381.476L12.686 187.133C4.465 178.911 0 168.556 0 158.2S4.465 137.489 12.686 129.267l22.627-22.627C43.533 98.4 53.847 93.919 64.2 93.919s20.667 4.48 28.886 12.72L224 237.552l130.914-130.913C363.133 98.4 373.447 93.919 383.8 93.919s20.667 4.48 28.886 12.72l22.627 22.627c16.74 16.74 16.74 43.911 0 60.651L240.971 381.476c-8.222 8.221-18.577 12.686-28.971 12.686s-20.749-4.465-28.971-12.686z'/%3E%3C/svg%3E")
+        no-repeat calc(100% - 1rem) center/1.2rem 1.2rem;
+    /* 
+       - background: image + no-repeat
+       - position de la flecha: right (100%) menos un poco de padding
+       - 1.2rem x 1.2rem (ajusta según tu gusto)
+    */
+    background-color: #fff;
+    font-size: 1rem;
+    color: rgb(0, 0, 0);
+	font-weight: bold;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none; /* Quita el outline nativo al hacer focus */
+}
+
+/* Efecto hover */
+.modern-select:hover {
+   
+	border: 3px solid rgb(255, 128, 0);
+}
+
+/* Efecto focus (cuando haces clic o tab) */
+.modern-select:focus {
+    border-color: #3b82f6; /* Azul clarito */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+}
+
+
 #welcome-text {
     font-size: 1.8rem; /* Aumenta el tamaño de la fuente */
     color: #f5b029; /* Amarillo */
@@ -462,7 +531,6 @@ select {
 	border: 1px solid #ddd;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	max-width: 800px;
 	margin: 0 auto;
 }
 
@@ -772,5 +840,141 @@ input {
 }
 
 
+/****************************************
+  1) Ocultar el <select> nativo
+*****************************************/
+.hidden-select {
+    display: none; 
+}
 
+/****************************************
+  2) Contenedor principal del dropdown
+*****************************************/
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+    font-size: 1rem;
+    color: #333;
+    margin-top: 10px; /* separarlo un poco */
+    cursor: pointer;
+}
 
+/****************************************
+  3) Caja que muestra la opción elegida
+*****************************************/
+.dropdown-selected {
+    /* Un degradado vistoso */
+    background: linear-gradient(to right, #4f74ab, #004a99);
+    color: #fff;
+    font-weight: 500;
+
+    /* Borde más grueso */
+    border: 2px solid #004a99;
+    border-radius: 8px;
+    
+    padding: 12px 14px;
+    transition: all 0.3s ease;
+    user-select: none;
+
+    /* Para mostrar flex con espacio entre texto e ícono flecha */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ICONO de flecha (usando Font Awesome) */
+.dropdown-selected::after {
+    content: "\f107"; /* fa-chevron-down */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+    margin-left: 8px;
+    transition: transform 0.5s ease;
+    pointer-events: none;
+}
+
+/* Al abrir el dropdown, rotamos la flecha 180° */
+.custom-dropdown.open .dropdown-selected::after {
+    transform: rotate(180deg);
+}
+
+/* Pequeño efecto hover en la caja principal */
+.dropdown-selected:hover {
+    background: linear-gradient(to right, #5896d9, #0057cd);
+    border-color: #0057cd;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+/****************************************
+  4) Lista de items con animación al abrir
+*****************************************/
+.dropdown-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    
+    /* Fondo blanco con un borde */
+    background-color: #fff;
+    border: 2px solid #004a99;
+    border-radius: 8px;
+    margin-top: 5px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+
+    /* Animaciones: 
+       - max-height para "desplegar" 
+       - opacity para un "fade" 
+       - transform scaleY para un "growing"
+    */
+    max-height: 0;
+    opacity: 0;
+    transform: scaleY(0.9);
+    transform-origin: top; 
+    transition: max-height 0.3s ease, 
+                opacity 0.3s ease, 
+                transform 0.8s ease;
+
+    /* Oculto por defecto */
+    overflow: hidden;
+    z-index: 999; 
+}
+
+/* Cuando está abierto: 
+   - incrementamos max-height lo suficiente 
+   - opacity y scaleY a 1
+*/
+.custom-dropdown.open .dropdown-items {
+    max-height: 300px; /* Ajusta según cuántos items tendrás */
+    opacity: 1;
+    transform: scaleY(1);
+    overflow-y: auto;
+}
+
+/****************************************
+  5) Estilos de cada .dropdown-item
+*****************************************/
+.dropdown-item {
+    padding: 12px 14px;
+    transition: background 0.2s ease, color 0.2s ease;
+	background: linear-gradient(to right,rgb(192, 192, 192), rgb(255, 255, 255));
+    border-bottom: 1px solid rgb(0, 0, 0);
+	color:white;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+/* Quitar la última línea */
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+/* Hover en cada ítem */
+.dropdown-item:hover {
+    background: rgb(40, 111, 17); 
+    color: rgb(255, 255, 255); 
+}
+
+/* Si quieres un color de texto más discreto inicialmente */
+.dropdown-item {
+    color: rgb(0, 0, 0);
+}

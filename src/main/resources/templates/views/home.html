@@ -43,19 +43,43 @@
 	<div class="container">
 		<!-- Menú lateral -->
 		<aside class="sidebar">
-			<h4 id="welcome-text">Bienvenido Usuario</h4> 
-			 <div id="usuario-data" data-usuario="${usuario}"></div>
-			<h2>Menú</h2>
-		
-			<div class="menu-item">
-				<h3>Selecciona una materia</h3>
-				<select id="materias"></select>
-			</div>
-			<div class="menu-item">
-				<h3>Selecciona un test</h3>
-				<select id="tests"></select>
-			</div>
-			
+		    <h4 id="welcome-text">Bienvenido Usuario</h4> 
+		    <div id="usuario-data" data-usuario="${usuario}"></div>
+		    <h2>Realiza tus test aquí</h2>
+		    
+		    <!-- Selección de Materias -->
+		 
+		        
+		        <!-- Select oculto -->
+		        <select id="materias" class="hidden-select"></select>
+		        
+		        <!-- Dropdown personalizado -->
+				<div class="menu-item">
+				    <h3>Selecciona una materia</h3>
+
+				    <!-- El <select> real se oculta con CSS -->
+				    <select id="materias" class="hidden-select"></select>
+				    
+				    <!-- Dropdown personalizado -->
+				    <div id="materiasDropdown" class="custom-dropdown">
+				        <div class="dropdown-selected">Elige una materia</div>
+				        <div class="dropdown-items"></div>
+				    </div>
+				</div>
+
+		    <!-- Selección de Tests -->
+		    <div class="menu-item">
+		        <h3>Selecciona un test</h3>
+
+		        <!-- Select oculto -->
+		        <select id="tests" class="hidden-select"></select>
+
+		        <!-- Dropdown personalizado -->
+		        <div id="testsDropdown" class="custom-dropdown">
+		            <div class="dropdown-selected">Elige un test</div>
+		            <div class="dropdown-items"></div>
+		        </div>
+		    </div>
 		</aside>
 
 		<!-- Contenido principal -->
