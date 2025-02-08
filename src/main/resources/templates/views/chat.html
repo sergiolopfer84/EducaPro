@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de IA</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #chat-container { max-width: 600px; margin: auto; padding: 20px; }
+        #chat-box { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #f9f9f9; }
+        #user-input { width: 100%; padding: 10px; margin-top: 10px; }
+        button { padding: 10px; margin-top: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <h2>Asistente de IA</h2>
+    <div id="chat-box"></div>
+    <input type="text" id="user-input" placeholder="Escribe tu pregunta...">
+    <button onclick="enviarMensaje()">Enviar</button>
+</div>
+
+<script>
+    function enviarMensaje() {
+        let input = document.getElementById("user-input");
+        let mensaje = input.value.trim();
+        if (mensaje === "") return;
+
+        let chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+
+		fetch('/api/chat', {
+		    method: 'POST',
+		    headers: {
+		        'Content-Type': 'application/json',
+		        [window.csrf.headerName]: window.csrf.token
+		    },
+		    body: JSON.stringify(mensaje)
+		})
+		.then(response => response.text())
+		.then(data => {
+		    chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+		    chatBox.scrollTop = chatBox.scrollHeight;
+		}); 
+
+        input.value = "";
+    }
+	
+</script>
+<script>
+    window.csrf = {
+        token: '[[${csrfToken.token}]]',
+        headerName: '[[${csrfToken.headerName}]]'
+    };
+</script>
+</body>
+</html>

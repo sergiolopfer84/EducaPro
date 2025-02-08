@@ -35,10 +35,16 @@ public class SecurityConfiguration {
 
         http.csrf(csrf -> 
             csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .ignoringRequestMatchers("/api/chat")
+            
         )
         .authorizeHttpRequests(auth -> auth
                 // Rutas públicas
                 .requestMatchers("/", "/register", "/styles/**", "/img/**", "/js/**").permitAll()
+                // Permitir el acceso anónimo a /api/chat
+                .requestMatchers("/api/chat").permitAll()
+                // Permitir también /chat.html, si lo tuvieras como archivo estático
+                .requestMatchers("/chat.html").permitAll()
                 // Cualquier otra requiere autenticación
                 .anyRequest().authenticated()
         )
