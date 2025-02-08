@@ -436,6 +436,7 @@ select {
        transition: background 0.5s ease-in-out; /* Suaviza la transición */
    }
    .main-content-home {
+	
        flex: 1;
        padding: 20px;
        position: relative; /* Necesario para el pseudo-elemento */
@@ -522,8 +523,58 @@ select {
 --------------------------------- */
 
 
+/*Nota obtenida y última nota*/
+
+#ultima-nota {
+    display: none; /* Oculto hasta que haya una última nota */
+    width: 100%;
+    max-width: 400px;
+    padding: 15px 20px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #FFD700, #FFA500); /* Degradado dorado a naranja */
+    color: #fff;
+    transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* Efecto hover */
+#ultima-nota:hover, #nota-obtenida:hover {
+    transform: scale(1.05);
+}
+
+
+/* Estilo para la nota obtenida, pero inicialmente oculta */
+#nota-obtenida {
+    display: none; /* Oculto por defecto */
+    width: 100%;
+    max-width: 400px;
+    padding: 15px 20px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #1e3148, #3b82f6); /* Verde vibrante */
+    color: #fff;
+    transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* Efecto al pasar el cursor */
+#ultima-nota:hover, #nota-obtenida:hover {
+    transform: scale(1.05);
+}
+
+
+
+
 .questions-container {
 	display: flex;
+	margin-right: auto;
 	flex-direction: column;
 	gap: 20px;
 	padding: 20px;
@@ -531,7 +582,21 @@ select {
 	border: 1px solid #ddd;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	margin: 0 auto;
+	margin-left: 250px;
+	width: 1000px;
+	
+}
+
+.capaTest{
+		display: flex;
+		flex-direction: column;
+		font-size: larger;
+		padding: 20px;
+		background: #f9f9f9;
+		font-weight: bolder;
+		border-radius: 10px;
+		margin: 0 auto;
+	
 }
 
 /* Cada pregunta */
@@ -970,8 +1035,9 @@ input {
 
 /* Hover en cada ítem */
 .dropdown-item:hover {
-    background: rgb(40, 111, 17); 
-    color: rgb(255, 255, 255); 
+    background: #f5b029; 
+    color: rgb(0, 0, 0); 
+	
 }
 
 /* Si quieres un color de texto más discreto inicialmente */
