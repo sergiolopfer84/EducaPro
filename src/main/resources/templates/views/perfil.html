@@ -6,6 +6,7 @@
     <title>Perfil de Usuario</title>
     <link rel="stylesheet" href="/styles/profileStyles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería para gráficas -->
+	
 </head>
 <body>
 
@@ -18,6 +19,16 @@
         </div>
     </div>
 </header>
+<!-- Modal para gráficos ampliados -->
+<div id="modalGrafico" class="modal">
+    <div class="modal-content">
+        <span id="modalClose" class="close">&times;</span>
+        <h2 id="modalTitulo"></h2>
+        <div id="modalGraficoContainer" class="modal-grafico-container">
+            <canvas id="modalGraficoCanvas"></canvas>
+        </div>
+    </div>
+</div>
 
 <div class="container perfil-container">
     <h2>Información Personal</h2>

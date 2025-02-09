@@ -80,7 +80,7 @@ $(document).ready(function() {
 		});
 	};
 	// ======================= Cargar Gráfico de Notas =======================
-	function cargarGraficoNotas() {
+	/*function cargarGraficoNotas() {
 		$.ajax({
 		    url: '/api/progresoTests?idUsuario=1', 
 		    type: 'GET',
@@ -135,7 +135,139 @@ $(document).ready(function() {
 		});
 
 
+	}*/
+	function cargarGraficoNotas() {
+	    $.ajax({
+	        url: '/api/progresoTests?idUsuario=1', 
+	        type: 'GET',
+	        success: function (data) {
+	            $('#graficos-container').html(''); // Limpiar gráficos anteriores
+
+	            Object.keys(data).forEach((materiaNombre) => {
+	                $('#graficos-container').append(`<div class="materia-wrapper"><h2>${materiaNombre}</h2></div>`);
+
+	                let materiaContainer = $('<div class="materia-container"></div>');
+
+	                Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
+	                    let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
+	                    materiaContainer.append(`
+	                        <div class="grafico-wrapper">
+	                            <h3>${testNombre}</h3>
+	                            <canvas id="${canvasId}" class="clickable-chart" width="400" height="200"></canvas>
+	                        </div>
+	                    `);
+	                });
+
+	                $('#graficos-container').append(materiaContainer);
+
+	                // Crear gráficos y añadir eventos para abrir el modal
+	                Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
+	                    let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
+	                    let ctx = document.getElementById(canvasId).getContext('2d');
+
+	                    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+	                    gradient.addColorStop(0, "rgba(0, 123, 255, 0.5)");
+	                    gradient.addColorStop(1, "rgba(0, 123, 255, 0)");
+
+	                    let chartData = {
+	                        labels: data[materiaNombre][testNombre].map((_, i) => `Intento ${i + 1}`),
+	                        datasets: [{
+	                            label: `Notas de ${testNombre}`,
+	                            data: data[materiaNombre][testNombre],
+	                            borderColor: "rgba(0, 123, 255, 1)",
+	                            backgroundColor: gradient,
+	                            borderWidth: 3,
+	                            tension: 0.4, // Suavizar la línea
+	                            pointBackgroundColor: "white",
+	                            pointBorderColor: "blue",
+	                            pointRadius: 5,
+	                            pointHoverRadius: 8,
+	                        }]
+	                    };
+
+	                    let chartOptions = {
+	                        responsive: true,
+	                        animation: {
+	                            duration: 2000,
+	                            easing: "easeInOutQuart"
+	                        },
+	                        plugins: {
+	                            legend: {
+	                                labels: {
+	                                    color: "black",
+	                                    font: {
+	                                        size: 14,
+	                                        weight: "bold"
+	                                    }
+	                                }
+	                            },
+	                            tooltip: {
+	                                backgroundColor: "rgba(0, 0, 0, 0.7)",
+	                                titleFont: { size: 16, weight: "bold" },
+	                                bodyFont: { size: 14 }
+	                            }
+	                        },
+	                        scales: {
+	                            x: {
+	                                grid: { display: false },
+	                                ticks: { color: "black", font: { size: 12 } }
+	                            },
+	                            y: {
+	                                beginAtZero: true,
+	                                max: 10,
+	                                grid: { color: "rgba(0,0,0,0.1)" },
+	                                ticks: { color: "black", font: { size: 12 } }
+	                            }
+	                        }
+	                    };
+
+	                    let chartInstance = new Chart(ctx, {
+	                        type: 'line',
+	                        data: chartData,
+	                        options: chartOptions
+	                    });
+
+	                    // Evento para abrir el modal con el gráfico ampliado
+	                    $(`#${canvasId}`).click(function () {
+	                        abrirModalGrafico(chartData, chartOptions, testNombre);
+	                    });
+	                });
+	            });
+	        },
+	        error: function () {
+	            console.log('Error al cargar el gráfico de notas.');
+	        }
+	    });
 	}
+
+	function abrirModalGrafico(chartData, chartOptions, testNombre) {
+	    $('#modalTitulo').text(`Notas de ${testNombre}`);
+
+	    // Limpiar y agregar nuevo canvas
+	    $('#modalGraficoContainer').html('<canvas id="modalGraficoCanvas"></canvas>');
+
+	    let ctx = document.getElementById("modalGraficoCanvas").getContext("2d");
+	    new Chart(ctx, {
+	        type: 'line',
+	        data: chartData,
+	        options: chartOptions
+	    });
+
+	    // Mostrar el modal correctamente
+	    $('#modalGrafico').addClass('show').fadeIn();
+	    $('.modal-content').fadeIn();
+	}
+
+	// Cerrar modal al hacer clic en la "X" o fuera del modal
+	$(document).on('click', '#modalClose, #modalGrafico', function(event) {
+	    if (event.target.id === 'modalClose' || event.target.id === 'modalGrafico') {
+	        $('#modalGrafico').removeClass('show').fadeOut();
+	        $('.modal-content').fadeOut();
+	    }
+	});
+
+
+
 
 
 	// ======================= Ejecutar Funciones al Cargar la Página =======================
