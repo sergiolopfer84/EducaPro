@@ -1,52 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academia Online</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Academia Online</title>
 	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 </head>
+
 <body>
-    <header>
-        <div class="top-bar">
-            <!-- Aquí puedes añadir cualquier elemento -->
-            <p>EducaPro</p>
-			<h4>Bienvenido Usuario</h4>
-        </div>
-    </header>
-    <div class="container">
-        <!-- Menú lateral -->
-        <aside class="sidebar">
-            <h2>Menú</h2>
-            <div class="menu-item">
-                <h3>Selecciona una materia</h3>
-                <select id="materias">
-                    <option value="">Elige una materia</option>
-                    <option value="geografía">Geografía</option>
-                    <option value="biología">Biología</option>
-                </select>
-            </div>
-            <div class="menu-item">
-                <h3>Selecciona un test</h3>
-                <select id="tests">
-                    <option value="">Elige un test</option>
-                    <option value="test1">Test 1</option>
-                    <option value="test2">Test 2</option>
-                    <option value="test3">Test 3</option>
-                </select>
-            </div>
-            <button id="loadTest" class="btn">Cargar preguntas</button>
-        </aside>
+	<header>
+	    <div class="top-bar">
+			<div class="logo-wrapper">
+				    <a href="/" class="logo-container">
+				        <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
+				    </a>
+				    <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
+				    <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+				    <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
+				</div>
+	
 
-        <!-- Contenido principal -->
-        <main class="main-content">
-            <div id="questions-container" class="questions-container">
-                <!-- Las preguntas aparecerán aquí -->
-            </div>
-        </main>
-    </div>
+	        <div class="auth-buttons">
+	            <a href="/index" id="Inicio" class="btn">
+	                <i class="fas fa-home"></i>
+	            </a>
+	            <button id="perfilBtn" class="btn btn-profile">
+	                <i class="fas fa-user"></i> Perfil
+	            </button>
+				<div th:if="${usuario != null}" id="logoutTrigger">
+							    <form th:action="@{/logout}" method="post">
+							        <button type="submit" style="background: none; border: none; cursor: pointer;">
+							            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
+							        </button>
+							    </form>
+	        </div>
+	    </div>
+	</header>
+	<div class="container">
+		<!-- Menú lateral -->
+		<aside class="sidebar">
+		    <h4 id="welcome-text">Bienvenido Usuario</h4> 
+		    <div id="usuario-data" data-usuario="${usuario}"></div>
+		    <h2>Realiza tus test aquí</h2>
+		    
+		    <!-- Selección de Materias -->
+		 
+		        
+		        <!-- Select oculto -->
+		        <select id="materias" class="hidden-select"></select>
+		        
+		        <!-- Dropdown personalizado -->
+				<div class="menu-item">
+				    <h3>Selecciona una materia</h3>
 
-    <script src="js/script.js"></script>
+				    <!-- El <select> real se oculta con CSS -->
+				    <select id="materias" class="hidden-select"></select>
+				    
+				    <!-- Dropdown personalizado -->
+				    <div id="materiasDropdown" class="custom-dropdown">
+				        <div class="dropdown-selected">Elige una materia</div>
+				        <div class="dropdown-items"></div>
+				    </div>
+				</div>
+
+		    <!-- Selección de Tests -->
+		    <div class="menu-item">
+		        <h3>Selecciona un test</h3>
+
+		        <!-- Select oculto -->
+		        <select id="tests" class="hidden-select"></select>
+
+		        <!-- Dropdown personalizado -->
+		        <div id="testsDropdown" class="custom-dropdown">
+		            <div class="dropdown-selected">Elige un test</div>
+		            <div class="dropdown-items"></div>
+		        </div>
+		    </div>
+		</aside>
+
+		<!-- Contenido principal -->
+		<main class="main-content-home">
+			<div id="ultima-nota"></div> <!-- Aquí se muestra la última nota obtenida -->
+			<div id="nota-obtenida"></div>
+			<button id="resetTest" style="display: none;" >Intentar de nuevo</button>
+  
+			<div id="questions-container" class="questions-container">
+				<p class="capaTest">Elige una materia y un test en el menú lateral para empezar</p>
+			</div>
+		</main>
+	</div>
+
+	<!-- Asegúrate de cargar jQuery antes de tu script.js -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="js/script.js"></script>
+	<script>
+		    window.csrf = {
+		        token: '[[${csrfToken.token}]]',
+		        headerName: '[[${csrfToken.headerName}]]'
+		    };
+		    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+		</script>
 </body>
+
 </html>
