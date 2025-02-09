@@ -56,6 +56,13 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/js/perfil.js"></script> 
+<script>
+	    window.csrf = {
+	        token: '[[${csrfToken.token}]]',
+	        headerName: '[[${csrfToken.headerName}]]'
+	    };
+	    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+	</script>
 
 </body>
 </html>

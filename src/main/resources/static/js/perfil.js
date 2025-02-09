@@ -19,33 +19,46 @@ $(document).ready(function() {
 
 	// ======================= Cambio de Contraseña =======================
 	$('#changePasswordForm').submit(function(e) {
-		e.preventDefault();
-		let newPassword = $('#newPassword').val().trim();
-		let confirmPassword = $('#confirmPassword').val().trim();
+	    e.preventDefault();
+	    let newPassword = $('#newPassword').val().trim();
+	    let confirmPassword = $('#confirmPassword').val().trim();
 
-		if (newPassword.length < 6) {
-			$('#passwordMessage').text('La contraseña debe tener al menos 6 caracteres.').css('color', 'red');
-			return;
-		}
-		if (newPassword !== confirmPassword) {
-			$('#passwordMessage').text('Las contraseñas no coinciden.').css('color', 'red');
-			return;
-		}
+	    if (newPassword.length < 6) {
+	        $('#passwordMessage').text('La contraseña debe tener al menos 6 caracteres.').css('color', 'red');
+	        return;
+	    }
+	    if (newPassword !== confirmPassword) {
+	        $('#passwordMessage').text('Las contraseñas no coinciden.').css('color', 'red');
+	        return;
+	    }
 
-		$.ajax({
-			url: '/api/cambiarPassword',
-			type: 'POST',
-			contentType: 'application/json',
-			data: JSON.stringify({ nuevaPassword: newPassword }),
-			success: function() {
-				$('#passwordMessage').text('Contraseña actualizada con éxito.').css('color', 'green');
-				$('#newPassword, #confirmPassword').val('');
-			},
-			error: function() {
-				$('#passwordMessage').text('Error al cambiar la contraseña.').css('color', 'red');
-			}
-		});
+	    console.log("Enviando nueva contraseña...");
+
+	    if (!window.csrf || !window.csrf.token || !window.csrf.headerName) {
+	        console.error("CSRF token no definido");
+	        return;
+	    }
+
+	    $.ajax({
+	        url: '/api/cambiarPassword',
+	        type: 'POST',
+	        contentType: 'application/json',
+	        data: JSON.stringify({ nuevaPassword: newPassword }),
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	        },
+	        success: function(response) {
+	            console.log("Respuesta del servidor:", response);
+	            $('#passwordMessage').text('Contraseña actualizada con éxito.').css('color', 'green');
+	            $('#newPassword, #confirmPassword').val('');
+	        },
+	        error: function(xhr) {
+	            console.log("Error en la petición AJAX:", xhr);
+	            $('#passwordMessage').text('Error al cambiar la contraseña.').css('color', 'red');
+	        }
+	    });
 	});
+
 
 	// ======================= Cargar Progreso de Materias =======================
 	function cargarProgresoMaterias() {
@@ -80,62 +93,7 @@ $(document).ready(function() {
 		});
 	};
 	// ======================= Cargar Gráfico de Notas =======================
-	/*function cargarGraficoNotas() {
-		$.ajax({
-		    url: '/api/progresoTests?idUsuario=1', 
-		    type: 'GET',
-		    success: function (data) {
-		        $('#graficos-container').html(''); // Limpiar gráficos anteriores
-
-		        Object.keys(data).forEach((materiaNombre) => {
-		            $('#graficos-container').append(`<div class="materia-wrapper"><h2>${materiaNombre}</h2></div>`); // Título de la materia
-
-		            let materiaContainer = $('<div class="materia-container"></div>');
-
-		            Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
-		                let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
-		                materiaContainer.append(`
-		                    <div class="grafico-wrapper">
-		                        <h3>${testNombre}</h3>
-		                        <canvas id="${canvasId}" width="400" height="200"></canvas>
-		                    </div>
-		                `);
-		            });
-
-		            $('#graficos-container').append(materiaContainer);
-
-		            // Renderizar los gráficos después de añadir los contenedores
-		            Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
-		                let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
-		                let ctx = document.getElementById(canvasId).getContext('2d');
-
-		                new Chart(ctx, {
-		                    type: 'line',
-		                    data: {
-		                        labels: data[materiaNombre][testNombre].map((_, i) => `Nota ${i + 1}`),
-		                        datasets: [{
-		                            label: `Notas de ${testNombre}`,
-		                            data: data[materiaNombre][testNombre],
-		                            borderColor: 'blue',
-		                            borderWidth: 2
-		                        }]
-		                    },
-		                    options: {
-		                        scales: {
-		                            y: { min: 0, max: 10 }
-		                        }
-		                    }
-		                });
-		            });
-		        });
-		    },
-		    error: function () {
-		        console.log('Error al cargar el gráfico de notas.');
-		    }
-		});
-
-
-	}*/
+	
 	function cargarGraficoNotas() {
 	    $.ajax({
 	        url: '/api/progresoTests?idUsuario=1', 
@@ -165,40 +123,29 @@ $(document).ready(function() {
 	                    let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
 	                    let ctx = document.getElementById(canvasId).getContext('2d');
 
-	                    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-	                    gradient.addColorStop(0, "rgba(0, 123, 255, 0.5)");
-	                    gradient.addColorStop(1, "rgba(0, 123, 255, 0)");
-
 	                    let chartData = {
-	                        labels: data[materiaNombre][testNombre].map((_, i) => `Intento ${i + 1}`),
+	                        labels: data[materiaNombre][testNombre].map((_, i) => `Nota ${i + 1}`),
 	                        datasets: [{
 	                            label: `Notas de ${testNombre}`,
 	                            data: data[materiaNombre][testNombre],
-	                            borderColor: "rgba(0, 123, 255, 1)",
-	                            backgroundColor: gradient,
-	                            borderWidth: 3,
-	                            tension: 0.4, // Suavizar la línea
-	                            pointBackgroundColor: "white",
-	                            pointBorderColor: "blue",
-	                            pointRadius: 5,
-	                            pointHoverRadius: 8,
+	                            backgroundColor: "rgba(59, 130, 246, 0.7)", // Azul con transparencia
+	                            borderColor: "rgba(59, 130, 246, 1)", // Azul sólido
+	                            borderWidth: 1,
+	                            borderRadius: 5, // Esquinas redondeadas en las barras
 	                        }]
 	                    };
 
 	                    let chartOptions = {
 	                        responsive: true,
 	                        animation: {
-	                            duration: 2000,
+	                            duration: 1500,
 	                            easing: "easeInOutQuart"
 	                        },
 	                        plugins: {
 	                            legend: {
 	                                labels: {
 	                                    color: "black",
-	                                    font: {
-	                                        size: 14,
-	                                        weight: "bold"
-	                                    }
+	                                    font: { size: 14, weight: "bold" }
 	                                }
 	                            },
 	                            tooltip: {
@@ -222,7 +169,7 @@ $(document).ready(function() {
 	                    };
 
 	                    let chartInstance = new Chart(ctx, {
-	                        type: 'line',
+	                        type: 'bar', // 🔹 Cambiado de 'line' a 'bar'
 	                        data: chartData,
 	                        options: chartOptions
 	                    });
@@ -240,6 +187,7 @@ $(document).ready(function() {
 	    });
 	}
 
+
 	function abrirModalGrafico(chartData, chartOptions, testNombre) {
 	    $('#modalTitulo').text(`Notas de ${testNombre}`);
 
@@ -248,7 +196,7 @@ $(document).ready(function() {
 
 	    let ctx = document.getElementById("modalGraficoCanvas").getContext("2d");
 	    new Chart(ctx, {
-	        type: 'line',
+	        type: 'bar',
 	        data: chartData,
 	        options: chartOptions
 	    });
