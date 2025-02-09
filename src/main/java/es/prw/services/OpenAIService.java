@@ -2,6 +2,7 @@ package es.prw.services;
 
 import es.prw.connection.MySqlConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,11 +15,15 @@ import java.util.*;
 @Service
 public class OpenAIService {
 
-    private final String apiKey;
-    private final String apiUrl;
+
+	private String apiKey;
+
+	
+	private String apiUrl;
+
 
     // Para hacer las peticiones HTTP
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     /**
      * Inyectamos MySqlConnection para obtener las variables
@@ -28,7 +33,20 @@ public class OpenAIService {
     public OpenAIService(MySqlConnection mySqlConnection) {
         this.apiKey = mySqlConnection.getOpenAiApiKey();
         this.apiUrl = mySqlConnection.getOpenAiApiUrl();
+        this.restTemplate = new RestTemplate();
+        System.out.println("🔑 API Key cargada: " + this.apiKey);
+        System.out.println("🌍 OpenAI API URL: " + this.apiUrl);
+        if (apiKey == null || apiKey.isEmpty()) {
+            throw new RuntimeException("❌ ERROR: No se encontró la API Key en el .env");
+        }
+        if (apiUrl == null || apiUrl.isEmpty()) {
+            throw new RuntimeException("❌ ERROR: No se encontró la URL de OpenAI en el .env");
+        }
+
+        System.out.println("🔑 OpenAI API Key cargada.");
+        System.out.println("🌍 OpenAI API URL: " + apiUrl);
     }
+
 
     /**
      * Método principal para enviar un mensaje y contexto (notas) a la IA
@@ -40,6 +58,12 @@ public class OpenAIService {
     public String obtenerRespuestaIA(Map<String, Object> datosChat) {
         String nombreUsuario = (String) datosChat.get("usuario");
         String mensajeUsuario = (String) datosChat.get("mensaje");
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + apiKey); // Debe incluir "Bearer"
+        headers.set("Content-Type", "application/json");
+
+        
         Map<String, Map<String, List<Double>>> notasPorMateria =
                 (Map<String, Map<String, List<Double>>>) datosChat.get("notasPorMateria");
 
@@ -64,11 +88,7 @@ public class OpenAIService {
             historialNotas.append("No hay registros de notas.\n");
         }
 
-        // Cabeceras de la petición a OpenAI
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
-        headers.set("Content-Type", "application/json");
-
+      
         // Cuerpo de la petición
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "gpt-3.5-turbo");

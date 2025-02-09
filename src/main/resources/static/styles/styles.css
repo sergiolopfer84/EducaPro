@@ -302,9 +302,9 @@ header {
     */
     background: 
       /* Gradiente (ajusta colores y dirección) */
-      linear-gradient(90deg, rgb(23, 55, 79) 40%, #0099cc 100%), 
+      linear-gradient(90deg, rgb(23, 55, 79) 40%, #0099cc 100%);
       /* Imagen de textura (cambia la URL por la tuya) */
-      url('https://via.placeholder.com/300x300.png?text=Textura') repeat;
+    
     
     /* Asegura que la textura cubra el área o se repita adecuadamente */
     background-size: cover, auto; 

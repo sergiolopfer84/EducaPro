@@ -70,7 +70,11 @@ public class MySqlConnection {
         // Variables de OpenAI
         this.openAiApiKey = dotenv.get("OPENAI_API_KEY", "");
         this.openAiApiUrl = dotenv.get("OPENAI_API_URL", "");
+        if (this.openAiApiKey.isEmpty()) {
+            throw new RuntimeException("❌ ERROR: No se encontró la API Key en el .env");
+        }
 
+        System.out.println("🔑 OpenAI API Key cargada correctamente.");
   
     }
 
@@ -131,6 +135,7 @@ public class MySqlConnection {
     // GETTERS PARA OPENAI
     // -----------------------------
     public String getOpenAiApiKey() {
+    	
         return openAiApiKey;
     }
 

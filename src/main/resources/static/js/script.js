@@ -438,6 +438,58 @@ $(document).ready(function() {
             $('#resetTest').hide();
             $('#finalizar').prop('disabled', false);
         });
+		
+		/***************************************************
+
+								ASISTENTE
+		 ***************************************************/
+
+		    const openAssistantBtn = document.getElementById("openAssistantBtn");
+		    const modal = document.getElementById("assistantModal");
+		    const closeBtn = document.querySelector(".close-btn");
+		    const chatBox = document.getElementById("chat-box");
+		    const userInput = document.getElementById("user-input");
+		    const sendMessageBtn = document.getElementById("sendMessageBtn");
+
+		    // Mostrar la modal al hacer clic en el botón
+		    openAssistantBtn.addEventListener("click", function() {
+		        modal.style.display = "flex";
+		    });
+
+		    // Cerrar la modal al hacer clic en la 'X'
+		    closeBtn.addEventListener("click", function() {
+		        modal.style.display = "none";
+		    });
+
+		    // Enviar mensaje al Asistente de Estudio
+		    sendMessageBtn.addEventListener("click", function() {
+		        let mensaje = userInput.value.trim();
+				console.log(mensaje);
+		        if (mensaje === "") return;
+
+		        chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+		        userInput.value = "";
+
+		        // Petición a la API
+		        fetch('/api/chat', {
+		            method: 'POST',
+		            headers: { 'Content-Type': 'application/json' },
+		            body: JSON.stringify(mensaje)
+		        })
+		        .then(response => response.text())
+		        .then(data => {
+		            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+		            chatBox.scrollTop = chatBox.scrollHeight;
+		        });
+		    });
+
+		    // Cerrar la modal si el usuario hace clic fuera del contenido
+		    window.addEventListener("click", function(event) {
+		        if (event.target === modal) {
+		            modal.style.display = "none";
+		        }
+		    });
+		
     } // Fin if /home
 
 }); // Fin document.ready
@@ -456,55 +508,7 @@ function finalizarTest() {
     $('#finalizar').prop('disabled', true);
 }
 
-/***************************************************
 
-						ASISTENTE
- ***************************************************/
 
-document.addEventListener("DOMContentLoaded", function() {
-    const openAssistantBtn = document.getElementById("openAssistantBtn");
-    const modal = document.getElementById("assistantModal");
-    const closeBtn = document.querySelector(".close-btn");
-    const chatBox = document.getElementById("chat-box");
-    const userInput = document.getElementById("user-input");
-    const sendMessageBtn = document.getElementById("sendMessageBtn");
 
-    // Mostrar la modal al hacer clic en el botón
-    openAssistantBtn.addEventListener("click", function() {
-        modal.style.display = "flex";
-    });
-
-    // Cerrar la modal al hacer clic en la 'X'
-    closeBtn.addEventListener("click", function() {
-        modal.style.display = "none";
-    });
-
-    // Enviar mensaje al Asistente de Estudio
-    sendMessageBtn.addEventListener("click", function() {
-        let mensaje = userInput.value.trim();
-        if (mensaje === "") return;
-
-        chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
-        userInput.value = "";
-
-        // Petición a la API
-        fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(mensaje)
-        })
-        .then(response => response.text())
-        .then(data => {
-            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        });
-    });
-
-    // Cerrar la modal si el usuario hace clic fuera del contenido
-    window.addEventListener("click", function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-});
 
