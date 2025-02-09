@@ -97,7 +97,7 @@ $(document).ready(function() {
                 if (xhr.status === 401) {
                     $('#loginError').html('<span style="color: red;">Nombre o contraseña incorrectos</span>');
                 } else if (xhr.status === 403) {
-                    $('#loginError').html('<span style="color: red;">Cuenta bloqueada. Inténtalo más tarde.</span>');
+                    $('#loginError').html('<span style="color: red;">Demasiados intentos fallidos. Espere 1 minuto.</span>');
                 } else {
                     $('#loginError').html('<span style="color: red;">Error al iniciar sesión.</span>');
                 }

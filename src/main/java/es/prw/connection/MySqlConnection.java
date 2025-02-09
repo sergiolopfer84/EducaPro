@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 import org.springframework.stereotype.Controller;
 
@@ -15,255 +14,272 @@ import io.github.cdimascio.dotenv.Dotenv;
 @Controller
 public class MySqlConnection {
 
-	private String host;
-	private String puerto;
-	private String nameDB;
-	private String usuario;
-	private String password;
+    private String host;
+    private String puerto;
+    private String nameDB;
+    private String usuario;
+    private String password;
 
-	// Atributo que indica si las operaciones se realizarán con autocomit. De lo
-	// contrario, en la capa de datos (DAO's) se
-	// debe controlar las transacciones.
-	private boolean autocomit;
+    // Variables para OpenAI
+    private String openAiApiKey;
+    private String openAiApiUrl;
 
-	// Bandera de error
-	private boolean flagError;
-	// Mensaje de error
-	private String msgError;
+    // Atributo que indica si las operaciones se realizarán con autocommit
+    private boolean autocomit;
 
-	// Objeto de conexión
-	private Connection connection;
+    // Bandera de error
+    private boolean flagError;
 
-	// inicialización de parámetros por defecto
-	private void _initialize() {
-		this.flagError = false;
-		this.msgError = "";
-		this.connection = null;
-	}
+    // Mensaje de error
+    private String msgError;
 
-	// Inicialización de la bandera y mensaje de error
-	private void _initializeError() {
-		this.flagError = false;
-		this.msgError = "";
-	}
+    // Objeto de conexión
+    private Connection connection;
 
-	// Constructor implícito
-	public MySqlConnection() {
-		this._initialize();
-		this.autocomit = true;
-		Dotenv dotenv = Dotenv.load();
-		this.host = dotenv.get("DB_HOST");
-		this.puerto = dotenv.get("DB_PORT");
-		this.nameDB = dotenv.get("DB_NAME");
-		this.usuario = dotenv.get("DB_USER");
-		this.password = dotenv.get("DB_PASSWORD");
+    // inicialización de parámetros por defecto
+    private void _initialize() {
+        this.flagError = false;
+        this.msgError = "";
+        this.connection = null;
+    }
 
-	}
+    // Inicialización de la bandera y mensaje de error
+    private void _initializeError() {
+        this.flagError = false;
+        this.msgError = "";
+    }
 
-	public MySqlConnection(boolean _autocomit) {
-		this._initialize();
-		this.autocomit = _autocomit;
-		Dotenv dotenv = Dotenv.load();
-		this.host = dotenv.get("DB_HOST");
-		this.puerto = dotenv.get("DB_PORT");
-		this.nameDB = dotenv.get("DB_NAME");
-		this.usuario = dotenv.get("DB_USER");
-		this.password = dotenv.get("DB_PASSWORD");
+    // -----------------------------
+    // CARGA DEL .env CON DOTENV
+    // -----------------------------
+    private void loadEnvVariables() {
+        // Configuramos Dotenv para que busque el archivo .env en el directorio raíz
+        Dotenv dotenv = Dotenv.configure()
+            .directory(System.getProperty("user.dir")) // raíz del proyecto
+            .filename(".env")                         // nombre del archivo
+            .ignoreIfMissing()                        // no lanzará error si no lo encuentra
+            .load();
 
-	}
+        // Variables de la base de datos
+        this.host = dotenv.get("DB_HOST", "localhost");
+        this.puerto = dotenv.get("DB_PORT", "3306");
+        this.nameDB = dotenv.get("DB_NAME", "default_db");
+        this.usuario = dotenv.get("DB_USER", "root");
+        this.password = dotenv.get("DB_PASSWORD", "");
 
-	// Constructor que permite indicar esquema por defecto
-	public MySqlConnection(String _nameDB) {
-		this._initialize();
-		this.nameDB = _nameDB;
-		this.autocomit = true;
-	}
+        // Variables de OpenAI
+        this.openAiApiKey = dotenv.get("OPENAI_API_KEY", "");
+        this.openAiApiUrl = dotenv.get("OPENAI_API_URL", "");
 
-	public MySqlConnection(String _nameDB, boolean _autocomit) {
-		this._initialize();
-		this.nameDB = _nameDB;
-		this.autocomit = _autocomit;
-	}
+  
+    }
 
-	// Constructor que permite conectar a cualquier base de datos MySql
-	public MySqlConnection(String _host, String _puerto, String _nameDB, String _usuario, String _password) {
-		this._initialize();
-		this.host = _host;
-		this.puerto = _puerto;
-		this.nameDB = _nameDB;
-		this.usuario = _usuario;
-		this.password = _password;
-		this.autocomit = true;
+    // -----------------------------
+    // CONSTRUCTORES
+    // -----------------------------
+    // Constructor implícito
+    public MySqlConnection() {
+        this._initialize();
+        this.autocomit = true;
+        loadEnvVariables();
+    }
 
-	}
+    public MySqlConnection(boolean _autocomit) {
+        this._initialize();
+        this.autocomit = _autocomit;
+        loadEnvVariables();
+    }
 
-	public MySqlConnection(String _host, String _puerto, String _nameDB, String _usuario, String _password,
-			boolean _autocomit) {
-		this._initialize();
-		this.host = _host;
-		this.puerto = _puerto;
-		this.nameDB = _nameDB;
-		this.usuario = _usuario;
-		this.password = _password;
-		this.autocomit = _autocomit;
+    // Constructor que permite indicar esquema por defecto
+    public MySqlConnection(String _nameDB) {
+        this._initialize();
+        this.autocomit = true;
+        loadEnvVariables();
+        this.nameDB = _nameDB;  // Sobrescribimos el DB_NAME si queremos
+    }
 
-	}
+    public MySqlConnection(String _nameDB, boolean _autocomit) {
+        this._initialize();
+        this.nameDB = _nameDB;
+        this.autocomit = _autocomit;
+        loadEnvVariables();
+    }
 
-	// Método que abre la conexión y en caso de error, activa la bandera de error.
-	public void open() {
+    // Constructor que permite conectar a cualquier base de datos MySQL
+    public MySqlConnection(String _host, String _puerto, String _nameDB, String _usuario, String _password) {
+        this._initialize();
+        this.host = _host;
+        this.puerto = _puerto;
+        this.nameDB = _nameDB;
+        this.usuario = _usuario;
+        this.password = _password;
+        this.autocomit = true;
+    }
 
-		try {
-			this._initializeError();
-			if ((this.connection == null) || (this.connection != null && this.connection.isClosed())) {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				this.connection = DriverManager.getConnection(
-						"jdbc:mysql://" + this.host + ":" + this.puerto + "/" + this.nameDB, this.usuario,
-						this.password);
-			}
-		} catch (ClassNotFoundException ex) {
-			this.flagError = true;
-			this.msgError = "Error al registrar el driver. +Info: " + ex.getMessage();
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en Open. +Info: " + ex.getMessage();
-		}
-	}
+    public MySqlConnection(String _host, String _puerto, String _nameDB, String _usuario, String _password,
+                           boolean _autocomit) {
+        this._initialize();
+        this.host = _host;
+        this.puerto = _puerto;
+        this.nameDB = _nameDB;
+        this.usuario = _usuario;
+        this.password = _password;
+        this.autocomit = _autocomit;
+    }
 
-	// Método que cierra la conexión si estaba abierta
-	public void close() {
-		try {
-			this._initializeError();
-			if ((this.connection != null) && (!this.connection.isClosed()))
-				this.connection.close();
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en close. +Info: " + ex.getMessage();
-		}
+    // -----------------------------
+    // GETTERS PARA OPENAI
+    // -----------------------------
+    public String getOpenAiApiKey() {
+        return openAiApiKey;
+    }
 
-	}
+    public String getOpenAiApiUrl() {
+        return openAiApiUrl;
+    }
 
-	// Método que retorna el resultado de cualquier consulta sql en un ResultSet
-	public ResultSet executeSelect(String sql, Object... params) {
-		try {
-			this._initializeError(); // Inicializar cualquier error previo
-			if (this.connection != null && !this.connection.isClosed()) {
-				// Crear el PreparedStatement
-				PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+    // -----------------------------
+    // MÉTODOS DE CONEXIÓN
+    // -----------------------------
+    public void open() {
+        try {
+            this._initializeError();
+            if ((this.connection == null) || (this.connection != null && this.connection.isClosed())) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                this.connection = DriverManager.getConnection(
+                        "jdbc:mysql://" + this.host + ":" + this.puerto + "/" + this.nameDB,
+                        this.usuario,
+                        this.password
+                );
+            }
+        } catch (ClassNotFoundException ex) {
+            this.flagError = true;
+            this.msgError = "Error al registrar el driver. +Info: " + ex.getMessage();
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en Open. +Info: " + ex.getMessage();
+        }
+    }
 
-				// Establecer los parámetros si existen
-				if (params != null) {
-					for (int i = 0; i < params.length; i++) {
-						stmt.setObject(i + 1, params[i]);
-					}
-				}
-				// Ejecutar la consulta
-				return stmt.executeQuery();
-			} else {
-				this.flagError = true;
-				this.msgError = "Error en ExecuteSelect. +Info: Conexión cerrada.";
-			}
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en ExecuteSelect. +Info: " + ex.getMessage();
-		}
+    public void close() {
+        try {
+            this._initializeError();
+            if ((this.connection != null) && (!this.connection.isClosed())) {
+                this.connection.close();
+            }
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en close. +Info: " + ex.getMessage();
+        }
+    }
 
-		return null; // Retornar null si hubo un error
-	}
+    // -----------------------------
+    // MÉTODOS DE CONSULTA
+    // -----------------------------
+    public ResultSet executeSelect(String sql, Object... params) {
+        try {
+            this._initializeError();
+            if (this.connection != null && !this.connection.isClosed()) {
+                PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-	// Método para ejecutar un insert. Devuelve la/s claves primarias generadas en
-	// un record set.
-	public ResultSet executeInsert(String sql, Object... params) {
-		try {
-			this._initializeError();
-			if (this.connection != null && !this.connection.isClosed()) {
-				PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-				if (params != null) {
-					// Establecer los parámetros
-					for (int i = 0; i < params.length; i++) {
-						stmt.setObject(i + 1, params[i]);
-					}
-				}
-				/// stmt.executeUpdate();
-				int rowsAffected = stmt.executeUpdate();
-				// Verifica si hay claves generadas
-				ResultSet rs = stmt.getGeneratedKeys();
+                if (params != null) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setObject(i + 1, params[i]);
+                    }
+                }
+                return stmt.executeQuery();
+            } else {
+                this.flagError = true;
+                this.msgError = "Error en ExecuteSelect. +Info: Conexión cerrada.";
+            }
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en ExecuteSelect. +Info: " + ex.getMessage();
+        }
+        return null;
+    }
 
-				return rs;
-			} else {
-				this.flagError = true;
-				this.msgError = "Error en ExecuteInsert. +Info: Conexión cerrada.";
-			}
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en ExecuteInsert. +Info: " + ex.getMessage();
-		}
+    public ResultSet executeInsert(String sql, Object... params) {
+        try {
+            this._initializeError();
+            if (this.connection != null && !this.connection.isClosed()) {
+                PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                if (params != null) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setObject(i + 1, params[i]);
+                    }
+                }
+                int rowsAffected = stmt.executeUpdate();
+                return stmt.getGeneratedKeys();
+            } else {
+                this.flagError = true;
+                this.msgError = "Error en ExecuteInsert. +Info: Conexión cerrada.";
+            }
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en ExecuteInsert. +Info: " + ex.getMessage();
+        }
+        return null;
+    }
 
-		return null;
-	}
+    public int executeUpdateOrDelete(String sql, Object... params) {
+        int numRows = 0;
+        try {
+            this._initializeError();
+            if (this.connection != null && !this.connection.isClosed()) {
+                PreparedStatement stmt = this.connection.prepareStatement(sql);
+                if (params != null) {
+                    for (int i = 0; i < params.length; i++) {
+                        stmt.setObject(i + 1, params[i]);
+                    }
+                }
+                numRows = stmt.executeUpdate();
+            } else {
+                this.flagError = true;
+                this.msgError = "Error en executeUpdateOrDelete. +Info: Conexión cerrada.";
+            }
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en executeUpdateOrDelete. +Info: " + ex.getMessage();
+        }
+        return numRows;
+    }
 
-	// Método para ejecutar un update o delete. Devuelve el número de registros
-	// afectados.
-	public int executeUpdateOrDelete(String sql, Object... params) {
-		int numRows = 0;
-		try {
-			this._initializeError();
-			if (this.connection != null && !this.connection.isClosed()) {
-				PreparedStatement stmt = this.connection.prepareStatement(sql);
-				if (params != null) {
-					// Establecer los parámetros
-					for (int i = 0; i < params.length; i++) {
-						stmt.setObject(i + 1, params[i]);
-					}
-				}
-				numRows = stmt.executeUpdate();
-			} else {
-				this.flagError = true;
-				this.msgError = "Error en executeUpdateOrDelete. +Info: Conexión cerrada.";
-			}
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en executeUpdateOrDelete. +Info: " + ex.getMessage();
-		}
+    // -----------------------------
+    // TRANSACCIONES
+    // -----------------------------
+    public void commit() {
+        try {
+            this._initializeError();
+            if (!this.connection.getAutoCommit()) {
+                this.connection.commit();
+            }
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en commit. +Info: " + ex.getMessage();
+        }
+    }
 
-		return numRows;
-	}
+    public void rollback() {
+        try {
+            this._initializeError();
+            if (!this.connection.getAutoCommit()) {
+                this.connection.rollback();
+            }
+        } catch (SQLException ex) {
+            this.flagError = true;
+            this.msgError = "Error en rollback. +Info: " + ex.getMessage();
+        }
+    }
 
-	// Método que fuerza un commit. Solo se realizará si el autocomit está
-	// deshabilitado. (autocomit = false).
-	public void commit() {
-		try {
-			this._initializeError();
-			if (!this.connection.getAutoCommit()) {
-				this.connection.commit();
-			}
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en commit. +Info: " + ex.getMessage();
-		}
-	}
+    // -----------------------------
+    // GETTERS DE ERRORES
+    // -----------------------------
+    public boolean isError() {
+        return this.flagError;
+    }
 
-	// Método que fuerza un rollback. Solo se realizará si el autocomit está
-	// deshabilitado. (autocomit = false).
-	public void rollback() {
-		try {
-			this._initializeError();
-			if (!this.connection.getAutoCommit()) {
-				this.connection.rollback();
-			}
-		} catch (SQLException ex) {
-			this.flagError = true;
-			this.msgError = "Error en rollback. +Info: " + ex.getMessage();
-		}
-	}
-
-	// Devuelve el valor de la bandera de error
-	public boolean isError() {
-		return this.flagError;
-	}
-
-	// Devuelve la descripción del error
-	public String msgError() {
-		return this.msgError;
-	}
-
+    public String msgError() {
+        return this.msgError;
+    }
 }
