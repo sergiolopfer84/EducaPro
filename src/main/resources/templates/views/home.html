@@ -1,109 +1,147 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Academia Online</title>
-	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
-	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Online</title>
+    
+    <!-- Tus estilos -->
+    <link rel="stylesheet" th:href="@{/styles/styles.css}" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
+    <!-- Modal oculto de inicio -->
+    <style>
+      .modal {
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        z-index: 1000;
+        left: 0; 
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        width: 70%;
+        max-width: 500px;
+        border-radius: 10px;
+        position: relative;
+      }
+      .close-btn {
+        position: absolute;
+        top: 10px; 
+        right: 20px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+    </style>
 </head>
 
 <body>
-	<header>
-	    <div class="top-bar">
-			<div class="logo-wrapper">
-				    <a href="/" class="logo-container">
-				        <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
-				    </a>
-				    <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
-				    <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
-				    <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
-				</div>
-	
+    <header>
+        <div class="top-bar">
+            <!-- Logo e imágenes -->
+            <div class="logo-wrapper">
+                <a href="/" class="logo-container">
+                    <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
+                </a>
+                <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
+                <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+                <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
+            </div>
 
-	        <div class="auth-buttons">
-	            <a href="/index" id="Inicio" class="btn">
-	                <i class="fas fa-home"></i>
-	            </a>
-	            <button id="perfilBtn" class="btn btn-profile">
-	                <i class="fas fa-user"></i> Perfil
-	            </button>
-				<div th:if="${usuario != null}" id="logoutTrigger">
-							    <form th:action="@{/logout}" method="post">
-							        <button type="submit" style="background: none; border: none; cursor: pointer;">
-							            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
-							        </button>
-							    </form>
-	        </div>
-	    </div>
-	</header>
-	<div class="container">
-		<!-- Menú lateral -->
-		<aside class="sidebar">
-		    <h4 id="welcome-text">Bienvenido Usuario</h4> 
-		    <div id="usuario-data" data-usuario="${usuario}"></div>
-		    <h2>Realiza tus test aquí</h2>
-		    
-		    <!-- Selección de Materias -->
-		 
-		        
-		        <!-- Select oculto -->
-		        <select id="materias" class="hidden-select"></select>
-		        
-		        <!-- Dropdown personalizado -->
-				<div class="menu-item">
-				    <h3>Selecciona una materia</h3>
+            <!-- Botones de auth -->
+            <div class="auth-buttons">
+                <a href="/index" id="Inicio" class="btn">
+                    <i class="fas fa-home"></i>
+                </a>
+                <button id="perfilBtn" class="btn btn-profile">
+                    <i class="fas fa-user"></i> Perfil
+                </button>
+                <div th:if="${usuario != null}" id="logoutTrigger">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" style="background: none; border: none; cursor: pointer;">
+                            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
 
-				    <!-- El <select> real se oculta con CSS -->
-				    <select id="materias" class="hidden-select"></select>
-				    
-				    <!-- Dropdown personalizado -->
-				    <div id="materiasDropdown" class="custom-dropdown">
-				        <div class="dropdown-selected">Elige una materia</div>
-				        <div class="dropdown-items"></div>
-				    </div>
-				</div>
+    <div class="container">
+        <!-- Menú lateral -->
+        <aside class="sidebar">
+            <h4 id="welcome-text">Bienvenido Usuario</h4>
+            <div id="usuario-data" data-usuario="${usuario}"></div>
+            <h2>Realiza tus test aquí</h2>
 
-		    <!-- Selección de Tests -->
-		    <div class="menu-item">
-		        <h3>Selecciona un test</h3>
+            <!-- Selección de Materias -->
+            <select id="materias" class="hidden-select"></select>
+            <div class="menu-item">
+                <h3>Selecciona una materia</h3>
+                <select id="materias" class="hidden-select"></select>
+                <div id="materiasDropdown" class="custom-dropdown">
+                    <div class="dropdown-selected">Elige una materia</div>
+                    <div class="dropdown-items"></div>
+                </div>
+            </div>
 
-		        <!-- Select oculto -->
-		        <select id="tests" class="hidden-select"></select>
+            <!-- Selección de Tests -->
+            <div class="menu-item">
+                <h3>Selecciona un test</h3>
+                <select id="tests" class="hidden-select"></select>
+                <div id="testsDropdown" class="custom-dropdown">
+                    <div class="dropdown-selected">Elige un test</div>
+                    <div class="dropdown-items"></div>
+                </div>
 
-		        <!-- Dropdown personalizado -->
-		        <div id="testsDropdown" class="custom-dropdown">
-		            <div class="dropdown-selected">Elige un test</div>
-		            <div class="dropdown-items"></div>
-		        </div>
-		    </div>
-		</aside>
+                <!-- Botón de Asistente de Estudio -->
+       
+                <button id="openAssistantBtn" class="btn-assistant">
+                    <i class="fas fa-robot"></i> Asistente de Estudio
+                </button>
+            </div>
+        </aside>
 
-		<!-- Contenido principal -->
-		<main class="main-content-home">
-			<div id="ultima-nota"></div> <!-- Aquí se muestra la última nota obtenida -->
-			<div id="nota-obtenida"></div>
-			<button id="resetTest" style="display: none;" >Intentar de nuevo</button>
-  
-			<div id="questions-container" class="questions-container">
-				<p class="capaTest">Elige una materia y un test en el menú lateral para empezar</p>
-			</div>
-		</main>
-	</div>
+        <!-- Contenido principal -->
+        <main class="main-content-home">
+            <div id="ultima-nota"></div>
+            <div id="nota-obtenida"></div>
+            <button id="resetTest" style="display: none;">Intentar de nuevo</button>
 
-	<!-- Asegúrate de cargar jQuery antes de tu script.js -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="js/script.js"></script>
-	<script>
-		    window.csrf = {
-		        token: '[[${csrfToken.token}]]',
-		        headerName: '[[${csrfToken.headerName}]]'
-		    };
-		    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
-		</script>
+            <div id="questions-container" class="questions-container">
+                <p class="capaTest">Elige una materia y un test en el menú lateral para empezar</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- jQuery y tu script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/script.js"></script>
+
+    <!-- Inyecta token CSRF -->
+    <script>
+        window.csrf = {
+            token: '[[${csrfToken.token}]]',
+            headerName: '[[${csrfToken.headerName}]]'
+        };
+        console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+    </script>
+
+    <!-- Modal del Asistente de Estudio -->
+    <div id="assistantModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Asistente Educapro</h2>
+            <div id="chat-box"></div>
+            <input type="text" id="user-input" placeholder="Escribe tu pregunta...">
+            <button id="sendMessageBtn">Enviar</button>
+        </div>
+    </div>
 </body>
-
 </html>
