@@ -31,6 +31,10 @@ public class OpenAIService {
      */
     @Autowired
     public OpenAIService(MySqlConnection mySqlConnection) {
+		/*
+		 * this.apiKey = mySqlConnection.getOpenAiApiKey(); this.apiUrl =
+		 * mySqlConnection.getOpenAiApiUrl();
+		 */
         this.apiKey = mySqlConnection.getOpenAiApiKey();
         this.apiUrl = mySqlConnection.getOpenAiApiUrl();
         this.restTemplate = new RestTemplate();
@@ -91,7 +95,7 @@ public class OpenAIService {
       
         // Cuerpo de la petición
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-3.5-turbo");
+        requestBody.put("model", "gpt-4-turbo");
         requestBody.put("messages", List.of(
             Map.of("role", "system", "content",
                    "Eres un tutor académico que ayuda a los estudiantes basándose en sus notas previas."),
