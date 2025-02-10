@@ -132,11 +132,16 @@ public class UserDao {
 
 	        try {
 	            // Encriptar la nueva contraseña antes de almacenarla
-	            String hashedPassword = passwordEncoder.encode(nuevaPassword);
-
+	            String hashedPassword =  passwordEncoder.encode(nuevaPassword);
+	            System.out.println("Contraseña encriptada: " + hashedPassword);
 	            // Query para actualizar la contraseña
-	            String sql = "UPDATE usuarios SET pass = ? WHERE id_usuario = ?";
+	            String sql = "UPDATE usuario SET pass = ? WHERE id_usuario = ?";
 	            int filasAfectadas = connection.executeUpdateOrDelete(sql, hashedPassword, idUsuario);
+	            if (filasAfectadas > 0) {
+	                System.out.println("Contraseña cambiada con éxito para el usuario ID: " + idUsuario);
+	            } else {
+	                System.out.println("Error: No se actualizó ninguna fila en la BD.");
+	            }
 
 	            return filasAfectadas > 0; // Retorna true si se actualizó al menos una fila
 	        } catch (Exception e) {

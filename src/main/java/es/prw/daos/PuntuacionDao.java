@@ -51,6 +51,47 @@ public class PuntuacionDao {
         return Optional.empty();
     }
 
+    public List<Puntuacion> getPuntuacionesPorMateria(int idUsuario, int idMateria, HttpSession session) {
+        String sessionKey = "puntuaciones_usuario_materia_" + idUsuario + "_" + idMateria;
+
+        // Intentar recuperar desde la sesión para mejorar rendimiento
+        List<Puntuacion> puntuaciones = (List<Puntuacion>) session.getAttribute(sessionKey);
+        if (puntuaciones != null) {
+            return puntuaciones;
+        }
+
+        // Si no está en sesión, consultar en BD
+        puntuaciones = new ArrayList<>();
+        String sql = """
+            SELECT p.* FROM puntuacion p
+            JOIN test t ON p.id_test = t.id_test
+            WHERE p.id_usuario = ? AND t.id_materia = ?
+            ORDER BY p.fecha DESC
+        """;
+
+        objMySqlConnection.open();
+        if (!objMySqlConnection.isError()) {
+            try {
+                ResultSet result = objMySqlConnection.executeSelect(sql, idUsuario, idMateria);
+                while (result != null && result.next()) {
+                    Puntuacion puntuacion = new Puntuacion();
+                    puntuacion.setIdPuntuacion(result.getInt("id_puntuacion"));
+                    puntuacion.setIdUsuario(result.getInt("id_usuario"));
+                    puntuacion.setIdTest(result.getInt("id_test"));
+                    puntuacion.setNotaConseguida(result.getDouble("nota_obtenida"));
+                    puntuacion.setFecha(result.getTimestamp("fecha"));
+                    puntuaciones.add(puntuacion);
+                }
+                session.setAttribute(sessionKey, puntuaciones);
+                result.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                objMySqlConnection.close();
+            }
+        }
+        return puntuaciones;
+    }
 
 
 

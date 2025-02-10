@@ -53,7 +53,7 @@ public class profileController {
         return ResponseEntity.ok(perfil);
     }
 
-    @PostMapping("/cambiarPassword")
+    @PostMapping("/api/cambiarPassword")
     public ResponseEntity<String> cambiarPassword(@SessionAttribute(name = "usuario", required = false) Usuario usuario,
                                                   @RequestBody Map<String, String> request) {
         if (usuario == null) {
@@ -61,6 +61,7 @@ public class profileController {
         }
 
         String nuevaPassword = request.get("nuevaPassword");
+        System.out.println(nuevaPassword);
 
         if (nuevaPassword == null || nuevaPassword.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("La nueva contraseña no puede estar vacía.");

@@ -4,10 +4,14 @@ body {
     background: linear-gradient(to bottom, #f0f0f0, #d9d9d9);
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* ====== Contenedor del perfil ====== */
 .container.perfil-container {
+    width: 90%;
     max-width: 900px;
     margin: 30px auto;
     padding: 20px;
@@ -36,10 +40,11 @@ h2 {
 .btn {
     background: #2b6cb0;
     color: white;
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background 0.3s ease-in-out;
 }
 
 .btn:hover {
@@ -87,15 +92,15 @@ form {
     height: auto;
 }
 
+/* Contenedor general de gráficos */
 #graficos-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 20px;
 }
 
-
-
-
+/* Cada sección de materia */
 .materia-wrapper {
     width: 100%;
     margin-bottom: 20px;
@@ -107,9 +112,97 @@ form {
     padding-bottom: 5px;
 }
 
+/* Ajuste responsive para los gráficos */
 .grafico-wrapper {
     width: 48%; 
-    margin-bottom: 20px; 
+    min-width: 300px;
+    margin-bottom: 20px;
     display: inline-block;
     vertical-align: top;
+}
+
+@media (max-width: 768px) {
+    .grafico-wrapper {
+        width: 100%;
+    }
+}
+
+/* ====== Estilos del Modal ====== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenido del modal */
+.modal-content {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 75%;
+    max-width: 900px;
+    height: 75vh;
+    max-height: 75vh;
+    text-align: center;
+    position: relative;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+/* Mostrar el modal cuando se hace clic */
+.modal.show {
+    display: flex;
+}
+
+.modal.show .modal-content {
+    display: block;
+    transform: scale(1);
+}
+
+/* Botón de cierre */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+}
+
+.close:hover {
+    color: red;
+}
+
+/* Asegurar que el gráfico del modal se vea bien */
+.modal-grafico-container {
+    width: 100%;
+    height: calc(100% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#modalGraficoCanvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Responsividad del modal en pantallas pequeñas */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        height: 80vh;
+        max-width: 100%;
+    }
 }

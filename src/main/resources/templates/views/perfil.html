@@ -6,6 +6,7 @@
     <title>Perfil de Usuario</title>
     <link rel="stylesheet" href="/styles/profileStyles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería para gráficas -->
+	
 </head>
 <body>
 
@@ -18,6 +19,16 @@
         </div>
     </div>
 </header>
+<!-- Modal para gráficos ampliados -->
+<div id="modalGrafico" class="modal">
+    <div class="modal-content">
+        <span id="modalClose" class="close">&times;</span>
+        <h2 id="modalTitulo"></h2>
+        <div id="modalGraficoContainer" class="modal-grafico-container">
+            <canvas id="modalGraficoCanvas"></canvas>
+        </div>
+    </div>
+</div>
 
 <div class="container perfil-container">
     <h2>Información Personal</h2>
@@ -26,7 +37,7 @@
     <p><strong>Rol:</strong> <span id="perfil-rol"></span></p>
 
     <h2>Cambiar Contraseña</h2>
-    <form id="changePasswordForm">
+    <form id="changePasswordForm" method="post">
         <label>Nueva Contraseña:</label>
         <input type="password" id="newPassword">
         <label>Confirmar Contraseña:</label>
@@ -45,6 +56,13 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/js/perfil.js"></script> 
+<script>
+	    window.csrf = {
+	        token: '[[${csrfToken.token}]]',
+	        headerName: '[[${csrfToken.headerName}]]'
+	    };
+	    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+	</script>
 
 </body>
 </html>
