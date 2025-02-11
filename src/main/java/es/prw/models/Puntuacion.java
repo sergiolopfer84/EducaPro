@@ -1,66 +1,77 @@
 package es.prw.models;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table(name = "Puntuacion")
 public class Puntuacion {
-	private Integer idPuntuacion;
-	private double notaConseguida;
-	private Integer idUsuario;
-	private Integer idTest;
-	private Date fecha;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idPuntuacion;
 
-	public Puntuacion() {
-		super();
+    @Column(nullable = false)
+    private double notaConseguida;
 
-	}
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
 
-	public Puntuacion(Integer idPuntuacion, double notaConseguida, Integer idUsuario, Integer idTest, Date fecha) {
-		super();
-		this.idPuntuacion = idPuntuacion;
-		this.notaConseguida = notaConseguida;
-		this.idUsuario = idUsuario;
-		this.idTest = idTest;
-		this.fecha = fecha;
-	}
+    @ManyToOne
+    @JoinColumn(name = "id_test", nullable = false)
+    private Test test;
 
-	public Integer getIdPuntuacion() {
-		return idPuntuacion;
-	}
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
 
-	public void setIdPuntuacion(Integer idPuntuacion) {
-		this.idPuntuacion = idPuntuacion;
-	}
+    public Puntuacion() {}
 
-	public double getNotaConseguida() {
-		return notaConseguida;
-	}
+    public Puntuacion(Integer idPuntuacion, double notaConseguida, Usuario usuario, Test test, Date fecha) {
+        this.idPuntuacion = idPuntuacion;
+        this.notaConseguida = notaConseguida;
+        this.usuario = usuario;
+        this.test = test;
+        this.fecha = fecha;
+    }
 
-	public void setNotaConseguida(double notaTotal) {
-		this.notaConseguida = notaTotal;
-	}
+    public Integer getIdPuntuacion() {
+        return idPuntuacion;
+    }
 
-	public Integer getIdUsuario() {
-		return idUsuario;
-	}
+    public void setIdPuntuacion(Integer idPuntuacion) {
+        this.idPuntuacion = idPuntuacion;
+    }
 
-	public void setIdUsuario(Integer idUsuario) {
-		this.idUsuario = idUsuario;
-	}
+    public double getNotaConseguida() {
+        return notaConseguida;
+    }
 
-	public Integer getIdTest() {
-		return idTest;
-	}
+    public void setNotaConseguida(double notaConseguida) {
+        this.notaConseguida = notaConseguida;
+    }
 
-	public void setIdTest(Integer idTest) {
-		this.idTest = idTest;
-	}
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-	public Date getFecha() {
-		return fecha;
-	}
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
+    public Test getTest() {
+        return test;
+    }
 
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
 }

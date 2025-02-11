@@ -40,7 +40,7 @@ $(document).ready(function() {
 	    }
 
 	    $.ajax({
-	        url: '/api/cambiarPassword',
+	        url: '/usuarios/cambiar-password',
 	        type: 'POST',
 	        contentType: 'application/json',
 	        data: JSON.stringify({ nuevaPassword: newPassword }),
@@ -63,7 +63,7 @@ $(document).ready(function() {
 	// ======================= Cargar Progreso de Materias =======================
 	function cargarProgresoMaterias() {
 		$.ajax({
-			url: '/api/progresoMaterias',
+			url: '/materias/progreso',
 			type: 'GET',
 			success: function(data) {
 				let html = '';
@@ -96,7 +96,7 @@ $(document).ready(function() {
 	
 	function cargarGraficoNotas() {
 	    $.ajax({
-	        url: '/api/progresoTests?idUsuario=1', 
+	        url: '/puntuaciones/progresoTests', 
 	        type: 'GET',
 	        success: function (data) {
 	            $('#graficos-container').html(''); // Limpiar gráficos anteriores

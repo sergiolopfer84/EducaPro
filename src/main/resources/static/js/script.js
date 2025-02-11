@@ -23,10 +23,8 @@ $(document).ready(function() {
 
             const $item = $('<div class="dropdown-item"></div>')
                 .attr('data-value', val)
-                .text(text);
-
-            // Evento click en cada item
-            $item.on('click', function(e) {
+                .text(text)
+				.on('click', function(e) {
                 e.stopPropagation();
                 // Setear el <select> real y disparar 'change'
                 $select.val(val).trigger('change');
@@ -82,7 +80,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '/login',
+            url: '/auth/login',
             type: 'POST',
             data: { email: email, password: password },
             beforeSend: function(xhr) {
@@ -110,7 +108,7 @@ $(document).ready(function() {
     $('#logoutBtn').click(function(e) {
         e.preventDefault();
         $.ajax({
-            url: '/logout',
+            url: '/auth/logout',
             type: 'POST',
             beforeSend: function(xhr) {
                 if (window.csrf.headerName && window.csrf.token) {
@@ -161,7 +159,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '/register',
+            url: '/auth/register',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ nombre: name, email: email, pass: password }),
@@ -205,13 +203,13 @@ $(document).ready(function() {
     });
 
     // ================== BIENVENIDA ==================
-    $.get("/api/current-user", function(usuario) {
-        $("#welcome-text").text("Bienvenido/a " + usuario.nombre);
-        if (usuario && usuario.nombre) {
-            $("#loginTrigger").hide();
-            $("#logoutBtn").show();
-        }
-    }).fail(function() {
+	$.get('/usuarios/api/perfil', function(usuario) {
+	       if (usuario && usuario.nombre) {
+	           $('#welcome-text').text("Bienvenido/a " + usuario.nombre);
+	           $('#loginTrigger').hide();
+	           $('#logoutBtn').show();
+	       }
+	   }).fail(function() {
         console.error("Error al obtener datos del usuario.");
     });
 
@@ -277,52 +275,29 @@ $(document).ready(function() {
         });
 
         // ===== CARGAR PREGUNTAS al cambiar test =====
-		$('#tests').on('change', function() {
-		    const idTest = $(this).val();
-		    if (!idTest) {
-		        $('#questions-container').html('');
-		        $('#ultima-nota').hide(); // Ocultar si no hay test seleccionado
-		        $('#nota-obtenida').hide(); // Ocultar nota obtenida también
-		        return;
-		    }
+		
+			('#tests').on('change', function() {
+			            const idTest = $(this).val();
+			            if (!idTest) return $('#questions-container').html('');
 
-		    $('#questions-container').html('');
-		    $('#nota-obtenida').html('').hide();
-		    $('#ultima-nota').html('').hide();
-
-		    $.ajax({
-		        url: '/preguntas',
-		        type: 'GET',
-		        data: { idTest: idTest },
-		        success: function(data) {
-		            let questionsHTML = '';
-		            data.forEach(pregunta => {
-		                questionsHTML += `
-		                    <div class="question">
-		                        <h3>${pregunta.pregunta}</h3>
-		                        <div class="options">`;
-
-		                pregunta.respuestas.forEach(respuesta => {
-		                    questionsHTML += `
-		                        <div class="respuesta">
-		                            <label>
-		                                <input type="radio" name="pregunta${pregunta.idPregunta}" value="${respuesta.idRespuesta}">
-		                                ${respuesta.respuesta}
-		                            </label>
-		                            <div class="explicacion" style="display: none;">${respuesta.explicacion}</div>
-		                        </div>`;
-		                });
-
-		                questionsHTML += `</div></div>`;
-		            });
-		            questionsHTML += `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
-		            $('#questions-container').html(questionsHTML);
-		        },
-		        error: function(xhr) {
-		            console.error('Error al cargar las preguntas:', xhr);
-		        }
-		    });
-
+			            $.get(`/api/preguntas/test/${idTest}`, function(data) {
+			                let questionsHTML = data.map(p => `
+			                    <div class="question">
+			                        <h3>${p.pregunta}</h3>
+			                        <div class="options">${p.respuestas.map(r => `
+			                            <div class="respuesta">
+			                                <label>
+			                                    <input type="radio" name="pregunta${p.idPregunta}" value="${r.idRespuesta}">
+			                                    ${r.respuesta}
+			                                </label>
+											<div class="explicacion" style="display: none;">${respuesta.explicacion}</div>
+			                            </div>
+			                        `).join('')}</div>
+			                    </div>
+			                `).join('') + `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
+			                $('#questions-container').html(questionsHTML);
+			            });
+			      
 		    // CARGAR ÚLTIMA PUNTUACIÓN Y MOSTRAR #ultima-nota SOLO SI TIENE CONTENIDO
 		    $.ajax({
 		        url: '/ultimaPuntuacion',
@@ -471,7 +446,7 @@ $(document).ready(function() {
 		        userInput.value = "";
 
 		        // Petición a la API
-		        fetch('/api/chat', {
+		        fetch('/api/asistente', {
 		            method: 'POST',
 		            headers: { 'Content-Type': 'application/json' },
 		            body: JSON.stringify(mensaje)

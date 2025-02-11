@@ -1,35 +1,49 @@
 package es.prw.models;
 
+import jakarta.persistence.*;
+import java.util.List;
 
+@Entity
+@Table(name = "Materia")
 public class Materia {
-	private Integer idMateria;
-	private String materia;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idMateria;
 
-	public Materia() {
-		super();
+    @Column(nullable = false, unique = true)
+    private String materia;
 
-	}
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Test> tests;
 
-	public Materia(Integer idMateria, String materia) {
-		super();
-		this.idMateria = idMateria;
-		this.materia = materia;
-	}
+    public Materia() {}
 
-	public Integer getIdMateria() {
-		return idMateria;
-	}
+    public Materia(Integer idMateria, String materia) {
+        this.idMateria = idMateria;
+        this.materia = materia;
+    }
 
-	public void setIdMateria(Integer idMateria) {
-		this.idMateria = idMateria;
-	}
+    public Integer getIdMateria() {
+        return idMateria;
+    }
 
-	public String getMateria() {
-		return materia;
-	}
+    public void setIdMateria(Integer idMateria) {
+        this.idMateria = idMateria;
+    }
 
-	public void setMateria(String materia) {
-		this.materia = materia;
-	}
+    public String getMateria() {
+        return materia;
+    }
 
+    public void setMateria(String materia) {
+        this.materia = materia;
+    }
+
+    public List<Test> getTests() {
+        return tests;
+    }
+
+    public void setTests(List<Test> tests) {
+        this.tests = tests;
+    }
 }

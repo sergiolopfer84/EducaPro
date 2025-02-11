@@ -1,8 +1,13 @@
 package es.prw.services;
 
-import es.prw.connection.MySqlConnection;
 import es.prw.dtos.MateriaProgresoDTO;
 import es.prw.dtos.NotaHistorialDTO;
+import es.prw.models.Materia;
+import es.prw.models.Test;
+import es.prw.repositories.PuntuacionRepository;
+import es.prw.repositories.TestRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
@@ -12,85 +17,50 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 @Service
 public class ProgresoService {
-    
-    public List<MateriaProgresoDTO> obtenerProgresoMaterias(int idUsuario) {
-        List<MateriaProgresoDTO> progresoMaterias = new ArrayList<>();
-        MySqlConnection connection = new MySqlConnection();
 
-        try {
-            connection.open();
-            String sql = """
-                     SELECT  m.nombre_materia, COUNT(DISTINCT t.id_test) AS total_tests_materia, 
-            			COUNT(DISTINCT CASE WHEN p.nota_obtenida >= 5 THEN t.id_test END) AS tests_aprobados
-            			FROM materia m LEFT JOIN test t ON m.id_materia = t.id_materia LEFT JOIN (
-            			SELECT p1.id_test, p1.nota_obtenida FROM puntuacion p1 JOIN (
-            				SELECT id_test, MAX(fecha) AS ultima_fecha FROM puntuacion
-            				WHERE id_usuario = ? GROUP BY id_test) p2 ON p1.id_test = p2.id_test 
-            				AND p1.fecha = p2.ultima_fecha WHERE p1.id_usuario = ? ) p 
-            				ON t.id_test = p.id_test GROUP BY m.nombre_materia
-                    """;
-            
-            ResultSet rs = connection.executeSelect(sql, idUsuario, idUsuario);
-            
-            
-            while (rs.next()) {
-                String materia = rs.getString("nombre_materia");  // <--- Corrección aquí
-                int totalTests = rs.getInt("total_tests_materia");
-                int aprobados = rs.getInt("tests_aprobados");
+    @Autowired
+    private PuntuacionRepository puntuacionRepository;
 
+    @Autowired
+    private TestRepository testRepository;
 
-                progresoMaterias.add(new MateriaProgresoDTO(materia, totalTests, aprobados));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connection.close();
-        }
+    public List<MateriaProgresoDTO> obtenerProgresoMaterias(Integer idUsuario) {
+        List<Materia> materias = testRepository.findAll().stream()
+                .map(Test::getMateria)
+                .distinct()
+                .toList();
 
-        return progresoMaterias;
+        return materias.stream().map(materia -> {
+            int totalTests = testRepository.countByMateria(materia);
+            int testsAprobados = puntuacionRepository.countAprobadosByMateria(materia.getIdMateria());
+            return new MateriaProgresoDTO(materia.getMateria(), totalTests, testsAprobados);
+        }).toList();
     }
-
-    public Map<String, Map<String, List<Double>>> obtenerProgresoTests(int idUsuario) {
+    public Map<String, Map<String, List<Double>>> obtenerProgresoTests(Integer idUsuario) {
         Map<String, Map<String, List<Double>>> historialNotas = new HashMap<>();
-        MySqlConnection connection = new MySqlConnection();
 
-        try {
-            connection.open();
-            String sql = """
-                    SELECT m.nombre_materia, t.nombre_test, p.nota_obtenida
-                    FROM puntuacion p
-                    JOIN test t ON p.id_test = t.id_test
-                    JOIN materia m ON t.id_materia = m.id_materia
-                    WHERE p.id_usuario = ?
-                    ORDER BY m.nombre_materia ASC, t.nombre_test ASC, p.fecha ASC
-                    """;
+        // Consultar las notas desde la base de datos
+        List<Object[]> resultados = puntuacionRepository.obtenerHistorialNotasPorUsuario(idUsuario);
 
-            ResultSet rs = connection.executeSelect(sql, idUsuario);
-            while (rs.next()) {
-                String materiaNombre = rs.getString("nombre_materia");
-                String testNombre = rs.getString("nombre_test");
-                double nota = rs.getDouble("nota_obtenida");
+        for (Object[] fila : resultados) {
+            String materiaNombre = (String) fila[0];
+            String testNombre = (String) fila[1];
+            Double nota = (Double) fila[2];
 
-                // Asegurar que la materia existe en el mapa
-                historialNotas.putIfAbsent(materiaNombre, new HashMap<>());
+            // Asegurar que la materia existe en el mapa
+            historialNotas.putIfAbsent(materiaNombre, new HashMap<>());
 
-                // Asegurar que el test existe dentro de la materia
-                historialNotas.get(materiaNombre).putIfAbsent(testNombre, new ArrayList<>());
+            // Asegurar que el test existe dentro de la materia
+            historialNotas.get(materiaNombre).putIfAbsent(testNombre, new ArrayList<>());
 
-                // Agregar la nota al test correspondiente
-                historialNotas.get(materiaNombre).get(testNombre).add(nota);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connection.close();
+            // Agregar la nota al test correspondiente
+            historialNotas.get(materiaNombre).get(testNombre).add(nota);
         }
 
         return historialNotas;
     }
 
-
 }
+
