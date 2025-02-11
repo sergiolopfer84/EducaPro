@@ -300,7 +300,7 @@ $(document).ready(function() {
 			      
 		    // CARGAR ÚLTIMA PUNTUACIÓN Y MOSTRAR #ultima-nota SOLO SI TIENE CONTENIDO
 		    $.ajax({
-		        url: '/ultimaPuntuacion',
+		        url: '/puntuaciones/ultimaPuntuacion',
 		        type: 'GET',
 		        data: { idTest: idTest },
 		        success: function(response) {
@@ -344,7 +344,7 @@ $(document).ready(function() {
 
 		            // Obtener la última nota antes de esta prueba
 		            $.ajax({
-		                url: '/ultimaPuntuacion',
+		                url: '/puntuaciones/ultimaPuntuacion',
 		                type: 'GET',
 		                data: { idTest: idTest },
 		                success: function(resp) {
@@ -362,7 +362,7 @@ $(document).ready(function() {
 
 		            // Respuestas correctas
 		            $.ajax({
-		                url: '/obtenerRespuestasSesion',
+		                url: '/respuestas/obtenerRespuestasSesion',
 		                type: 'GET',
 		                data: { idTest: idTest },
 		                success: function(data) {

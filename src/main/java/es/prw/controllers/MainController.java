@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 
-    @GetMapping("/perfil")
+    @GetMapping({"/perfil"})
     public String perfilPage(CsrfToken csrfToken, Model model) {
         model.addAttribute("csrfToken", csrfToken);
         return "views/perfil";
@@ -19,6 +19,12 @@ public class MainController {
         model.addAttribute("csrfToken", csrfToken);
         return "views/home";
     }
+    @GetMapping({"/index", "/"})
+    public String indexPagge(CsrfToken csrfToken, Model model) {
+        model.addAttribute("csrfToken", csrfToken);
+        return "views/index";
+    }
+
     
     
 }
