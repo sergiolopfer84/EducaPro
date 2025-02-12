@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header th:fragment="header">
+    <div class="top-bar">
+        <!-- Logo e imágenes -->
+        <div class="logo-wrapper">
+            <a href="/" class="logo-container">
+                <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
+            </a>
+            <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
+            <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+            <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
+        </div>
+
+        <!-- Botones de auth -->
+        <div class="auth-buttons">
+			<button class="btn2" th:onclick="|window.location.href='@{/index}'|">
+			    <i class="fas fa-home"></i>
+			</button>
+			
+            <div th:if="${usuario != null}" id="logoutTrigger">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" style="background: none; border: none; cursor: pointer;">
+                        <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+</html>

@@ -4,21 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario</title>
-    <link rel="stylesheet" href="/styles/profileStyles.css">
+	<link rel="stylesheet" th:href="@{/styles.css}">
+    <link rel="stylesheet" th:href="@{/styles/profileStyles.css}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería para gráficas -->
 	
 </head>
 <body>
 
-<header>
-    <div class="top-bar">
-        <p>EducaPro</p>
-        <h4 id="welcome-text">Perfil de Usuario</h4>
-        <div class="auth-buttons">
-            <a href="/home" class="btn">Volver al Inicio</a>
-        </div>
-    </div>
-</header>
+	<div th:replace="fragments/header :: header"></div>
+	
 <!-- Modal para gráficos ampliados -->
 <div id="modalGrafico" class="modal">
     <div class="modal-content">

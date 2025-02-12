@@ -1,1155 +1,1110 @@
+/* ======================================
+   1. RESETEO BÁSICO
+====================================== */
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
 }
 
+/* ======================================
+   2. ESTILOS GLOBALES
+====================================== */
 body {
-	font-family: 'Roboto', sans-serif;
-	display: flex;
-	flex-direction: column;
-	/* Se unifican 'height: 100vh;' y 'min-height: 100vh;':
-       usar min-height es más flexible para que el contenido pueda crecer */
-	min-height: 100vh;
-	/* Mezclamos el color base #f4f4f9 con el degradado hacia #e6e6e6
-       y mantenemos color: #333 del segundo CSS */
-	background: linear-gradient(to bottom, #f4f4f9, #e6e6e6);
-	color: #333;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  /* Permite que el contenido crezca más allá del alto si es necesario */
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f4f4f9, #e6e6e6);
+  color: #333;
+  display: flex;
 }
 
-/* --------------------------------
-   Header
---------------------------------- */
+/* ======================================
+   3. ENCABEZADO (HEADER) Y TOP-BAR
+====================================== */
 header {
-    background: linear-gradient(to right, #1e3148, #3b82f6);
-	display: flex;
-	flex-direction: column;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 2);
-	border-radius: 10px;
+  background: linear-gradient(to right, #1e3148, #3b82f6);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.625rem; /* 10px */
 }
 
-
-/* --------------------------------
-   logo EP
---------------------------------- */
-.logo-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 300px; /* Espacio entre las dos imágenes */
-
-}
-
-.logo {
-	margin-left: 20px;
-    max-height: 120px; /* Ajusta el tamaño del logo */
-    width: auto;
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-
-.header-img .tuacademia-img {
-    max-height: 80px; /* Ajusta el tamaño de la segunda imagen */
-    width: auto;
-	margin-left: 20%;
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
-.chavalada-img {
-	max-height: 160px; /* Ajusta el tamaño de la segunda imagen */
-	margin-top: 0px;
-
-	   width: auto;
-	   transition: transform 0.3s ease, filter 0.3s ease;
-	   box-shadow: 10px 10px 25px rgb(0, 0, 0);
-	
-	}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.logo {
-    max-height: 80px; /* Ajusta el tamaño de la imagen */
-    width: auto;
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-
-
-/* --------------------------------
-   Barra Superior
---------------------------------- */
+/* Barra superior (logo, tagline, auth-buttons) */
 .top-bar {
-	display: flex;
-	justify-content: space-between;
-	/* Alinea a los extremos */
-	align-items: center;
-	background:  #1e3148;
-	color: #050505;
-	font-weight: bold;
-	font-size: 2rem;
-	border-radius: 5px;
-	padding-right: 20px;
-	padding-left: 20px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* En lugar de stretch, para centrar verticalmente */
+  /* Elimina height fija: se adaptará a su contenido */
+  flex-wrap: wrap; 
+  background: #1e3148;
+  color: #050505;
+  font-weight: bold;
+  font-size: 2rem;
+  border-radius: 5px;
+  padding: 1rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
 }
 
-/* --------------------------------
-   Login
---------------------------------- */
+/* ======================================
+   4. LOGOS E IMÁGENES DEL HEADER
+====================================== */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%; /* Ocupará todo el ancho disponible */
+}
 
+
+/* 
+   - Si prefieres que las imágenes aparezcan desplazadas a la derecha en escritorio,
+     podrías hacer margin-left: 10% (en lugar de 30%),
+     pero lo ideal es 'justify-content: center' en su contenedor si quieres centrar.
+   - Aquí se deja un offset suave en escritorio. 
+*/
+.logo,
+.header-img,
+.chavalada-img,
+.tuacademia-img {
+  /* Para escritorio grande */
+  margin-left: 10%;
+  height: auto;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Ajustes específicos para el .logo */
+.logo {
+  /* 20px → 1.25rem */
+  margin-left: 1.25rem;
+  /* 120px → 7.5rem */
+  max-height: 7.5rem; 
+  width: auto;
+}
+
+/* ======================================
+   5. BOTONES DE AUTENTICACIÓN (LOGIN/LOGOUT)
+====================================== */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Si quieres centrarlos horizontalmente */
+  gap: 0.625rem;
+  margin-top: auto; /* Empuja los botones al fondo */
+}
+/* Icono del login */
 .login-icon {
-    max-width: 90px;
-	 height: auto;
-	    transition: transform 0.2s ease, filter 0.2s ease;
-	}
+  max-width: 8.625rem; /* ~90px */
+  height: auto;
+  margin-top: 70%;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.login-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+  cursor: pointer;
+}
 
-	.login-icon:hover {
-	    transform: scale(1.1); /* Aumenta un 10% el tamaño */
-	    filter: brightness(1.2); /* Aumenta el brillo */
-	    cursor: pointer;
-	}
+/* Botón "Ir a Tests" */
+.btn-test {
+  background-color: rgb(220, 147, 10) !important;
+  color: white !important;
+  max-width: 10.75rem !important; /* 140px → 8.75rem */
+  font-weight: bold !important;
+  padding: 0.625rem 0.9375rem;   /* 10px 15px */
+  border-radius: 0.3125rem;      /* 5px */
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn-test:hover {
+  background-color: #f5b029 !important;
+  transform: scale(1.15);
+}
 
+/* Botón Logout (icono) */
+.logout-icon {
+  max-width: 4.5rem; /* 40px */
+  height: auto;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.logout-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+  cursor: pointer;
+}
+
+/* Botón "Inicio" o icono Home */
+#Inicio {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0.3125rem; /* ~5px */
+  transition: color 0.3s ease;
+}
+#Inicio:hover {
+  color: #ffcc00;
+}
+
+/* "Cerrar Sesión" */
+#logoutBtn {
+  background: #dc3545;
+  color: white;
+  padding: 0.5rem 0.9375rem; /* 8px 15px */
+  border: none;
+  border-radius: 0.3125rem; /* 5px */
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+#logoutBtn:hover {
+  background: #c82333;
+}
+
+.btn btn-profile{
+	background-color: yellow;
+}
+/* ======================================
+   6. LOGIN (FORMULARIOS Y MODAL)
+====================================== */
 .login-container {
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	padding: 10px 20px;
-	gap: 10px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0.625rem 1.25rem; /* 10px 20px */
+  gap: 0.625rem;            /* 10px */
 }
-
 .login-container input {
-	padding: 8px 10px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	font-size: 1rem;
-	outline: none;
+  padding: 0.5rem 0.625rem; /* 8px 10px */
+  border: 0.0625rem solid #ddd; 
+  border-radius: 0.3125rem; 
+  font-size: 1rem;
+  outline: none;
 }
-
 .login-container input:focus {
-	border-color: #004a99;
+  border-color: #004a99;
 }
-
 .login-container .btn {
-	background: #004a99;
-	color: white;
-	padding: 8px 15px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	font-size: 1rem;
-	transition: background-color 0.3s;
+  background: #004a99;
+  color: white;
+  padding: 0.5rem 0.9375rem; /* 8px 15px */
+  border: none;
+  border-radius: 0.3125rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
 }
-
 .login-container .btn:hover {
-	background: #002f66;
+  background: #002f66;
 }
-/* ============================
-   🚀 Estilo Moderno para el Modal de Login 
-   ============================ */
 
-   /* Posición inicial del modal (fuera de la pantalla arriba a la derecha) */
-   .modal.fade .modal-dialog {
-       position: fixed;
-       top: 10%;
-       right: -50%; /* Sale desde fuera de la pantalla a la derecha */
-       transform: translate(50%, -50%);
-       opacity: 0;
-       transition: transform 2s ease-out, opacity 0.4s ease-out;
-   }
-
-   /* Cuando el modal se muestra, se desplaza hacia el centro */
-   .modal.show .modal-dialog {
-       top: 20%;
-       right: 1000px;
-       transform: translate(50%, -50%);
-       opacity: 1;
+/* Modal (animación) */
+.modal.fade .modal-dialog {
+  position: fixed;
+  top: 10%;
+  right: -50%;
+  transform: translate(50%, -50%);
+  opacity: 0;
+  transition: transform 2s ease-out, opacity 0.4s ease-out;
 }
-/* Cuerpo del Modal */
+.modal.show .modal-dialog {
+  top: 20%;
+  right: 62.5rem; /* ~1000px. Ajusta si quieres otra posición */
+  transform: translate(50%, -50%);
+  opacity: 1;
+}
 .modal-content {
-    background: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px); /* Efecto desenfoque */
-    border: none;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border: none;
 }
 
-/* Cabecera del Modal */
 .modal-header {
-    background: #1e3148;
-    color: #fff;
-    padding: 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
+  background: #1e3148;
+  color: #fff;
+  padding: 0.9375rem; /* 15px */
+  font-size: 1.2rem;
+  font-weight: bold;
 }
-
-/* Botón de cierre */
 .modal-header .close {
-    color: white;
-    font-size: 1.5rem;
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
+  color: white;
+  font-size: 1.5rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
 }
-
 .modal-header .close:hover {
-    opacity: 1;
+  opacity: 1;
 }
-
-/* Cuerpo del Modal */
 .modal-body {
-    padding: 20px;
+  padding: 1.25rem; /* 20px */
 }
-
-/* Formulario de Login */
-#loginForm, #registerForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+#loginForm,
+#registerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9375rem; /* 15px */
 }
-
-/* Inputs del formulario */
 .modal-body input {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    transition: border 0.3s ease-in-out;
+  padding: 0.75rem; /* 12px */
+  border: 0.0625rem solid #ddd;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease-in-out;
 }
-
-/* Efecto en los inputs al hacer foco */
 .modal-body input:focus {
-    border-color: #1e90ff;
-    box-shadow: 0 0 5px rgba(30, 144, 255, 0.5);
+  border-color: #1e90ff;
+  box-shadow: 0 0 0.3125rem rgba(30, 144, 255, 0.5);
 }
-
-/* Botón de Login */
-#loginBtn, #registerBtn {
-    background: linear-gradient(to right, #1e90ff, #004a99);
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+#loginBtn,
+#registerBtn {
+  background: linear-gradient(to right, #1e90ff, #004a99);
+  color: white;
+  padding: 0.75rem; /* 12px */
+  border: none;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
-
-/* Hover y efecto de click */
-#loginBtn:hover, #registerBtn:hover {
-    background: linear-gradient(to right, #004a99, #1e90ff);
-    transform: scale(1.05);
+#loginBtn:hover,
+#registerBtn:hover {
+  background: linear-gradient(to right, #004a99, #1e90ff);
+  transform: scale(1.05);
 }
-
-#loginBtn:active, #registerBtn:active {
-    transform: scale(0.95);
+#loginBtn:active,
+#registerBtn:active {
+  transform: scale(0.95);
 }
-
-/* Enlaces de "Regístrate aquí" */
 .modal-body a {
-    color: #1e90ff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.2s ease-in-out;
+  color: #1e90ff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease-in-out;
 }
-
 .modal-body a:hover {
-    color: #004a99;
+  color: #004a99;
 }
 
-/* Enlaces de "Regístrate aquí" */
-.modal-body a {
-    color: #1e90ff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.2s ease-in-out;
-}
-
-.modal-body a:hover {
-    color: #004a99;
-}
-
-
-/* --------------------------------
-   Contenedor Principal
---------------------------------- */
+/* ======================================
+   7. CONTENEDOR PRINCIPAL Y SIDEBAR
+====================================== */
 .container {
-	display: flex;
-	flex-grow: 1;
-	width: 100%;
+  display: flex;
+  flex-grow: 1;
 }
 
-/* --------------------------------
-   Sidebar
---------------------------------- */
+/* Sidebar (ejemplo si lo usas) */
 .sidebar {
-    width: 18%;
-    color: #fff; 
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
-    /* 
-       1) Degradado principal
-       2) Textura superpuesta (imagen en repeat)
-       3) Mezcla con background-blend-mode
-    */
-    background: 
-      /* Gradiente (ajusta colores y dirección) */
-      linear-gradient(90deg, rgb(23, 55, 79) 40%, #0099cc 100%);
-      /* Imagen de textura (cambia la URL por la tuya) */
-    
-    
-    /* Asegura que la textura cubra el área o se repita adecuadamente */
-    background-size: cover, auto; 
-
-    /*
-      overlay = La textura se mezcla con el degradado;
-      otros modos: multiply, screen, soft-light, etc.
-    */
-    background-blend-mode: overlay;
-
-    /* Opcional: Bordes redondeados, si quieres */
-border-radius: 5px;
-
+  color: #fff;
+  padding: 1.25rem; /* 20px */
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* 20px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, rgb(23, 55, 79) 40%, #0099cc 100%);
+  background-size: cover, auto;
+  background-blend-mode: overlay;
+  border-radius: 0.3125rem; /* 5px */
 }
-
 .sidebar h2 {
-	margin-bottom: 10px;
+  margin-bottom: 0.625rem; /* 10px */
 }
-
 .menu-item {
-	margin-bottom: 20px;
-	margin-top: 60px;
-	
+  margin-bottom: 1.25rem; /* 20px */
+  margin-top: 3.75rem;    /* 60px */
 }
-
 .menu-item h3 {
-	font-size: 1rem;
-	margin-bottom: 5px;
+  font-size: 1rem;
+  margin-bottom: 0.3125rem; /* 5px */
 }
-
 select {
-	width: 100%;
-	padding: 10px;
-	border-radius: 5px;
-	border: none;
-	font-size: 1rem;
+  padding: 0.625rem;  /* 10px */
+  border-radius: 0.3125rem; /* 5px */
+  border: none;
+  font-size: 1rem;
 }
-
-/* Estilos "modernos" para los <select> */
+/* Select moderno */
 .modern-select {
-    /* Ajusta el ancho y el padding a tu gusto */
-    width: 100%;
-    padding: 12px 14px;
-    border: 3px solid #ddd;
-    border-radius: 6px;
-
-    /* Quita la flecha nativa de los navegadores */
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    /* Flechita personalizada usando un icono en SVG (o Font Awesome) */
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 448 512' width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23444' d='M207.029 381.476L12.686 187.133C4.465 178.911 0 168.556 0 158.2S4.465 137.489 12.686 129.267l22.627-22.627C43.533 98.4 53.847 93.919 64.2 93.919s20.667 4.48 28.886 12.72L224 237.552l130.914-130.913C363.133 98.4 373.447 93.919 383.8 93.919s20.667 4.48 28.886 12.72l22.627 22.627c16.74 16.74 16.74 43.911 0 60.651L240.971 381.476c-8.222 8.221-18.577 12.686-28.971 12.686s-20.749-4.465-28.971-12.686z'/%3E%3C/svg%3E")
-        no-repeat calc(100% - 1rem) center/1.2rem 1.2rem;
-    /* 
-       - background: image + no-repeat
-       - position de la flecha: right (100%) menos un poco de padding
-       - 1.2rem x 1.2rem (ajusta según tu gusto)
-    */
-    background-color: #fff;
-    font-size: 1rem;
-    color: rgb(0, 0, 0);
-	font-weight: bold;
-    cursor: pointer;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    outline: none; /* Quita el outline nativo al hacer focus */
+  padding: 0.75rem 0.875rem;      /* 12px 14px */
+  border: 0.1875rem solid #ddd;   /* 3px → 0.1875rem */
+  border-radius: 0.375rem;        /* 6px */
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 448 512' width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23444' d='M207.029 381.476L12.686 187.133C4.465 178.911 0 168.556 0 158.2S4.465 137.489 12.686 129.267l22.627-22.627C43.533 98.4 53.847 93.919 64.2 93.919s20.667 4.48 28.886 12.72L224 237.552l130.914-130.913C363.133 98.4 373.447 93.919 383.8 93.919s20.667 4.48 28.886 12.72l22.627 22.627c16.74 16.74 16.74 43.911 0 60.651L240.971 381.476c-8.222 8.221-18.577 12.686-28.971 12.686s-20.749-4.465-28.971-12.686z'/%3E%3C/svg%3E")
+    no-repeat calc(100% - 1rem) center/1.2rem 1.2rem;
+  background-color: #fff;
+  font-size: 1rem;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  outline: none;
 }
-
-/* Efecto hover */
 .modern-select:hover {
-   
-	border: 3px solid rgb(255, 128, 0);
+  border: 0.1875rem solid rgb(255, 128, 0);
 }
-
-/* Efecto focus (cuando haces clic o tab) */
 .modern-select:focus {
-    border-color: #3b82f6; /* Azul clarito */
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+  border-color: #3b82f6;
+  box-shadow: 0 0 0.1875rem rgba(59, 130, 246, 0.2);
 }
-
-
 #welcome-text {
-    font-size: 1.8rem; /* Aumenta el tamaño de la fuente */
-    color: #f5b029; /* Amarillo */
-    font-weight: bold;
-    text-transform: uppercase; /* Convierte el texto en mayúsculas */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Efecto de sombra sutil */
+  font-size: 1.8rem;
+  color: #f5b029;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
 }
 
-/* --------------------------------
-   Botones (Generales)
---------------------------------- */
+/* ======================================
+   8. BOTONES GENERALES
+====================================== */
 .btn {
-	background: #004a99;
-	color: white;
-	padding: 10px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	font-size: 1rem;
-	transition: background-color 0.3s;
+  background: #f5b029;
+  color: white;
+  padding: 0.625rem;   /* 10px */
+  border: none;
+  border-radius: 0.3125rem; /* 5px */
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
 }
-
 .btn:hover {
-	background: #003366;
+  transform: scale(1.05);
 }
 
-/* --------------------------------
-   Contenido Principal
---------------------------------- */
-/* Se fusionan las propiedades:
-   - Degradado + textura del primer CSS
-   - display: flex, gap, align-items del segundo */
-   .main-content {
-       flex: 1;
-       padding: 20px;
-	   background: url('/img/IndexBackground.png') center/cover;
-       background-size: cover;
-       background-blend-mode: overlay;
-       border-radius: 10px;
-       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-       display: flex;
-       flex-direction: column;
-       gap: 40px;
-       align-items: center;
-       transition: background 0.5s ease-in-out; /* Suaviza la transición */
-   }
-   .main-content-home {
-	
-       flex: 1;
-       padding: 20px;
-       position: relative; /* Necesario para el pseudo-elemento */
-       border-radius: 10px;
-       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-       display: flex;
-       flex-direction: column;
-       gap: 40px;
-       align-items: center;
-       transition: background 0.5s ease-in-out;
-   }
+/* ======================================
+   9. CONTENIDO PRINCIPAL (MAIN-CONTENT)
+====================================== */
+.main-content {
+  flex: 1;
+  padding: 1.25rem; /* 20px */
+  background: url('/img/IndexBackground.png') center/cover;
+  background-size: cover;
+  background-blend-mode: overlay;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem; /* 40px */
+  align-items: center;
+  transition: background 0.5s ease-in-out;
+}
+/* Ejemplo de .main-content-home */
+.main-content-home {
+  flex: 1;
+  padding: 1.25rem; /* 20px */
+  position: relative;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.5rem;
+  align-items: center;
+  transition: background 0.5s ease-in-out;
+}
+.main-content-home::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/img/FondoTest.png') center/cover;
+  opacity: 0.6;
+  z-index: -1;
+  border-radius: 0.625rem; /* 10px */
+}
 
-   /* Agregamos un pseudo-elemento que será el fondo */
-   .main-content-home::before {
-       content: "";
-       position: absolute;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       background: url('/img/FondoTest.png') center/cover;
-       opacity: 0.6; /* 60% de opacidad solo en el fondo */
-       z-index: -1; /* Coloca el fondo detrás del contenido */
-       border-radius: 10px;
-   }
-
-
-
-/* --------------------------------
-   Sección "Acerca de la Academia"
---------------------------------- */
-
-
+/* ======================================
+   10. SECCIONES ESPECÍFICAS (ABOUT / LOCATION)
+====================================== */
 .about-section {
-    font-family:Georgia, 'Times New Roman', Times, serif;
-    max-width: 800px;
-    text-align: center;
-    padding: 20px;
-    background: rgb(244, 244, 244);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  max-width: 50rem;       /* 800px */
+  text-align: center;
+  padding: 1.25rem;       /* 20px */
+  background: #f4f4f4;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.8);
 }
-
-
 .about-section h2 {
-	font-size: 2.5rem;
-	margin-bottom: 15px;
-	color:#f5b029
+  font-size: 2.5rem;
+  margin-bottom: 0.9375rem; /* 15px */
+  color: #f5b029;
 }
-
 .about-section p {
-	font-size: 1.6rem;
-	line-height: 1.6;
-	color: #666;
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: #666;
 }
 
-/* --------------------------------
-   Sección "Localización"
---------------------------------- */
 .location-section {
-	max-width: 800px;
-	text-align: center;
-	padding: 20px;
-	background: #f9f9f9;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 50rem;  /* 800px */
+  text-align: center;
+  padding: 1.25rem;  /* 20px */
+  background: #f9f9f9;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
 }
-
 .location-section h2 {
-	font-size: 1.8rem;
-	margin-bottom: 15px;
-	color: #444;
+  font-size: 1.8rem;
+  margin-bottom: 0.9375rem; /* 15px */
+  color: #444;
 }
-
 .location-section p {
-	font-size: 1.1rem;
-	line-height: 1.6;
-	color: #666;
-	margin-bottom: 15px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 0.9375rem; /* 15px */
 }
 
-/* --------------------------------
-   Contenedor de Preguntas
---------------------------------- */
-
-
-/*Nota obtenida y última nota*/
-
-#ultima-nota {
-    display: none; /* Oculto hasta que haya una última nota */
-    width: 100%;
-    max-width: 400px;
-    padding: 15px 20px;
-    margin: 10px auto;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, #FFD700, #FFA500); /* Degradado dorado a naranja */
-    color: #fff;
-    transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
-}
-
-/* Efecto hover */
-#ultima-nota:hover, #nota-obtenida:hover {
-    transform: scale(1.05);
-}
-
-
-/* Estilo para la nota obtenida, pero inicialmente oculta */
+/* ======================================
+   11. NOTAS O RESULTADOS (EJEMPLO: #ultima-nota)
+====================================== */
+#ultima-nota,
 #nota-obtenida {
-    display: none; /* Oculto por defecto */
-    width: 100%;
-    max-width: 400px;
-    padding: 15px 20px;
-    margin: 10px auto;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, #1e3148, #3b82f6); /* Verde vibrante */
-    color: #fff;
-    transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+  display: none;
+  max-width: 16rem; /* 400px */
+  padding: 0.9375rem 1.25rem; /* 15px 20px */
+  margin: 0.625rem auto;      /* 10px */
+  text-align: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin-left: 40%;
+  font-weight: bold;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+}
+#ultima-nota {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #fff;
+
+}
+#nota-obtenida {
+  background: linear-gradient(135deg, #1e3148, #3b82f6);
+  color: #fff;
+  margin-left: 39%;
+
+ 
+}
+#ultima-nota:hover,
+#nota-obtenida:hover {
+  transform: scale(1.05);
 }
 
-/* Efecto al pasar el cursor */
-#ultima-nota:hover, #nota-obtenida:hover {
-    transform: scale(1.05);
-}
-
-
-
-
+/* ======================================
+   12. CONTENEDOR DE PREGUNTAS (TESTS)
+====================================== */
 .questions-container {
-	display: flex;
-	margin-right: auto;
-	flex-direction: column;
-	gap: 20px;
-	padding: 20px;
-	background: #f9f9f9;
-	border: 1px solid #ddd;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	margin-left: 250px;
-	width: 1000px;
-	
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;        /* 20px */
+  padding: 1.25rem;    /* 20px */
+  margin-right: auto;
+  margin-left: 15.625rem; /* 250px → 15.625rem */
+  width: 60.5rem;      /* 1000px → 62.5rem (usa max-width si quieres responsive) */
+  background: #f9f9f9;
+  border: 0.0625rem solid #ddd; /* 1px → 0.0625rem */
+  border-radius: 0.625rem;      /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
 }
 
-.capaTest{
-		display: flex;
-		flex-direction: column;
-		font-size: larger;
-		padding: 20px;
-		background: #f9f9f9;
-		font-weight: bolder;
-		border-radius: 10px;
-		margin: 0 auto;
-	
+.capaTest {
+  display: flex;
+  flex-direction: column;
+  font-size: larger;   /* o 1.125rem */
+  padding: 1.25rem;    /* 20px */
+  background: #f9f9f9;
+  font-weight: bolder;
+  border-radius: 0.625rem; /* 10px */
+  margin: 0 auto;
 }
 
 /* Cada pregunta */
 .question {
-	background: white;
-	padding: 15px;
-	border-radius: 8px;
-	border: 1px solid #ddd;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  padding: 0.9375rem; /* 15px */
+  border-radius: 0.5rem; /* 8px */
+  border: 0.0625rem solid #ddd;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
-
 .question h3 {
-	font-size: 1.2rem;
-	color: #333;
-	margin-bottom: 10px;
-	text-align: left;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 0.625rem; /* 10px */
+  text-align: left;
 }
 
 /* Opciones */
 .options {
-	display: flex;
-	flex-direction: column;
-	gap: 3px;
-	align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem; /* 3px */
+  align-items: flex-start;
 }
-
 .options label {
-	font-size: 1rem;
-	color: #333;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	display: flex;
-
-	gap: 3px;
-	width: 100%;
-
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.1875rem; /* 3px */
 }
-
-/* Estilos del logo/título */
-.brand {
-	font-size: 1.8rem;
-	font-weight: bold;
-}
-
-
 .options input[type="radio"] {
-	margin-right: 10px;
+  margin-right: 0.625rem; /* 10px */
 }
 
-/* Botón de enviar respuestas */
+/* Botón de enviar */
 #submitAnswers {
-	display: block;
-	margin: 20px auto;
-	background: #1e90ff;
-	color: white;
-	padding: 10px 20px;
-	border: none;
-	border-radius: 5px;
-	font-size: 1rem;
-	cursor: pointer;
-	transition: background-color 0.3s;
+  display: block;
+  margin: 1.25rem auto;        /* 20px */
+  background: #1e90ff;
+  color: white;
+  padding: 0.625rem 1.25rem;   /* 10px 20px */
+  border: none;
+  border-radius: 0.3125rem;    /* 5px */
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
-
 #submitAnswers:hover {
-	background: #004a99;
+  background: #004a99;
 }
 
-/* Sección de botones de autenticación */
-.auth-buttons {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	margin-top: 80px;
-	margin-bottom: 20px;
-}
-
-/* Estilos de los botones */
-.auth-buttons .btn {
-	padding: 10px 15px;
-	font-size: 1rem;
-
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-/* Estilos para el botón "Cerrar sesión" */
-
-
-
-.auth-buttons .btn-danger {
-	background: #dc3545;
-	border: none;
-}
-
-#Inicio {
-	background: none;
-	border: none;
-	font-size: 1.5rem;
-	color: #ffffff;
-	/* Color del ícono */
-	cursor: pointer;
-	padding: 5px;
-	transition: color 0.3s ease;
-}
-
-#Inicio:hover {
-	color: #ffcc00;
-	/* Cambio de color al pasar el mouse */
-}
-
-#logoutBtn {
-	background: #dc3545;
-	color: white;
-	padding: 8px 15px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	font-size: 1rem;
-	transition: background-color 0.3s;
-}
-
-#logoutBtn:hover {
-	background: #c82333;
-}
-
-.auth-buttons .btn-danger:hover {
-	background: #c82333;
-}
-
-/* Estilos para el botón "Finalizar" */
-.btn-finalizar, #resetTest {
-	background: #007bff;
-	/* Azul */
-	color: white;
-	font-size: 1rem;
-	padding: 10px 20px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	transition: background-color 0.3s ease, transform 0.1s ease;
-}
-
-/* Efecto al pasar el ratón */
-.btn-finalizar:hover {
-	background: #0056b3;
-	/* Azul más oscuro */
-}
-
-/* Efecto al hacer clic */
-.btn-finalizar:active {
-	transform: scale(0.95);
-}
-
-
-
+/* Respuestas correctas/incorrectas */
 .respuesta {
-	display: flex;
-	flex-direction: column;
-	/* Asegura que el contenido se apile verticalmente */
-	width: 100%;
-	padding: 3px;
-	border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  padding: 0.1875rem; /* 3px */
+  border-radius: 0.3125rem; /* 5px */
 }
-
 .respuesta-correcta {
-	border: 2px solid green;
-	background-color: #d4edda;
-	/* Verde claro */
-	padding: 3px;
-	border-radius: 5px;
+  border: 0.125rem solid green; /* 2px */
+  background-color: #d4edda;
+  padding: 0.1875rem;
+  border-radius: 0.3125rem;
 }
-
 .respuesta-incorrecta {
-	border: 2px solid red;
-	background-color: #f8d7da;
-	/* Rojo claro */
-	padding: 3px;
-	border-radius: 5px;
+  border: 0.125rem solid red;
+  background-color: #f8d7da;
+  padding: 0.1875rem;
+  border-radius: 0.3125rem;
 }
-
 .explicacion {
-	font-size: 14px;
-	color: #333;
-	margin: 2px;
-	display: none;
-	/* Oculta todas las explicaciones por defecto */
+  font-size: 0.875rem; /* ~14px */
+  color: #333;
+  margin: 0.125rem;    /* 2px */
+  display: none;       /* Oculto por defecto */
 }
 
-/* Perfil Usuario*/
-
+/* ======================================
+   13. PERFIL DE USUARIO (EJEMPLO)
+====================================== */
 .perfil-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 50rem; /* 800px */
+  margin: 1.25rem auto; /* 20px */
+  padding: 1.25rem;
+  background: white;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
 }
-
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem; /* 10px */
 }
-
 input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  padding: 0.625rem; /* 10px */
+  border: 0.0625rem solid #ddd; /* 1px */
+  border-radius: 0.3125rem;     /* 5px */
 }
-
 #materia-progresos {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem; /* 10px */
 }
-
 .progress-bar {
-    width: 100%;
-    height: 20px;
-    background: #ddd;
-    border-radius: 5px;
-    overflow: hidden;
+  height: 1.25rem;  /* 20px */
+  background: #ddd;
+  border-radius: 0.3125rem; /* 5px */
+  overflow: hidden;
 }
-
 .progress {
-    height: 100%;
-    text-align: center;
-    line-height: 20px;
-    color: white;
-    font-weight: bold;
-}
-.logout-icon {
-    max-width: 40px;
-    height: auto;
-    transition: transform 0.2s ease, filter 0.2s ease;
+  height: 100%;
+  text-align: center;
+  line-height: 1.25rem; /* Alinea verticalmente el texto en 20px */
+  color: white;
+  font-weight: bold;
 }
 
-.logout-icon:hover {
-    transform: scale(1.1);
-    filter: brightness(1.2);
-    cursor: pointer;
+/* ======================================
+   14. BOTONES DE FINALIZAR TEST, ETC.
+====================================== */
+.btn-finalizar,
+#resetTest {
+  background: #007bff;
+  color: white;
+  font-size: 1rem;
+  padding: 0.625rem 1.25rem; /* 10px 20px */
+  border: none;
+  border-radius: 0.3125rem; /* 5px */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
 }
-/* Botón de Ir a Tests */
-.btn-test {
-    background-color: rgb(220, 147, 10) !important; 
-    color: white !important;
-	max-width: 140px !important;
-	font-size: 12px !important;
-	font-weight: bold  !important;
-	margin-top: 10px;
-    padding: 10px 15px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+#resetTest {
+	margin-right: 5%;
 }
 
-.btn-test:hover {
-    background-color: #f5b029 !important; /* Amarillo más oscuro */
-    transform: scale(1.15);
-   
+.btn-finalizar:hover {
+  background: #0056b3;
 }
-/* Botón perfil */
-.btn-profile{
-    background-color: rgb(220, 147, 10) !important; 
-    color: white !important;
-	max-width: 140px !important;
-	font-size: 12px !important;
-	font-weight: bold  !important;
-    padding: 10px 15px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+.btn-finalizar:active {
+  transform: scale(0.95);
 }
 
-.btn-profile:hover {
-    background-color: #f5b029 !important; /* Amarillo más oscuro */
-    transform: scale(1.1);
-   
-}
-
-/* Video de index */
-
+/* ======================================
+   15. SECCIÓN VIDEO (INDEX)
+====================================== */
 .video-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 600px;
-    height: 950px; /* Ajusta la altura según tu necesidad */
-    overflow: hidden;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-	border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 37.5rem;   /* 600px */
+  height: 59.375rem;/* 950px */
+  overflow: hidden;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.8);
+  border-radius: 0.9375rem; /* 15px */
 }
-
 .video-section video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  object-fit: cover;
+  max-width: 100%;
+  /* Quita width/height fijos si quieres que se adapte al contenedor */
+  /* width: 100%; height: 100%; */
 }
 
+.modal-backdrop {
+    z-index: 10; 
+   
+}
 
-/****************************************
-  1) Ocultar el <select> nativo
-*****************************************/
+/* ======================================
+   16. DROPDOWN PERSONALIZADO
+====================================== */
 .hidden-select {
-    display: none; 
+  display: none;
 }
-
-/****************************************
-  2) Contenedor principal del dropdown
-*****************************************/
 .custom-dropdown {
-    position: relative;
-    width: 100%;
-    font-size: 1rem;
-    color: #333;
-    margin-top: 10px; /* separarlo un poco */
-    cursor: pointer;
+  position: relative;
+  font-size: 1rem;
+  color: #333;
+  margin-top: 0.625rem; /* 10px */
+  cursor: pointer;
 }
-
-/****************************************
-  3) Caja que muestra la opción elegida
-*****************************************/
 .dropdown-selected {
-    /* Un degradado vistoso */
-    background: linear-gradient(to right, #4f74ab, #004a99);
-    color: #fff;
-    font-weight: 500;
-
-    /* Borde más grueso */
-    border: 2px solid #004a99;
-    border-radius: 8px;
-    
-    padding: 12px 14px;
-    transition: all 0.3s ease;
-    user-select: none;
-
-    /* Para mostrar flex con espacio entre texto e ícono flecha */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  background: linear-gradient(to right, #4f74ab, #004a99);
+  color: #fff;
+  font-weight: 500;
+  border: 0.125rem solid #004a99; /* 2px */
+  border-radius: 0.5rem;          /* 8px */
+  padding: 0.75rem 0.875rem;      /* 12px 14px */
+  transition: all 0.3s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-
-/* ICONO de flecha (usando Font Awesome) */
 .dropdown-selected::after {
-    content: "\f107"; /* fa-chevron-down */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    font-size: 1rem;
-    margin-left: 8px;
-    transition: transform 0.5s ease;
-    pointer-events: none;
+  content: "\f107"; /* Font Awesome: fa-chevron-down */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  transition: transform 0.5s ease;
+  pointer-events: none;
 }
-
-/* Al abrir el dropdown, rotamos la flecha 180° */
 .custom-dropdown.open .dropdown-selected::after {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
-
-/* Pequeño efecto hover en la caja principal */
 .dropdown-selected:hover {
-    background: linear-gradient(to right, #5896d9, #0057cd);
-    border-color: #0057cd;
-    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  background: linear-gradient(to right, #5896d9, #0057cd);
+  border-color: #0057cd;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
 }
-
-/****************************************
-  4) Lista de items con animación al abrir
-*****************************************/
 .dropdown-items {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    
-    /* Fondo blanco con un borde */
-    background-color: #fff;
-    border: 2px solid #004a99;
-    border-radius: 8px;
-    margin-top: 5px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-
-    /* Animaciones: 
-       - max-height para "desplegar" 
-       - opacity para un "fade" 
-       - transform scaleY para un "growing"
-    */
-    max-height: 0;
-    opacity: 0;
-    transform: scaleY(0.9);
-    transform-origin: top; 
-    transition: max-height 0.3s ease, 
-                opacity 0.3s ease, 
-                transform 0.8s ease;
-
-    /* Oculto por defecto */
-    overflow: hidden;
-    z-index: 999; 
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 0.125rem solid #004a99;
+  border-radius: 0.5rem; /* 8px */
+  margin-top: 0.3125rem; /* 5px */
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.15);
+  max-height: 0;
+  opacity: 0;
+  transform: scaleY(0.9);
+  transform-origin: top;
+  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.8s ease;
+  overflow: hidden;
+  z-index: 999;
 }
-
-/* Cuando está abierto: 
-   - incrementamos max-height lo suficiente 
-   - opacity y scaleY a 1
-*/
 .custom-dropdown.open .dropdown-items {
-    max-height: 300px; /* Ajusta según cuántos items tendrás */
-    opacity: 1;
-    transform: scaleY(1);
-    overflow-y: auto;
+  max-height: 18.75rem; /* 300px */
+  opacity: 1;
+  transform: scaleY(1);
+  overflow-y: auto;
 }
-
-/****************************************
-  5) Estilos de cada .dropdown-item
-*****************************************/
 .dropdown-item {
-    padding: 12px 14px;
-    transition: background 0.2s ease, color 0.2s ease;
-	background: linear-gradient(to right,rgb(192, 192, 192), rgb(255, 255, 255));
-    border-bottom: 1px solid rgb(0, 0, 0);
-	color:white;
-    font-size: 0.95rem;
-    font-weight: bold;
+  padding: 0.75rem 0.875rem; /* 12px 14px */
+  border-bottom: 0.0625rem solid rgb(0, 0, 0);
+  background: linear-gradient(to right, rgb(192, 192, 192), rgb(255, 255, 255));
+  color: white;
+  font-size: 0.95rem;
+  font-weight: bold;
+  transition: background 0.2s ease, color 0.2s ease;
 }
-
-/* Quitar la última línea */
 .dropdown-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
-
-/* Hover en cada ítem */
 .dropdown-item:hover {
-    background: #f5b029; 
-    color: rgb(0, 0, 0); 
-	
+  background: #f5b029;
+  color: rgb(0, 0, 0);
 }
-
-/* Si quieres un color de texto más discreto inicialmente */
 .dropdown-item {
-    color: rgb(0, 0, 0);
+  color: rgb(0, 0, 0);
 }
 
-/*Asistente de estudio */
-
+/* ======================================
+   17. ASISTENTE DE ESTUDIO (CHAT)
+====================================== */
 .modal {
-    display: none; /* Oculto por defecto */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-	width: 600px;
-	height: 600px;
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  /* Puedes crear un contenedor interno si deseas 600×600 fijos */
 }
-
+.modal-content2 {
+  background-color: white;
+  padding: 1.25rem; /* 20px */
+  border-radius: 0.625rem; /* 10px */
+width: 70rem;
+  text-align: center;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  margin: auto;
+  z-index: 11;
+}
 .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 500px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  padding: 1.25rem; /* 20px */
+  border-radius: 0.625rem; /* 10px */
+  max-width: 45.25rem; /* 500px */
+  text-align: center;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  margin: auto;
+  z-index: 11;
 }
+.modal.show .modal-dialog {
+	width: 60%;
+	height: 60%;
+	right: 50%;
+	margin-top: 20%;
+	}
 
 .close-btn {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    font-size: 24px;
-    cursor: pointer;
+  position: absolute;
+  right: 1.25rem;  /* 20px */
+  top: 0.625rem;   /* 10px */
+  font-size: 1.5rem; /* 24px */
+  cursor: pointer;
 }
-
 #chat-box {
-    height: 300px;
-    overflow-y: auto;
-    background: #f9f9f9;
-    padding: 10px;
-    margin-bottom: 10px;
-	gap:30px;
-	align-items: flex-start; /* Alinea todo el contenido a la izquierda */
+  height: 18.75rem; /* 300px */
+  overflow-y: auto;
+  background: rgb(239, 239, 239);
+  padding: 0.625rem;    /* 10px */
+  margin-bottom: 0.625rem;
+  gap: 1.875rem;        /* 30px */
+  align-items: flex-start;
 }
-
 #chat-box p {
-   margin-top: 10px;
-   text-align: left; /* Alinea el texto dentro de cada mensaje */
+  margin-top: 0.625rem; /* 10px */
+  text-align: left;
 }
-
 #user-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
+  padding: 0.625rem;    /* 10px */
+  margin-bottom: 0.625rem;
+  width: 50rem;
 }
-
 #sendMessageBtn {
-    background: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
+  background: #4CAF50;
+  color: white;
+  padding: 0.625rem;    /* 10px */
+  border: none;
+  cursor: pointer;
+}
+#sendMessageBtn:hover {
+  background: #45a049;
 }
 
-#sendMessageBtn:hover {
-    background: #45a049;
+/* Botón general Asistente (ejemplo) */
+.btn-assistant {
+  margin-top: 5rem;  /* 80px → 5rem */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;        /* 8px */
+  padding: 0.75rem 1rem; /* 12px 16px */
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  border: none;
+  border-radius: 0.375rem; /* 6px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.btn-assistant:hover {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.2);
+  transform: translateY(-0.125rem); /* -2px */
+}
+.btn-assistant:active {
+  transform: translateY(0);
+  box-shadow: 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.2);
+}
+.btn-assistant i {
+  font-size: 1.2rem;
+}
+
+/* ======================================
+   18. MEDIA QUERIES (RESPONSIVE)
+====================================== */
+
+/* -- TABLET: <= 1024px -- */
+@media (min-width: 481px) and (max-width: 1800px) {
+  /* Estilos para dispositivos entre 481px y 1024px de ancho */
+
+
+  .logo-wrapper {
+    width: 70%; /* Hace que ocupe todo el ancho disponible */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+
+  /* Quita o reduce el offset lateral de las imágenes */
+  
+  .chavalada-img,
+  .header-img,
+  .tuacademia-img {
+    margin-left: 2%; /* o 2% si quieres un ligero offset */
+	width: 30%;
+	height: 100%;
+  }
+
+  /* Modal centrado en tablets */
+  .modal.show .modal-dialog {
+    top: 50%;
+    left: 120%;
+    transform: translate(-50%, -50%);
+    max-width: 70vw; 
+  }
+  .video-section{
+  width: 40%;
+  
+   }
+   
+   .video-section video {
+  width: 100%;
+
+  }
+  .questions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;        /* 20px */
+    padding: 1.25rem;    /* 20px */
+    margin-right: 0;
+    margin-left: 0; /* 250px → 15.625rem */
+    width: 45rem;      /* 1000px → 62.5rem (usa max-width si quieres responsive) */
+    background: #f9f9f9;
+    border: 0.0625rem solid #ddd; /* 1px → 0.0625rem */
+    border-radius: 0.625rem;      /* 10px */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  }
+  #ultima-nota {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #fff;
+  margin-right: 45%;
+  width: 25rem;
+  }
+  #nota-obtenida {
+    background: linear-gradient(135deg, #1e3148, #3b82f6);
+    color: #fff;
+    margin-left: 30%;
+
+   }
+   .modal-content2 {
+   
+   width: 30rem;
+ 
+   }
+}
+
+/* -- MÓVIL: <= 480px (o 430px) -- */
+@media (max-width: 930px) {
+  /* Ajustes específicos para móviles muy pequeños */
+
+  .top-bar {
+    font-size: 1rem;
+    flex-direction: column;
+  
+    gap: 0.5rem;
+  }
+  .modal-content2 {
+    
+    width: 20rem;
+
+    }
+
+  /* Reorganizar logo-wrapper en columna y reducir offset */
+  .logo-wrapper {
+    flex-direction: column;
+ 
+  }
+  .logo,
+  .chavalada-img,
+  .header-img,
+  .tuacademia-img {
+    margin-left: 0;   /* Quita margen extra */
+    max-width: 70%;   /* Ajusta el ancho si quieres */
+  }
+  .auth-buttons {
+   margin-left: 50%;
+   height: 80%;
+  
+  }
+  .login-icon {
+	width: 70%;
+  }
+
+  /* Modal en móviles: centrado */
+  .modal.show .modal-dialog {
+    top: 50%;
+    left: 10%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    max-width: 100vw; 
+	width: 80%;
+    margin: 0 auto;
+  }
+  .video-section{
+	width: 90%;
+	height: auto;
+  }
+  .video-section video {
+	width: 70%;
+	}
+	
+	.about-section {
+	 width: 70%;
+	 
+	}
+	.about-section h2 {
+		font-size: 90%;
+	}
+	.about-section p {
+		font-size: 80%;
+	}
+
+	.location-section {
+	  width: 70%;
+	}
+	.location-section h2 {
+	font-size: 80%;
+	}
+	.location-section p {
+		font-size: 80%;
+	}
+
+	.container {
+display: block;
+  flex-grow: 1;
+}
+
+.modal-backdrop {
+    z-index: 10; 
+   
+}
+
+.questions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;        /* 20px */
+  padding: 1.25rem;    /* 20px */
+  margin-right: 0;
+  margin-left: 0; /* 250px → 15.625rem */
+  width: 25rem;      /* 1000px → 62.5rem (usa max-width si quieres responsive) */
+  background: #f9f9f9;
+  border: 0.0625rem solid #ddd; /* 1px → 0.0625rem */
+  border-radius: 0.625rem;      /* 10px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+/* Menú test */
+
+#welcome-text {
+  font-size: 0.8rem;
+ }
+.sidebar h2 {
+  margin-bottom: 0;
+  font-size: 80%;
+}
+.menu-item {
+  margin-bottom: 0.25rem;
+  margin-top: 0 !important; 
+}
+.menu-item h3 {
+  font-size:0;
+  margin-bottom: 0.3125rem; /* 5px */
 }
 .btn-assistant {
-	margin-top: 80px;
-    display: inline-flex; /* Para alinear el icono y el texto en la misma línea */
-    align-items: center;  /* Centra verticalmente el icono y el texto */
-    justify-content: center;
-    gap: 8px; /* Espacio entre el icono y el texto */
-    
-    /* Tamaño del botón */
-    padding: 12px 16px;
-    font-size: 1rem;
-    font-weight: 600;
-    
-    /* Colores y fondo */
-    color: #fff;
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    border: none;
-    border-radius: 6px;
-    
-    /* Sombras y transición */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
+  margin-top: 3rem;  /* 80px → 5rem */
 
-/* Efecto hover */
-.btn-assistant:hover {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
+  font-size: 0.8rem;
+ 
 
-/* Efecto activo (click) */
-.btn-assistant:active {
-    transform: translateY(0);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
-
-/* Opcional: Ajustar el icono */
-.btn-assistant i {
-    font-size: 1.2rem; /* Tamaño del icono */
+#ultima-nota {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #fff;
+margin-right: 45%;
+width: 25rem;
 }
+#nota-obtenida {
+  background: linear-gradient(135deg, #1e3148, #3b82f6);
+  color: #fff;
+  margin-left: 15%;
 
+ }
+}
