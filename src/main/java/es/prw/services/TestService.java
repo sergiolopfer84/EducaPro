@@ -1,38 +1,42 @@
 package es.prw.services;
+
 import es.prw.dtos.NotaHistorialDTO;
 import es.prw.models.Test;
-import es.prw.models.Materia;
-import es.prw.models.Puntuacion;
 import es.prw.repositories.TestRepository;
-import es.prw.repositories.MateriaRepository;
 import es.prw.repositories.PuntuacionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 @Service
 public class TestService {
 
-    @Autowired
-    private TestRepository testRepository;
+    private final TestRepository testRepository;
+    private final PuntuacionRepository puntuacionRepository;
 
-    @Autowired
-    private PuntuacionRepository puntuacionRepository;
+    // Inyección de dependencias por constructor
+    public TestService(TestRepository testRepository, PuntuacionRepository puntuacionRepository) {
+        this.testRepository = testRepository;
+        this.puntuacionRepository = puntuacionRepository;
+    }
 
     // Obtener tests por materia
+    @Transactional(readOnly = true)
     public List<Test> getTestsByMateria(int idMateria) {
-        return testRepository.findTestsByMateria(idMateria); // Corrección aquí
+        return testRepository.findByMateriaIdMateria(idMateria); // Optimizado
     }
 
     // Obtener historial de notas por test
+    @Transactional(readOnly = true)
     public List<NotaHistorialDTO> obtenerHistorialNotas() {
-        List<Test> tests = testRepository.findAll();
-
-        return tests.stream().map(test -> {
-            List<Double> notas = puntuacionRepository.findNotasByTest(test);
-            return new NotaHistorialDTO(test.getTest(), notas);
-        }).collect(Collectors.toList());
+        return testRepository.findAll().stream()
+            .map(test -> {
+                List<Double> notas = puntuacionRepository.findNotasByTest(test);
+                return new NotaHistorialDTO(test.getNombreTest(), (notas != null) ? notas : Collections.emptyList());
+            })
+            .collect(Collectors.toList());
     }
 }

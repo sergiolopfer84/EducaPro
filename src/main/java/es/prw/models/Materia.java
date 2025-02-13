@@ -3,24 +3,27 @@ package es.prw.models;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Materia")
 public class Materia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_materia")
     private Integer idMateria;
 
-    @Column(nullable = false, unique = true)
-    private String materia;
+    @Column(name = "nombre_materia", nullable = false, unique = true)
+    private String nombreMateria;
 
     @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Test> tests;
-
     public Materia() {}
 
-    public Materia(Integer idMateria, String materia) {
+    public Materia(Integer idMateria, String nombreMateria) {
         this.idMateria = idMateria;
-        this.materia = materia;
+        this.nombreMateria = nombreMateria;
     }
 
     public Integer getIdMateria() {
@@ -31,15 +34,17 @@ public class Materia {
         this.idMateria = idMateria;
     }
 
-    public String getMateria() {
-        return materia;
-    }
+    
 
-    public void setMateria(String materia) {
-        this.materia = materia;
-    }
+    public String getNombreMateria() {
+		return nombreMateria;
+	}
 
-    public List<Test> getTests() {
+	public void setNombreMateria(String nombreMateria) {
+		this.nombreMateria = nombreMateria;
+	}
+
+	public List<Test> getTests() {
         return tests;
     }
 

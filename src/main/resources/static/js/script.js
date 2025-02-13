@@ -1,9 +1,12 @@
-$(document).ready(function() {
 
-    /*************************************
-     * 1. Función para "transformar" <select>
-     *    en un dropdown personalizado
-     *************************************/
+$(document).ready(function() {
+	
+
+   
+
+    /***************************************************
+     * 1. Dropdown personalizado para selects
+     ***************************************************/
     function transformSelectToDropdown(selectId, dropdownId) {
         const $select = $('#' + selectId);
         const $dropdown = $('#' + dropdownId);
@@ -17,31 +20,24 @@ $(document).ready(function() {
         $select.find('option').each(function() {
             const val = $(this).attr('value');
             const text = $(this).text();
-
-            // Evitar añadir si la opción está vacía (p.e. "Elige una materia")
             if (!val) return;
 
             const $item = $('<div class="dropdown-item"></div>')
                 .attr('data-value', val)
                 .text(text)
-				.on('click', function(e) {
-                e.stopPropagation();
-                // Setear el <select> real y disparar 'change'
-                $select.val(val).trigger('change');
-                // Cambiar el texto mostrado en .dropdown-selected
-                $selected.text(text);
-                // Cerrar el menú
-                $dropdown.removeClass('open');
-            });
+                .on('click', function(e) {
+                    e.stopPropagation();
+                    $select.val(val).trigger('change');
+                    $selected.text(text);
+                    $dropdown.removeClass('open');
+                });
             $itemsContainer.append($item);
         });
 
-        // Si el <select> actual tiene algo seleccionado, mostrarlo
+        // Mostrar la opción seleccionada si la hubiera
         const currentValue = $select.val();
         if (currentValue) {
-            const currentText = $select
-                .find('option[value="' + currentValue + '"]')
-                .text();
+            const currentText = $select.find('option[value="' + currentValue + '"]').text();
             if (currentText) {
                 $selected.text(currentText);
             }
@@ -50,25 +46,20 @@ $(document).ready(function() {
         // Evento para abrir/cerrar el dropdown
         $selected.off('click').on('click', function(e) {
             e.stopPropagation();
-            // Toggle la clase "open"
             $dropdown.toggleClass('open');
         });
     }
 
-    /*************************************
-     * 2. Cerrar dropdown si se hace click
-     *    en cualquier lugar fuera de él
-     *************************************/
     $(document).on('click', function() {
         $('.custom-dropdown.open').removeClass('open');
     });
 
-    // ================== PERFIL ==================
-    $('#perfilBtn').click(function () {
-        window.location.href = 'perfil';
+    // Botón de perfil
+    $('#perfilBtn').click(function() {
+        window.location.href = '/perfil';  // o la ruta que uses
     });
 
-    // ================== LOGIN FORM-BASED ==================
+    // LOGIN
     $('#loginBtn').click(function(e) {
         e.preventDefault();
         const email = $('#loginUsername').val();
@@ -84,47 +75,50 @@ $(document).ready(function() {
             type: 'POST',
             data: { email: email, password: password },
             beforeSend: function(xhr) {
-                if (window.csrf.headerName && window.csrf.token) {
+                if (window.csrf?.headerName && window.csrf?.token) {
                     xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
                 }
             },
             success: function() {
+                // Si la sesión se crea, se guardará el usuario en el server
+                // Asegúrate de que luego las peticiones GET usen la misma cookie
                 window.location.href = '/home';
             },
             error: function(xhr) {
+                let mensaje = 'Error al iniciar sesión.';
                 if (xhr.status === 401) {
-                    $('#loginError').html('<span style="color: red;">Nombre o contraseña incorrectos</span>');
+                    mensaje = 'Nombre o contraseña incorrectos.';
                 } else if (xhr.status === 403) {
-                    $('#loginError').html('<span style="color: red;">Demasiados intentos fallidos. Espere 1 minuto.</span>');
-                } else {
-                    $('#loginError').html('<span style="color: red;">Error al iniciar sesión.</span>');
+                    mensaje = 'Demasiados intentos fallidos. Espere 1 minuto.';
                 }
+                $('#loginError').html(`<span style="color: red;">${mensaje}</span>`);
                 $('#authModal').modal({ backdrop: 'static', keyboard: false });
             }
         });
     });
 
-    // ================== LOGOUT ==================
+    // LOGOUT
     $('#logoutBtn').click(function(e) {
         e.preventDefault();
         $.ajax({
             url: '/auth/logout',
             type: 'POST',
             beforeSend: function(xhr) {
-                if (window.csrf.headerName && window.csrf.token) {
+                if (window.csrf?.headerName && window.csrf?.token) {
                     xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
                 }
             },
             success: function() {
-                window.location.href = '/login';
+                // Se invalidará la sesión en el server (si tu config lo hace)
+                window.location.href = '/';
             },
-            error: function(xhr) {
+            error: function() {
                 alert('Error al cerrar sesión.');
             }
         });
     });
 
-    // ================== FORZAR QUE EL MODAL SIEMPRE SE ABRA ==================
+    // Forzar modal login/register limpio
     $('#authModal').on('show.bs.modal', function() {
         $('#loginUsername').val('');
         $('#loginPassword').val('');
@@ -137,7 +131,7 @@ $(document).ready(function() {
         $('#loginForm').show();
     });
 
-    // ================== REGISTRO ==================
+    // REGISTRO
     $('#registerBtn').click(function() {
         $('#registerError').html('');
         const name = $('#registerName').val().trim();
@@ -149,12 +143,12 @@ $(document).ready(function() {
             return;
         }
         if (!email.includes('@') || !email.includes('.')) {
-            $('#registerError').html('<span style="color: red;">Inserte un email válido</span>');
+            $('#registerError').html('<span style="color: red;">Inserta un email válido</span>');
             return;
         }
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{4,12}$/;
         if (!passwordRegex.test(password)) {
-            $('#registerError').html('<span style="color: red;">La contraseña debe contener una mayúscula y un número</span>');
+            $('#registerError').html('<span style="color: red;">La contraseña debe contener una mayúscula y un número (4-12)</span>');
             return;
         }
 
@@ -164,11 +158,12 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({ nombre: name, email: email, pass: password }),
             beforeSend: function(xhr) {
-                if (window.csrf.headerName && window.csrf.token) {
+                if (window.csrf?.headerName && window.csrf?.token) {
                     xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
                 }
             },
             success: function() {
+				console.log("registro ok")
                 $('#registerForm').hide();
                 $('#loginForm').show();
                 $('#registerName').val('');
@@ -185,7 +180,7 @@ $(document).ready(function() {
         });
     });
 
-    // ================== MOSTRAR/OCULTAR formularios modal ==================
+    // Mostrar/ocultar formularios en el modal
     $('#showRegister').click(function() {
         $('#loginForm').hide();
         $('#registerForm').show();
@@ -201,207 +196,200 @@ $(document).ready(function() {
         $('#registerPassword').val('');
         $('#registerError').html('');
     });
-
-    // ================== BIENVENIDA ==================
-	$.get('/usuarios/api/perfil', function(usuario) {
+	// ================== BIENVENIDA ==================
+	   $.get("/usuarios/api/current-user", function(usuario) {
+	       $("#welcome-text").text("Bienvenido/a " + usuario.nombre);
 	       if (usuario && usuario.nombre) {
-	           $('#welcome-text').text("Bienvenido/a " + usuario.nombre);
-	           $('#loginTrigger').hide();
-	           $('#logoutBtn').show();
+	           $("#loginTrigger").hide();
+	           $("#logoutBtn").show();
 	       }
 	   }).fail(function() {
-        console.error("Error al obtener datos del usuario.");
-    });
+	       console.error("Error al obtener datos del usuario.");
+	   });
 
-    const currentPath = window.location.pathname;
+	   const currentPath = window.location.pathname;
 
-    // Configuración global CSRF
-    if (window.csrf && window.csrf.token && window.csrf.headerName) {
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-            },
-        });
-    }
+	   // Configuración global CSRF
+	   if (window.csrf && window.csrf.token && window.csrf.headerName) {
+	       $.ajaxSetup({
+	           beforeSend: function(xhr) {
+	               xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+	           },
+	       });
+	   }
 
-    // ================== LÓGICA DE HOME ==================
     if (currentPath === '/home') {
-
-        // ===== CARGAR MATERIAS =====
-        $.ajax({
-            url: '/materias',
-            type: 'GET',
-            success: function(data) {
-                let options = '<option value="">Elige una materia</option>';
-                data.forEach(materia => {
-                    options += `<option value="${materia.idMateria}">${materia.materia}</option>`;
-                });
-                $('#materias').html(options);
-
-                // Llamar a nuestra función para "convertir" <select> en dropdown
-                transformSelectToDropdown('materias', 'materiasDropdown');
-            },
-            error: function(xhr) {
-                console.error('Error al cargar las materias:', xhr);
-            }
+		
+        // Cargar materias
+        $.get('/materias', function(data) {
+            let options = '<option value="">Elige una materia</option>';
+            data.forEach(materia => {
+                options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
+            });
+            $('#materias').html(options);
+            transformSelectToDropdown('materias', 'materiasDropdown');
         });
 
-        // ===== CARGAR TESTS al cambiar materia =====
+        // Al cambiar materia -> cargar tests
         $('#materias').on('change', function() {
             const idMateria = $(this).val();
             if (!idMateria) {
                 $('#tests').html('<option value="">Elige un test</option>');
-                transformSelectToDropdown('tests', 'testsDropdown'); // Reseteamos
+                transformSelectToDropdown('tests', 'testsDropdown');
                 return;
             }
+            $.get(`/tests/materia/${idMateria}`, function(data) {
+                let options = '<option value="">Elige un test</option>';
+                data.forEach(test => {
+                    options += `<option value="${test.idTest}">${test.nombreTest || test.test}</option>`;
+                });
+                $('#tests').html(options).prop('disabled', false);
+                transformSelectToDropdown('tests', 'testsDropdown');
+            });
+        });
 
+        // Al cambiar test -> cargar preguntas + última nota
+        $('#tests').on('change', function() {
+            const idTest = $(this).val();
+            if (!idTest) {
+                $('#questions-container').html('');
+                $('#ultima-nota').hide();
+                $('#nota-obtenida').hide();
+                return;
+            }
+            $('#questions-container').html('');
+            $('#nota-obtenida').html('').hide();
+            $('#ultima-nota').html('').hide();
+
+            // 1. Cargar preguntas (y en el backend se guardan en sesión)
+            $.get(`/preguntas/test/${idTest}`, function(data) {
+                let questionsHTML = '';
+                data.forEach(p => {
+                    questionsHTML += `
+                        <div class="question">
+                            <h3>${p.pregunta}</h3>
+                            <div class="options">
+                                ${p.respuestas.map(r => `
+                                    <div class="respuesta">
+                                        <label>
+                                            <input type="radio" name="pregunta${p.idPregunta}" value="${r.idRespuesta}">
+                                            ${r.textoRespuesta}
+                                        </label>
+                                        <div class="explicacion" style="display: none;">${r.textoExplicacion}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                questionsHTML += `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
+                $('#questions-container').html(questionsHTML);
+            });
+
+            // 2. Cargar última puntuación
             $.ajax({
-                url: '/tests',
+                url: '/puntuaciones/ultimaPuntuacion',
                 type: 'GET',
-                data: { idMateria: idMateria },
-                success: function(data) {
-                    let options = '<option value="">Elige un test</option>';
-                    data.forEach(test => {
-                        options += `<option value="${test.idTest}">${test.test}</option>`;
-                    });
-                    $('#tests').html(options);
-                    // Actualizar dropdown de tests
-                    transformSelectToDropdown('tests', 'testsDropdown');
+                data: { idTest: idTest },
+                success: function(response) {
+                    let ultimaNota = response.ultimaNota ?? null;
+                    if (ultimaNota !== null) {
+                        $('#ultima-nota')
+                            .html(`<p><strong>Última nota obtenida:</strong> ${ultimaNota}</p>`)
+                            .fadeIn();
+                    }
                 },
                 error: function(xhr) {
-                    console.error('Error al cargar los tests:', xhr);
+                    console.error("Error al obtener la última puntuación:", xhr);
                 }
             });
         });
 
-        // ===== CARGAR PREGUNTAS al cambiar test =====
-		
-			('#tests').on('change', function() {
-			            const idTest = $(this).val();
-			            if (!idTest) return $('#questions-container').html('');
+        // FINALIZAR TEST
+        $(document).on('click', '#finalizar', function() {
+            let respuestasSeleccionadas = [];
+            let idTest = $('#tests').val();
 
-			            $.get(`/api/preguntas/test/${idTest}`, function(data) {
-			                let questionsHTML = data.map(p => `
-			                    <div class="question">
-			                        <h3>${p.pregunta}</h3>
-			                        <div class="options">${p.respuestas.map(r => `
-			                            <div class="respuesta">
-			                                <label>
-			                                    <input type="radio" name="pregunta${p.idPregunta}" value="${r.idRespuesta}">
-			                                    ${r.respuesta}
-			                                </label>
-											<div class="explicacion" style="display: none;">${respuesta.explicacion}</div>
-			                            </div>
-			                        `).join('')}</div>
-			                    </div>
-			                `).join('') + `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
-			                $('#questions-container').html(questionsHTML);
-			            });
-			      
-		    // CARGAR ÚLTIMA PUNTUACIÓN Y MOSTRAR #ultima-nota SOLO SI TIENE CONTENIDO
-		    $.ajax({
-		        url: '/puntuaciones/ultimaPuntuacion',
-		        type: 'GET',
-		        data: { idTest: idTest },
-		        success: function(response) {
-		            let ultimaNota = response.ultimaNota ?? null;
-		            if (ultimaNota !== null) {
-		                $('#ultima-nota')
-		                    .html(`<p><strong>Última nota obtenida:</strong> ${ultimaNota}</p>`)
-		                    .fadeIn(); // Solo mostrar si hay contenido
-		            }
-		        },
-		        error: function(xhr) {
-		            console.error("Error al obtener la última puntuación:", xhr);
-		        }
-		    });
-		});
+            $('input[type=radio]:checked').each(function() {
+                respuestasSeleccionadas.push(parseInt($(this).val()));
+            });
 
+            if (!idTest || respuestasSeleccionadas.length === 0) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
 
-        // ===== FINALIZAR TEST =====
-		$(document).on('click', '#finalizar', function() {
-		    let respuestasSeleccionadas = [];
-		    let idTest = $('#tests').val();
+            // Enviamos al backend para calcular la nota y guardar en BD
+            $.ajax({
+                url: '/puntuaciones/calcularNota',
+                type: 'POST',
+                contentType: 'application/json',
+				beforeSend: function(xhr) {
+				                if (window.csrf?.headerName && window.csrf?.token) {
+				                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+				                }
+				            },
+                data: JSON.stringify({ idTest: idTest, respuestas: respuestasSeleccionadas }),
+                success: function(response) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    let notaObtenida = response.nota;
 
-		    $('input[type=radio]:checked').each(function() {
-		        respuestasSeleccionadas.push(parseInt($(this).val()));
-		    });
+                    // Obtener la penúltima nota (o "sin registros previos")
+                    $.ajax({
+                        url: '/puntuaciones/ultimaPuntuacion',
+                        type: 'GET',
+                        data: { idTest: idTest },
+                        success: function(resp) {
+                            let notaAnterior = (resp.penultimaNota !== null) ? resp.penultimaNota : 'Sin registros previos';
+                            $('#ultima-nota').html(`<p><strong>Última nota obtenida:</strong> ${notaAnterior}</p>`);
 
-		    if (!idTest || respuestasSeleccionadas.length === 0) {
-		        window.scrollTo({ top: 0, behavior: 'smooth' });
-		        return;
-		    }
+                            if (notaObtenida !== null && notaObtenida !== undefined) {
+                                $('#nota-obtenida')
+                                    .html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`)
+                                    .fadeIn();
+                            }
+                        }
+                    });
 
-		    $.ajax({
-		        url: '/calcularNota',
-		        type: 'POST',
-		        contentType: 'application/json',
-		        data: JSON.stringify({ idTest: idTest, respuestas: respuestasSeleccionadas }),
-		        success: function(response) {
-		            window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Resaltar correctas/incorrectas
+                    $.ajax({
+                        url: '/respuestas/obtenerRespuestasSesion', // Ajusta al path real si es "/respuestas/obtenerRespuestasSesion"
+                        type: 'GET',
+                        data: { idTest: idTest },
+                        success: function(data) {
+                            // data es la lista de Respuesta con su nota=1 o 0
+                            let respuestasCorrectas = data
+                                .filter(r => r.nota === 1)
+                                .map(r => r.idRespuesta);
 
-		            let notaObtenida = response.nota;
+                            $('.respuesta').each(function() {
+                                let input = $(this).find('input[type=radio]');
+                                let explicacion = $(this).find('.explicacion');
+                                let respuestaId = parseInt(input.val());
 
-		            // Obtener la última nota antes de esta prueba
-		            $.ajax({
-		                url: '/puntuaciones/ultimaPuntuacion',
-		                type: 'GET',
-		                data: { idTest: idTest },
-		                success: function(resp) {
-		                    let notaAnterior = resp.penultimaNota !== null ? resp.penultimaNota : 'Sin registros previos';
+                                if (respuestasSeleccionadas.includes(respuestaId)) {
+                                    if (respuestasCorrectas.includes(respuestaId)) {
+                                        $(this).addClass('respuesta-correcta');
+                                    } else {
+                                        $(this).addClass('respuesta-incorrecta');
+                                    }
+                                    explicacion.show();
+                                }
+                            });
+                            finalizarTest();
+                        },
+                        error: function(xhr) {
+                            console.error("Error en la petición AJAX (obtenerRespuestasSesion):", xhr.responseText);
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    console.error("Error en la petición AJAX (calcularNota):", xhr.responseText);
+                }
+            });
+        });
 
-		                    $('#ultima-nota').html(`<p><strong>Última nota obtenida:</strong> ${notaAnterior}</p>`);
-
-		                    if (notaObtenida !== null && notaObtenida !== undefined) {
-		                        $('#nota-obtenida')
-		                            .html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`)
-		                            .fadeIn(); // Mostrar con efecto
-		                    }
-		                }
-		            });
-
-		            // Respuestas correctas
-		            $.ajax({
-		                url: '/respuestas/obtenerRespuestasSesion',
-		                type: 'GET',
-		                data: { idTest: idTest },
-		                success: function(data) {
-		                    let respuestasCorrectas = [];
-		                    data.forEach(r => {
-		                        if (r.nota === 1) {
-		                            respuestasCorrectas.push(r.idRespuesta);
-		                        }
-		                    });
-
-		                    $('.respuesta').each(function() {
-		                        let input = $(this).find('input[type=radio]');
-		                        let explicacion = $(this).find('.explicacion');
-		                        let respuestaId = parseInt(input.val());
-
-		                        if (respuestasSeleccionadas.includes(respuestaId)) {
-		                            if (respuestasCorrectas.includes(respuestaId)) {
-		                                $(this).addClass('respuesta-correcta');
-		                            } else {
-		                                $(this).addClass('respuesta-incorrecta');
-		                            }
-		                            explicacion.show();
-		                        }
-		                    });
-		                    finalizarTest();
-		                },
-		                error: function(xhr) {
-		                    console.error("Error en la petición AJAX:", xhr.responseText);
-		                }
-		            });
-		        },
-		        error: function(xhr) {
-		            console.error("Error en la petición AJAX:", xhr.responseText);
-		        }
-		    });
-		});
-
-        
-
+        // RESET TEST
         $('#resetTest').click(function() {
             let inputs = document.querySelectorAll("input[type='radio'], input[type='checkbox']");
             inputs.forEach(input => {
@@ -413,66 +401,54 @@ $(document).ready(function() {
             $('#resetTest').hide();
             $('#finalizar').prop('disabled', false);
         });
-		
-		/***************************************************
 
-								ASISTENTE
-		 ***************************************************/
+        // ASISTENTE
+        const openAssistantBtn = document.getElementById("openAssistantBtn");
+        const modal = document.getElementById("assistantModal");
+        const closeBtn = document.querySelector(".close-btn");
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const sendMessageBtn = document.getElementById("sendMessageBtn");
 
-		    const openAssistantBtn = document.getElementById("openAssistantBtn");
-		    const modal = document.getElementById("assistantModal");
-		    const closeBtn = document.querySelector(".close-btn");
-		    const chatBox = document.getElementById("chat-box");
-		    const userInput = document.getElementById("user-input");
-		    const sendMessageBtn = document.getElementById("sendMessageBtn");
+        openAssistantBtn.addEventListener("click", function() {
+            modal.style.display = "flex";
+        });
+        closeBtn.addEventListener("click", function() {
+            modal.style.display = "none";
+        });
+        sendMessageBtn.addEventListener("click", function() {
+            let mensaje = userInput.value.trim();
+            if (mensaje === "") return;
 
-		    // Mostrar la modal al hacer clic en el botón
-		    openAssistantBtn.addEventListener("click", function() {
-		        modal.style.display = "flex";
-		    });
+            chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+            userInput.value = "";
 
-		    // Cerrar la modal al hacer clic en la 'X'
-		    closeBtn.addEventListener("click", function() {
-		        modal.style.display = "none";
-		    });
-
-		    // Enviar mensaje al Asistente de Estudio
-		    sendMessageBtn.addEventListener("click", function() {
-		        let mensaje = userInput.value.trim();
-				console.log(mensaje);
-		        if (mensaje === "") return;
-
-		        chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
-		        userInput.value = "";
-
-		        // Petición a la API
-		        fetch('/api/asistente', {
-		            method: 'POST',
-		            headers: { 'Content-Type': 'application/json' },
-		            body: JSON.stringify(mensaje)
-		        })
-		        .then(response => response.text())
-		        .then(data => {
-		            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
-		            chatBox.scrollTop = chatBox.scrollHeight;
-		        });
-		    });
-
-		    // Cerrar la modal si el usuario hace clic fuera del contenido
-		    window.addEventListener("click", function(event) {
-		        if (event.target === modal) {
-		            modal.style.display = "none";
-		        }
-		    });
-		
+            // Petición al backend
+            fetch('/api/asistente', {
+                method: 'POST',
+				headers: {
+				      'Content-Type': 'application/json',
+				      [window.csrf.headerName]: window.csrf.token
+				    },
+                body: JSON.stringify(mensaje)
+            })
+            .then(response => response.text())
+            .then(data => {
+                chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        });
+        window.addEventListener("click", function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
     } // Fin if /home
 
 }); // Fin document.ready
 
-
 /***************************************************
- * FUNCIÓN finalizarTest():
- * Bloquea respuestas y muestra botón "Intentar de nuevo"
+ * Bloquear respuestas al finalizar
  ***************************************************/
 function finalizarTest() {
     $('#resetTest').show();
@@ -482,8 +458,3 @@ function finalizarTest() {
     });
     $('#finalizar').prop('disabled', true);
 }
-
-
-
-
-

@@ -3,18 +3,22 @@ package es.prw.models;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Pregunta")
 public class Pregunta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_pregunta")
     private Integer idPregunta;
 
-    @Column(nullable = false)
-    private String pregunta;
+    @Column(name = "texto_pregunta", nullable = false)
+    private String textoPregunta;
 
     @ManyToOne
     @JoinColumn(name = "id_test", nullable = false)
+    @JsonIgnore
     private Test test;
 
     @OneToMany(mappedBy = "pregunta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -22,9 +26,9 @@ public class Pregunta {
 
     public Pregunta() {}
 
-    public Pregunta(Integer idPregunta, String pregunta, Test test, List<Respuesta> respuestas) {
+    public Pregunta(Integer idPregunta, String textoPregunta, Test test, List<Respuesta> respuestas) {
         this.idPregunta = idPregunta;
-        this.pregunta = pregunta;
+        this.textoPregunta = textoPregunta;
         this.test = test;
         this.respuestas = respuestas;
     }
@@ -38,11 +42,11 @@ public class Pregunta {
     }
 
     public String getPregunta() {
-        return pregunta;
+        return textoPregunta;
     }
 
-    public void setPregunta(String pregunta) {
-        this.pregunta = pregunta;
+    public void setPregunta(String textoPregunta) {
+        this.textoPregunta = textoPregunta;
     }
 
     public Test getTest() {

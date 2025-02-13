@@ -1,14 +1,10 @@
 package es.prw.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import org.springframework.web.client.HttpStatusCodeException;
 import java.util.*;
 
 @Service
@@ -22,20 +18,19 @@ public class OpenAIService {
 
     private final RestTemplate restTemplate;
 
-    @Autowired
-    public OpenAIService() {
-        this.restTemplate = new RestTemplate();
+    public OpenAIService(RestTemplate restTemplate) {  // Inyección por constructor
+        this.restTemplate = restTemplate;
     }
 
     public String obtenerRespuestaIA(Map<String, Object> datosChat) {
         String nombreUsuario = (String) datosChat.get("usuario");
         String mensajeUsuario = (String) datosChat.get("mensaje");
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + apiKey);
         headers.set("Content-Type", "application/json");
 
-        // Construimos el cuerpo de la petición
+        // Construcción del cuerpo de la petición
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "gpt-3.5-turbo");
         requestBody.put("messages", List.of(
@@ -44,30 +39,30 @@ public class OpenAIService {
             Map.of("role", "user", "content", mensajeUsuario)
         ));
 
-        // Construcción de la petición
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
-        // Llamada a la API de OpenAI
-        ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, request, Map.class);
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, request, Map.class);
+            Map<String, Object> body = response.getBody();
 
-        // Extraer la respuesta de la IA
-        Map<String, Object> body = response.getBody();
-        if (body == null) {
-            return "Error: respuesta vacía de OpenAI.";
+            if (body == null || !body.containsKey("choices")) {
+                return "Error: respuesta inesperada de OpenAI.";
+            }
+
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+            if (choices.isEmpty()) {
+                return "Error: la IA no generó ninguna respuesta.";
+            }
+
+            Map<String, Object> firstChoice = choices.get(0);
+            Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
+
+            return (String) message.get("content");
+
+        } catch (HttpStatusCodeException e) {
+            return "Error en la solicitud a OpenAI: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+        } catch (Exception e) {
+            return "Error al procesar la respuesta de OpenAI: " + e.getMessage();
         }
-
-        List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
-        if (choices == null || choices.isEmpty()) {
-            return "Error: no se recibieron 'choices' de OpenAI.";
-        }
-
-        // ✅ Aplicamos cast explícito para evitar errores de tipo
-        Map<String, Object> firstChoice = choices.get(0);
-        Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
-        
-        return (String) message.get("content");
     }
-
 }
-
-

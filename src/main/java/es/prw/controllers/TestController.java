@@ -1,6 +1,6 @@
 package es.prw.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import es.prw.dtos.NotaHistorialDTO;
@@ -12,15 +12,21 @@ import java.util.List;
 @RequestMapping("/tests")
 public class TestController {
 
-    @Autowired
-    private TestService testService;
+    private final TestService testService;
+
+    public TestController(TestService testService) {
+        this.testService = testService;
+    }
 
     @GetMapping("/materia/{idMateria}")
-    public List<Test> obtenerTestsPorMateria(@PathVariable int idMateria) {
-        return testService.getTestsByMateria(idMateria);
+    public ResponseEntity<List<Test>> obtenerTestsPorMateria(@PathVariable int idMateria) {
+        List<Test> tests = testService.getTestsByMateria(idMateria);
+        return tests.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(tests);
     }
+
     @GetMapping("/historial")
-    public List<NotaHistorialDTO> obtenerHistorialNotas() {
-        return testService.obtenerHistorialNotas();
+    public ResponseEntity<List<NotaHistorialDTO>> obtenerHistorialNotas() {
+        List<NotaHistorialDTO> historialNotas = testService.obtenerHistorialNotas();
+        return historialNotas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(historialNotas);
     }
 }

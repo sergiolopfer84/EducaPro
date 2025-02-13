@@ -4,30 +4,33 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "Test")
 public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_test")
     private Integer idTest;
 
-    @Column(nullable = false, unique = true)
-    private String test;
+    @Column(name = "nombre_test", nullable = false, unique = true)
+    private String nombreTest;
 
     @ManyToOne
     @JoinColumn(name = "id_materia", nullable = false)
+    @JsonIgnore
     private Materia materia;
 
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Pregunta> preguntas = new ArrayList<>(); // Se inicializa directamente
-
+    private List<Pregunta> preguntas = new ArrayList<>();
     public Test() {
         // Se mantiene la inicialización en el constructor vacío
     }
 
-    public Test(Integer idTest, String test, Materia materia) {
+    public Test(Integer idTest, String nombreTest, Materia materia) {
         this.idTest = idTest;
-        this.test = test;
+        this.nombreTest = nombreTest;
         this.materia = materia;
         this.preguntas = new ArrayList<>(); // Se inicializa aquí también
     }
@@ -40,15 +43,16 @@ public class Test {
         this.idTest = idTest;
     }
 
-    public String getTest() {
-        return test;
-    }
+   
+    public String getNombreTest() {
+		return nombreTest;
+	}
 
-    public void setTest(String test) {
-        this.test = test;
-    }
+	public void setNombreTest(String nombreTest) {
+		this.nombreTest = nombreTest;
+	}
 
-    public Materia getMateria() {
+	public Materia getMateria() {
         return materia;
     }
 

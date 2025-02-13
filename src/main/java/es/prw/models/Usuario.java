@@ -1,36 +1,27 @@
 package es.prw.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import java.util.Set;
 import java.util.HashSet;
 
 @Entity
 @Table(name = "Usuario")
 public class Usuario {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_usuario") 
-	private Integer idUsuario;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "pass", nullable = false)
     private String pass;
     
-    @Column(nullable = false) 
+    @Column(name = "nombre", nullable = false)
     private String nombre; 
     
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "Usuario_Rol",
         joinColumns = @JoinColumn(name = "id_usuario"),
@@ -39,14 +30,12 @@ public class Usuario {
     private Set<Rol> roles = new HashSet<>();
 
     // Getters y Setters
-  
-
-    public String getNombre() { return nombre; } 
     public Integer getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
 
-	public void setNombre(String nombre) { this.nombre = nombre; } 
-    
+    public String getNombre() { return nombre; } 
+    public void setNombre(String nombre) { this.nombre = nombre; } 
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
