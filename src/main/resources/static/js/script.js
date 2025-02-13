@@ -1,271 +1,271 @@
 
 $(document).ready(function() {
-	
 
-   
 
-    /***************************************************
-     * 1. Dropdown personalizado para selects
-     ***************************************************/
-    function transformSelectToDropdown(selectId, dropdownId) {
-        const $select = $('#' + selectId);
-        const $dropdown = $('#' + dropdownId);
-        const $selected = $dropdown.find('.dropdown-selected');
-        const $itemsContainer = $dropdown.find('.dropdown-items');
 
-        // Limpiar items previos
-        $itemsContainer.empty();
 
-        // Crear un .dropdown-item por cada <option>
-        $select.find('option').each(function() {
-            const val = $(this).attr('value');
-            const text = $(this).text();
-            if (!val) return;
+	/***************************************************
+	 * 1. Dropdown personalizado para selects
+	 ***************************************************/
+	function transformSelectToDropdown(selectId, dropdownId) {
+		const $select = $('#' + selectId);
+		const $dropdown = $('#' + dropdownId);
+		const $selected = $dropdown.find('.dropdown-selected');
+		const $itemsContainer = $dropdown.find('.dropdown-items');
 
-            const $item = $('<div class="dropdown-item"></div>')
-                .attr('data-value', val)
-                .text(text)
-                .on('click', function(e) {
-                    e.stopPropagation();
-                    $select.val(val).trigger('change');
-                    $selected.text(text);
-                    $dropdown.removeClass('open');
-                });
-            $itemsContainer.append($item);
-        });
+		// Limpiar items previos
+		$itemsContainer.empty();
 
-        // Mostrar la opción seleccionada si la hubiera
-        const currentValue = $select.val();
-        if (currentValue) {
-            const currentText = $select.find('option[value="' + currentValue + '"]').text();
-            if (currentText) {
-                $selected.text(currentText);
-            }
-        }
+		// Crear un .dropdown-item por cada <option>
+		$select.find('option').each(function() {
+			const val = $(this).attr('value');
+			const text = $(this).text();
+			if (!val) return;
 
-        // Evento para abrir/cerrar el dropdown
-        $selected.off('click').on('click', function(e) {
-            e.stopPropagation();
-            $dropdown.toggleClass('open');
-        });
-    }
+			const $item = $('<div class="dropdown-item"></div>')
+				.attr('data-value', val)
+				.text(text)
+				.on('click', function(e) {
+					e.stopPropagation();
+					$select.val(val).trigger('change');
+					$selected.text(text);
+					$dropdown.removeClass('open');
+				});
+			$itemsContainer.append($item);
+		});
 
-    $(document).on('click', function() {
-        $('.custom-dropdown.open').removeClass('open');
-    });
+		// Mostrar la opción seleccionada si la hubiera
+		const currentValue = $select.val();
+		if (currentValue) {
+			const currentText = $select.find('option[value="' + currentValue + '"]').text();
+			if (currentText) {
+				$selected.text(currentText);
+			}
+		}
 
-    // Botón de perfil
-    $('#perfilBtn').click(function() {
-        window.location.href = '/perfil';  // o la ruta que uses
-    });
+		// Evento para abrir/cerrar el dropdown
+		$selected.off('click').on('click', function(e) {
+			e.stopPropagation();
+			$dropdown.toggleClass('open');
+		});
+	}
 
-    // LOGIN
-    $('#loginBtn').click(function(e) {
-        e.preventDefault();
-        const email = $('#loginUsername').val();
-        const password = $('#loginPassword').val();
+	$(document).on('click', function() {
+		$('.custom-dropdown.open').removeClass('open');
+	});
 
-        if (!email || !password) {
-            $('#loginError').html('<span style="color: red;">Por favor, completa todos los campos.</span>');
-            return;
-        }
+	// Botón de perfil
+	$('#perfilBtn').click(function() {
+		window.location.href = '/perfil';  // o la ruta que uses
+	});
 
-        $.ajax({
-            url: '/auth/login',
-            type: 'POST',
-            data: { email: email, password: password },
-            beforeSend: function(xhr) {
-                if (window.csrf?.headerName && window.csrf?.token) {
-                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-                }
-            },
-            success: function() {
-                // Si la sesión se crea, se guardará el usuario en el server
-                // Asegúrate de que luego las peticiones GET usen la misma cookie
-                window.location.href = '/home';
-            },
-            error: function(xhr) {
-                let mensaje = 'Error al iniciar sesión.';
-                if (xhr.status === 401) {
-                    mensaje = 'Nombre o contraseña incorrectos.';
-                } else if (xhr.status === 403) {
-                    mensaje = 'Demasiados intentos fallidos. Espere 1 minuto.';
-                }
-                $('#loginError').html(`<span style="color: red;">${mensaje}</span>`);
-                $('#authModal').modal({ backdrop: 'static', keyboard: false });
-            }
-        });
-    });
+	// LOGIN
+	$('#loginBtn').click(function(e) {
+		e.preventDefault();
+		const email = $('#loginUsername').val();
+		const password = $('#loginPassword').val();
 
-    // LOGOUT
-    $('#logoutBtn').click(function(e) {
-        e.preventDefault();
-        $.ajax({
-            url: '/auth/logout',
-            type: 'POST',
-            beforeSend: function(xhr) {
-                if (window.csrf?.headerName && window.csrf?.token) {
-                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-                }
-            },
-            success: function() {
-                // Se invalidará la sesión en el server (si tu config lo hace)
-                window.location.href = '/';
-            },
-            error: function() {
-                alert('Error al cerrar sesión.');
-            }
-        });
-    });
+		if (!email || !password) {
+			$('#loginError').html('<span style="color: red;">Por favor, completa todos los campos.</span>');
+			return;
+		}
 
-    // Forzar modal login/register limpio
-    $('#authModal').on('show.bs.modal', function() {
-        $('#loginUsername').val('');
-        $('#loginPassword').val('');
-        $('#loginError').html('');
-        $('#registerName').val('');
-        $('#registerEmail').val('');
-        $('#registerPassword').val('');
-        $('#registerError').html('');
-        $('#registerForm').hide();
-        $('#loginForm').show();
-    });
+		$.ajax({
+			url: '/auth/login',
+			type: 'POST',
+			data: { email: email, password: password },
+			beforeSend: function(xhr) {
+				if (window.csrf?.headerName && window.csrf?.token) {
+					xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+				}
+			},
+			success: function() {
+				// Si la sesión se crea, se guardará el usuario en el server
+				// Asegúrate de que luego las peticiones GET usen la misma cookie
+				window.location.href = '/home';
+			},
+			error: function(xhr) {
+				let mensaje = 'Error al iniciar sesión.';
+				if (xhr.status === 401) {
+					mensaje = 'Nombre o contraseña incorrectos.';
+				} else if (xhr.status === 403) {
+					mensaje = 'Demasiados intentos fallidos. Espere 1 minuto.';
+				}
+				$('#loginError').html(`<span style="color: red;">${mensaje}</span>`);
+				$('#authModal').modal({ backdrop: 'static', keyboard: false });
+			}
+		});
+	});
 
-    // REGISTRO
-    $('#registerBtn').click(function() {
-        $('#registerError').html('');
-        const name = $('#registerName').val().trim();
-        const email = $('#registerEmail').val().trim();
-        const password = $('#registerPassword').val().trim();
+	// LOGOUT
+	$('#logoutBtn').click(function(e) {
+		e.preventDefault();
+		$.ajax({
+			url: '/auth/logout',
+			type: 'POST',
+			beforeSend: function(xhr) {
+				if (window.csrf?.headerName && window.csrf?.token) {
+					xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+				}
+			},
+			success: function() {
+				// Se invalidará la sesión en el server (si tu config lo hace)
+				window.location.href = '/';
+			},
+			error: function() {
+				alert('Error al cerrar sesión.');
+			}
+		});
+	});
 
-        if (!name || !email || !password) {
-            $('#registerError').html('<span style="color: red;">Faltan campos por rellenar</span>');
-            return;
-        }
-        if (!email.includes('@') || !email.includes('.')) {
-            $('#registerError').html('<span style="color: red;">Inserta un email válido</span>');
-            return;
-        }
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{4,12}$/;
-        if (!passwordRegex.test(password)) {
-            $('#registerError').html('<span style="color: red;">La contraseña debe contener una mayúscula y un número (4-12)</span>');
-            return;
-        }
+	// Forzar modal login/register limpio
+	$('#authModal').on('show.bs.modal', function() {
+		$('#loginUsername').val('');
+		$('#loginPassword').val('');
+		$('#loginError').html('');
+		$('#registerName').val('');
+		$('#registerEmail').val('');
+		$('#registerPassword').val('');
+		$('#registerError').html('');
+		$('#registerForm').hide();
+		$('#loginForm').show();
+	});
 
-        $.ajax({
-            url: '/auth/register',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ nombre: name, email: email, pass: password }),
-            beforeSend: function(xhr) {
-                if (window.csrf?.headerName && window.csrf?.token) {
-                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-                }
-            },
-            success: function() {
+	// REGISTRO
+	$('#registerBtn').click(function() {
+		$('#registerError').html('');
+		const name = $('#registerName').val().trim();
+		const email = $('#registerEmail').val().trim();
+		const password = $('#registerPassword').val().trim();
+
+		if (!name || !email || !password) {
+			$('#registerError').html('<span style="color: red;">Faltan campos por rellenar</span>');
+			return;
+		}
+		if (!email.includes('@') || !email.includes('.')) {
+			$('#registerError').html('<span style="color: red;">Inserta un email válido</span>');
+			return;
+		}
+		const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{4,12}$/;
+		if (!passwordRegex.test(password)) {
+			$('#registerError').html('<span style="color: red;">La contraseña debe contener una mayúscula y un número (4-12)</span>');
+			return;
+		}
+
+		$.ajax({
+			url: '/auth/register',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({ nombre: name, email: email, pass: password }),
+			beforeSend: function(xhr) {
+				if (window.csrf?.headerName && window.csrf?.token) {
+					xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+				}
+			},
+			success: function() {
 				console.log("registro ok")
-                $('#registerForm').hide();
-                $('#loginForm').show();
-                $('#registerName').val('');
-                $('#registerEmail').val('');
-                $('#registerPassword').val('');
-                $('#registerError').html('');
-            },
-            error: function(xhr) {
-                console.error("Error al registrarse:", xhr);
-                $('#registerError').html(
-                    `<span style="color: red;">${xhr.responseText || 'Error al registrarse.'}</span>`
-                );
-            }
-        });
-    });
+				$('#registerForm').hide();
+				$('#loginForm').show();
+				$('#registerName').val('');
+				$('#registerEmail').val('');
+				$('#registerPassword').val('');
+				$('#registerError').html('');
+			},
+			error: function(xhr) {
+				console.error("Error al registrarse:", xhr);
+				$('#registerError').html(
+					`<span style="color: red;">${xhr.responseText || 'Error al registrarse.'}</span>`
+				);
+			}
+		});
+	});
 
-    // Mostrar/ocultar formularios en el modal
-    $('#showRegister').click(function() {
-        $('#loginForm').hide();
-        $('#registerForm').show();
-        $('#loginUsername').val('');
-        $('#loginPassword').val('');
-        $('#loginError').html('');
-    });
-    $('#showLogin').click(function() {
-        $('#registerForm').hide();
-        $('#loginForm').show();
-        $('#registerName').val('');
-        $('#registerEmail').val('');
-        $('#registerPassword').val('');
-        $('#registerError').html('');
-    });
+	// Mostrar/ocultar formularios en el modal
+	$('#showRegister').click(function() {
+		$('#loginForm').hide();
+		$('#registerForm').show();
+		$('#loginUsername').val('');
+		$('#loginPassword').val('');
+		$('#loginError').html('');
+	});
+	$('#showLogin').click(function() {
+		$('#registerForm').hide();
+		$('#loginForm').show();
+		$('#registerName').val('');
+		$('#registerEmail').val('');
+		$('#registerPassword').val('');
+		$('#registerError').html('');
+	});
 	// ================== BIENVENIDA ==================
-	   $.get("/usuarios/api/current-user", function(usuario) {
-	       $("#welcome-text").text("Bienvenido/a " + usuario.nombre);
-	       if (usuario && usuario.nombre) {
-	           $("#loginTrigger").hide();
-	           $("#logoutBtn").show();
-	       }
-	   }).fail(function() {
-	       console.error("Error al obtener datos del usuario.");
-	   });
+	$.get("/usuarios/api/current-user", function(usuario) {
+		$("#welcome-text").text("Bienvenido/a " + usuario.nombre);
+		if (usuario && usuario.nombre) {
+			$("#loginTrigger").hide();
+			$("#logoutBtn").show();
+		}
+	}).fail(function() {
+		console.error("Error al obtener datos del usuario.");
+	});
 
-	   const currentPath = window.location.pathname;
+	const currentPath = window.location.pathname;
 
-	   // Configuración global CSRF
-	   if (window.csrf && window.csrf.token && window.csrf.headerName) {
-	       $.ajaxSetup({
-	           beforeSend: function(xhr) {
-	               xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-	           },
-	       });
-	   }
+	// Configuración global CSRF
+	if (window.csrf && window.csrf.token && window.csrf.headerName) {
+		$.ajaxSetup({
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+			},
+		});
+	}
 
-    if (currentPath === '/home') {
-		
-        // Cargar materias
-        $.get('/materias', function(data) {
-            let options = '<option value="">Elige una materia</option>';
-            data.forEach(materia => {
-                options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
-            });
-            $('#materias').html(options);
-            transformSelectToDropdown('materias', 'materiasDropdown');
-        });
+	if (currentPath === '/home') {
 
-        // Al cambiar materia -> cargar tests
-        $('#materias').on('change', function() {
-            const idMateria = $(this).val();
-            if (!idMateria) {
-                $('#tests').html('<option value="">Elige un test</option>');
-                transformSelectToDropdown('tests', 'testsDropdown');
-                return;
-            }
-            $.get(`/tests/materia/${idMateria}`, function(data) {
-                let options = '<option value="">Elige un test</option>';
-                data.forEach(test => {
-                    options += `<option value="${test.idTest}">${test.nombreTest || test.test}</option>`;
-                });
-                $('#tests').html(options).prop('disabled', false);
-                transformSelectToDropdown('tests', 'testsDropdown');
-            });
-        });
+		// Cargar materias
+		$.get('/materias', function(data) {
+			let options = '<option value="">Elige una materia</option>';
+			data.forEach(materia => {
+				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
+			});
+			$('#materias').html(options);
+			transformSelectToDropdown('materias', 'materiasDropdown');
+		});
 
-        // Al cambiar test -> cargar preguntas + última nota
-        $('#tests').on('change', function() {
-            const idTest = $(this).val();
-            if (!idTest) {
-                $('#questions-container').html('');
-                $('#ultima-nota').hide();
-                $('#nota-obtenida').hide();
-                return;
-            }
-            $('#questions-container').html('');
-            $('#nota-obtenida').html('').hide();
-            $('#ultima-nota').html('').hide();
+		// Al cambiar materia -> cargar tests
+		$('#materias').on('change', function() {
+			const idMateria = $(this).val();
+			if (!idMateria) {
+				$('#tests').html('<option value="">Elige un test</option>');
+				transformSelectToDropdown('tests', 'testsDropdown');
+				return;
+			}
+			$.get(`/tests/materia/${idMateria}`, function(data) {
+				let options = '<option value="">Elige un test</option>';
+				data.forEach(test => {
+					options += `<option value="${test.idTest}">${test.nombreTest || test.test}</option>`;
+				});
+				$('#tests').html(options).prop('disabled', false);
+				transformSelectToDropdown('tests', 'testsDropdown');
+			});
+		});
 
-            // 1. Cargar preguntas (y en el backend se guardan en sesión)
-            $.get(`/preguntas/test/${idTest}`, function(data) {
-                let questionsHTML = '';
-                data.forEach(p => {
-                    questionsHTML += `
+		// Al cambiar test -> cargar preguntas + última nota
+		$('#tests').on('change', function() {
+			const idTest = $(this).val();
+			if (!idTest) {
+				$('#questions-container').html('');
+				$('#ultima-nota').hide();
+				$('#nota-obtenida').hide();
+				return;
+			}
+			$('#questions-container').html('');
+			$('#nota-obtenida').html('').hide();
+			$('#ultima-nota').html('').hide();
+
+			// 1. Cargar preguntas (y en el backend se guardan en sesión)
+			$.get(`/preguntas/test/${idTest}`, function(data) {
+				let questionsHTML = '';
+				data.forEach(p => {
+					questionsHTML += `
                         <div class="question">
                             <h3>${p.pregunta}</h3>
                             <div class="options">
@@ -281,169 +281,174 @@ $(document).ready(function() {
                             </div>
                         </div>
                     `;
-                });
-                questionsHTML += `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
-                $('#questions-container').html(questionsHTML);
-            });
+				});
+				questionsHTML += `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
+				$('#questions-container').html(questionsHTML);
+			});
 
-            // 2. Cargar última puntuación
-            $.ajax({
-                url: '/puntuaciones/ultimaPuntuacion',
-                type: 'GET',
-                data: { idTest: idTest },
-                success: function(response) {
-                    let ultimaNota = response.ultimaNota ?? null;
-                    if (ultimaNota !== null) {
-                        $('#ultima-nota')
-                            .html(`<p><strong>Última nota obtenida:</strong> ${ultimaNota}</p>`)
-                            .fadeIn();
-                    }
-                },
-                error: function(xhr) {
-                    console.error("Error al obtener la última puntuación:", xhr);
-                }
-            });
-        });
+			// 2. Cargar última puntuación
+			$.ajax({
+				url: '/puntuaciones/ultimaPuntuacion',
+				type: 'GET',
+				data: { idTest: idTest },
+				success: function(response) {
 
-        // FINALIZAR TEST
-        $(document).on('click', '#finalizar', function() {
-            let respuestasSeleccionadas = [];
-            let idTest = $('#tests').val();
+					let ultimaNota = response.ultimaNota ?? null;
+					if (ultimaNota !== null) {
+						$('#ultima-nota')
+							.html(`<p><strong>Última nota obtenida:</strong> ${ultimaNota}</p>`)
+							.fadeIn();
+					} else {
+						$('#ultima-nota')
+							.html(`<p><strong>No existen registros de nota para este test.</p>`)
+							.fadeIn();
+					}
+				},
+				error: function(xhr) {
+					console.error("Error al obtener la última puntuación:", xhr);
+				}
+			});
+		});
 
-            $('input[type=radio]:checked').each(function() {
-                respuestasSeleccionadas.push(parseInt($(this).val()));
-            });
+		// FINALIZAR TEST
+		$(document).on('click', '#finalizar', function() {
+			let respuestasSeleccionadas = [];
+			let idTest = $('#tests').val();
 
-            if (!idTest || respuestasSeleccionadas.length === 0) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return;
-            }
+			$('input[type=radio]:checked').each(function() {
+				respuestasSeleccionadas.push(parseInt($(this).val()));
+			});
 
-            // Enviamos al backend para calcular la nota y guardar en BD
-            $.ajax({
-                url: '/puntuaciones/calcularNota',
-                type: 'POST',
-                contentType: 'application/json',
+			if (!idTest || respuestasSeleccionadas.length === 0) {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+				return;
+			}
+
+			// Enviamos al backend para calcular la nota y guardar en BD
+			$.ajax({
+				url: '/puntuaciones/calcularNota',
+				type: 'POST',
+				contentType: 'application/json',
 				beforeSend: function(xhr) {
-				                if (window.csrf?.headerName && window.csrf?.token) {
-				                    xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-				                }
-				            },
-                data: JSON.stringify({ idTest: idTest, respuestas: respuestasSeleccionadas }),
-                success: function(response) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    let notaObtenida = response.nota;
+					if (window.csrf?.headerName && window.csrf?.token) {
+						xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+					}
+				},
+				data: JSON.stringify({ idTest: idTest, respuestas: respuestasSeleccionadas }),
+				success: function(response) {
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+					let notaObtenida = response.nota;
 
-                    // Obtener la penúltima nota (o "sin registros previos")
-                    $.ajax({
-                        url: '/puntuaciones/ultimaPuntuacion',
-                        type: 'GET',
-                        data: { idTest: idTest },
-                        success: function(resp) {
-                            let notaAnterior = (resp.penultimaNota !== null) ? resp.penultimaNota : 'Sin registros previos';
-                            $('#ultima-nota').html(`<p><strong>Última nota obtenida:</strong> ${notaAnterior}</p>`);
+					// Obtener la penúltima nota (o "sin registros previos")
+					$.ajax({
+						url: '/puntuaciones/ultimaPuntuacion',
+						type: 'GET',
+						data: { idTest: idTest },
+						success: function(resp) {
+							let notaAnterior = (resp.penultimaNota !== null) ? resp.penultimaNota : 'Sin registros previos';
+							$('#ultima-nota').html(`<p><strong>Última nota obtenida:</strong> ${notaAnterior}</p>`);
 
-                            if (notaObtenida !== null && notaObtenida !== undefined) {
-                                $('#nota-obtenida')
-                                    .html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`)
-                                    .fadeIn();
-                            }
-                        }
-                    });
+							if (notaObtenida !== null && notaObtenida !== undefined) {
+								$('#nota-obtenida')
+									.html(`<p><strong>Nota obtenida en este test:</strong> ${notaObtenida}</p>`)
+									.fadeIn();
+							}
+						}
+					});
 
-                    // Resaltar correctas/incorrectas
-                    $.ajax({
-                        url: '/respuestas/obtenerRespuestasSesion', // Ajusta al path real si es "/respuestas/obtenerRespuestasSesion"
-                        type: 'GET',
-                        data: { idTest: idTest },
-                        success: function(data) {
-                            // data es la lista de Respuesta con su nota=1 o 0
-                            let respuestasCorrectas = data
-                                .filter(r => r.nota === 1)
-                                .map(r => r.idRespuesta);
+					// Resaltar correctas/incorrectas
+					$.ajax({
+						url: '/respuestas/obtenerRespuestasSesion', // Ajusta al path real si es "/respuestas/obtenerRespuestasSesion"
+						type: 'GET',
+						data: { idTest: idTest },
+						success: function(data) {
+							// data es la lista de Respuesta con su nota=1 o 0
+							let respuestasCorrectas = data
+								.filter(r => r.nota === 1)
+								.map(r => r.idRespuesta);
 
-                            $('.respuesta').each(function() {
-                                let input = $(this).find('input[type=radio]');
-                                let explicacion = $(this).find('.explicacion');
-                                let respuestaId = parseInt(input.val());
+							$('.respuesta').each(function() {
+								let input = $(this).find('input[type=radio]');
+								let explicacion = $(this).find('.explicacion');
+								let respuestaId = parseInt(input.val());
 
-                                if (respuestasSeleccionadas.includes(respuestaId)) {
-                                    if (respuestasCorrectas.includes(respuestaId)) {
-                                        $(this).addClass('respuesta-correcta');
-                                    } else {
-                                        $(this).addClass('respuesta-incorrecta');
-                                    }
-                                    explicacion.show();
-                                }
-                            });
-                            finalizarTest();
-                        },
-                        error: function(xhr) {
-                            console.error("Error en la petición AJAX (obtenerRespuestasSesion):", xhr.responseText);
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    console.error("Error en la petición AJAX (calcularNota):", xhr.responseText);
-                }
-            });
-        });
+								if (respuestasSeleccionadas.includes(respuestaId)) {
+									if (respuestasCorrectas.includes(respuestaId)) {
+										$(this).addClass('respuesta-correcta');
+									} else {
+										$(this).addClass('respuesta-incorrecta');
+									}
+									explicacion.show();
+								}
+							});
+							finalizarTest();
+						},
+						error: function(xhr) {
+							console.error("Error en la petición AJAX (obtenerRespuestasSesion):", xhr.responseText);
+						}
+					});
+				},
+				error: function(xhr) {
+					console.error("Error en la petición AJAX (calcularNota):", xhr.responseText);
+				}
+			});
+		});
 
-        // RESET TEST
-        $('#resetTest').click(function() {
-            let inputs = document.querySelectorAll("input[type='radio'], input[type='checkbox']");
-            inputs.forEach(input => {
-                input.checked = false;
-                input.disabled = false;
-            });
-            $('.respuesta').removeClass('respuesta-correcta respuesta-incorrecta');
-            $('.explicacion').hide();
-            $('#resetTest').hide();
-            $('#finalizar').prop('disabled', false);
-        });
+		// RESET TEST
+		$('#resetTest').click(function() {
+			let inputs = document.querySelectorAll("input[type='radio'], input[type='checkbox']");
+			inputs.forEach(input => {
+				input.checked = false;
+				input.disabled = false;
+			});
+			$('.respuesta').removeClass('respuesta-correcta respuesta-incorrecta');
+			$('.explicacion').hide();
+			$('#resetTest').hide();
+			$('#finalizar').prop('disabled', false);
+		});
 
-        // ASISTENTE
-        const openAssistantBtn = document.getElementById("openAssistantBtn");
-        const modal = document.getElementById("assistantModal");
-        const closeBtn = document.querySelector(".close-btn");
-        const chatBox = document.getElementById("chat-box");
-        const userInput = document.getElementById("user-input");
-        const sendMessageBtn = document.getElementById("sendMessageBtn");
+		// ASISTENTE
+		const openAssistantBtn = document.getElementById("openAssistantBtn");
+		const modal = document.getElementById("assistantModal");
+		const closeBtn = document.querySelector(".close-btn");
+		const chatBox = document.getElementById("chat-box");
+		const userInput = document.getElementById("user-input");
+		const sendMessageBtn = document.getElementById("sendMessageBtn");
 
-        openAssistantBtn.addEventListener("click", function() {
-            modal.style.display = "flex";
-        });
-        closeBtn.addEventListener("click", function() {
-            modal.style.display = "none";
-        });
-        sendMessageBtn.addEventListener("click", function() {
-            let mensaje = userInput.value.trim();
-            if (mensaje === "") return;
+		openAssistantBtn.addEventListener("click", function() {
+			modal.style.display = "flex";
+		});
+		closeBtn.addEventListener("click", function() {
+			modal.style.display = "none";
+		});
+		sendMessageBtn.addEventListener("click", function() {
+			let mensaje = userInput.value.trim();
+			if (mensaje === "") return;
 
-            chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
-            userInput.value = "";
+			chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+			userInput.value = "";
 
-            // Petición al backend
-            fetch('/api/asistente', {
-                method: 'POST',
+			// Petición al backend
+			fetch('/api/asistente', {
+				method: 'POST',
 				headers: {
-				      'Content-Type': 'application/json',
-				      [window.csrf.headerName]: window.csrf.token
-				    },
-                body: JSON.stringify(mensaje)
-            })
-            .then(response => response.text())
-            .then(data => {
-                chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            });
-        });
-        window.addEventListener("click", function(event) {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
-    } // Fin if /home
+					'Content-Type': 'application/json',
+					[window.csrf.headerName]: window.csrf.token
+				},
+				body: JSON.stringify(mensaje)
+			})
+				.then(response => response.text())
+				.then(data => {
+					chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+					chatBox.scrollTop = chatBox.scrollHeight;
+				});
+		});
+		window.addEventListener("click", function(event) {
+			if (event.target === modal) {
+				modal.style.display = "none";
+			}
+		});
+	} // Fin if /home
 
 }); // Fin document.ready
 
@@ -451,10 +456,10 @@ $(document).ready(function() {
  * Bloquear respuestas al finalizar
  ***************************************************/
 function finalizarTest() {
-    $('#resetTest').show();
-    let inputs = document.querySelectorAll("input[type='radio'], input[type='checkbox']");
-    inputs.forEach(input => {
-        input.disabled = true;
-    });
-    $('#finalizar').prop('disabled', true);
+	$('#resetTest').show();
+	let inputs = document.querySelectorAll("input[type='radio'], input[type='checkbox']");
+	inputs.forEach(input => {
+		input.disabled = true;
+	});
+	$('#finalizar').prop('disabled', true);
 }

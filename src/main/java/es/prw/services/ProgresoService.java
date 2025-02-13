@@ -56,4 +56,44 @@ public class ProgresoService {
 
         return historialNotas;
     }
+
+	/*
+	 * @Transactional(readOnly = true) public MateriaProgresoDTO
+	 * obtenerProgresoMateriaEspecifica(Integer idUsuario, Integer idMateria) {
+	 * Materia materia = testRepository.findMateriaById(idMateria) .orElseThrow(()
+	 * -> new RuntimeException("Materia no encontrada con ID: " + idMateria));
+	 * 
+	 * int totalTests = testRepository.countByMateria(materia); int testsAprobados =
+	 * puntuacionRepository.countAprobadosByMateria(idMateria);
+	 * 
+	 * return new MateriaProgresoDTO(materia.getNombreMateria(), totalTests,
+	 * testsAprobados); }
+	 */
+    @Transactional(readOnly = true)
+    public Map<String, Map<String, List<Double>>> obtenerProgresoMateriaEspecifica(Integer idUsuario, Integer idMateria) {
+        Map<String, Map<String, List<Double>>> historialNotas = new HashMap<>();
+
+        // Consultar las notas desde la base de datos
+        List<Object[]> resultados = puntuacionRepository.obtenerHistorialNotasPorUsuarioYMateria(idUsuario, idMateria);
+
+        // 🔍 Debug: Ver qué devuelve la BD
+        System.out.println("Resultados BD: " + resultados);
+
+        for (Object[] fila : resultados) {
+            String testNombre = (String) fila[0];
+            Double nota = (Double) fila[1];
+
+            // Usar `computeIfAbsent` para inicializar la estructura
+            historialNotas.computeIfAbsent("Materia Consultada", k -> new HashMap<>())
+                          .computeIfAbsent(testNombre, k -> new ArrayList<>())
+                          .add(nota);
+        }
+
+        System.out.println("Notas procesadas: " + historialNotas);
+        return historialNotas;
+    }
+
+
+
+
 }

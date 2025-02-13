@@ -3,6 +3,9 @@ package es.prw.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.PageRequest;
+
+import es.prw.dtos.MateriaProgresoDTO;
+import es.prw.models.Materia;
 import es.prw.models.Puntuacion;
 import es.prw.models.Test;
 import es.prw.models.Usuario;
@@ -67,4 +70,16 @@ public class PuntuacionService {
     public List<Puntuacion> getPuntuacionesByUsuario(Integer idUsuario) {
         return puntuacionRepository.findPuntuacionesByUsuario(idUsuario);
     }
+    
+    @Transactional(readOnly = true)
+    public MateriaProgresoDTO obtenerProgresoMateriaEspecifica(Integer idUsuario, Integer idMateria) {
+        Materia materia = testRepository.findMateriaById(idMateria)
+                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + idMateria));
+
+        int totalTests = testRepository.countByMateria(materia);
+        int testsAprobados = puntuacionRepository.countAprobadosByMateria(idMateria);
+
+        return new MateriaProgresoDTO(materia.getNombreMateria(), totalTests, testsAprobados);
+    }
+
 }
