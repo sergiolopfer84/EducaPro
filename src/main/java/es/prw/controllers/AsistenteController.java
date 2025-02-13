@@ -59,24 +59,35 @@ public class AsistenteController {
     	        notasPorMateria = progresoService.obtenerProgresoTests(idUsuario);
     	    }
 
-    	    // 🔍 Debug: Ver qué datos se están enviando
-    	    System.out.println("Datos enviados a la IA:");
-    	    System.out.println("Usuario: " + usuarioReal.getNombre());
-    	    System.out.println("Mensaje: " + mensaje);
-    	    System.out.println("Notas por materia: " + notasPorMateria);
+    	   
 
-    	    // Formatear la información para que la IA la entienda mejor
+    	 // Construir infoProgreso con bucle dinámico
     	    StringBuilder infoProgreso = new StringBuilder();
-    	    infoProgreso.append("El usuario ").append(usuarioReal.getNombre()).append(" pregunta por su progreso en ").append(materiaConsultada).append(". ");
+    	    infoProgreso.append("El usuario ")
+    	                .append(usuarioReal.getNombre())
+    	                .append(" pregunta por su progreso.\n\n");
 
     	    if (notasPorMateria.isEmpty()) {
-    	        infoProgreso.append("No hay registros de tests en esta materia.");
+    	        infoProgreso.append("No hay registros de tests.");
     	    } else {
     	        infoProgreso.append("Aquí están sus notas recientes:\n");
-    	        for (Map.Entry<String, List<Double>> testEntry : notasPorMateria.get("Materia Consultada").entrySet()) {
-    	            infoProgreso.append("- ").append(testEntry.getKey()).append(": ").append(testEntry.getValue()).append("\n");
+    	        // Iteramos por cada materia
+    	        for (Map.Entry<String, Map<String, List<Double>>> materiaEntry : notasPorMateria.entrySet()) {
+    	            String nombreMateria = materiaEntry.getKey(); // p. ej. "Geografía" o "Biología"
+    	            Map<String, List<Double>> testsMateria = materiaEntry.getValue();
+
+    	            infoProgreso.append("\nMateria: ").append(nombreMateria).append("\n");
+
+    	            // Iteramos por cada test dentro de la materia
+    	            for (Map.Entry<String, List<Double>> testEntry : testsMateria.entrySet()) {
+    	                String nombreTest = testEntry.getKey();
+    	                List<Double> notas = testEntry.getValue();
+    	                infoProgreso.append("   - ").append(nombreTest).append(": ")
+    	                            .append(notas).append("\n");
+    	            }
     	        }
     	    }
+
     	    Map<String, Object> datosChat = Map.of(
     	    	    "usuario", usuarioReal.getNombre(),
     	    	    "mensaje", mensaje,
