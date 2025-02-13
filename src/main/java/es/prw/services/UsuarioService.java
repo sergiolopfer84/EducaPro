@@ -14,6 +14,7 @@ import es.prw.models.Rol;
 import es.prw.models.Usuario;
 import es.prw.repositories.RolRepository;
 import es.prw.repositories.UsuarioRepository;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class UsuarioService {
@@ -74,4 +75,29 @@ public class UsuarioService {
             return true;
         }).orElse(false);
     }
+    
+    @PostConstruct
+    public void testInsertUser() {
+        if (!usuarioRepository.existsByEmail("admin@educapro.es")) {
+            Usuario adminUser = new Usuario();
+            adminUser.setNombre("Admin");
+            adminUser.setEmail("admin@educapro.es");
+            adminUser.setPass(passwordEncoder.encode("M0j1t0"));
+
+            // Buscar los roles "ADMIN" y "USER"
+            Rol userRole = rolRepository.findByNombre("USER")
+                    .orElseThrow(() -> new RuntimeException("❌ Rol 'USER' no encontrado en la BD."));
+            Rol adminRole = rolRepository.findByNombre("ADMIN")
+                    .orElseThrow(() -> new RuntimeException("❌ Rol 'ADMIN' no encontrado en la BD."));
+
+            // Asignar ambos roles
+            adminUser.setRoles(Set.of(userRole, adminRole));
+
+            usuarioRepository.save(adminUser);
+            System.out.println("✅ Usuario ADMIN insertado correctamente con roles 'ADMIN' y 'USER'.");
+        } else {
+            System.out.println("ℹ️ Usuario ADMIN ya existe.");
+        }
+    }
+
 }
