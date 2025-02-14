@@ -1,59 +1,47 @@
 package es.prw.models;
 
-import java.util.Collection;
+import jakarta.persistence.*;
+import java.util.Set;
+import java.util.HashSet;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
+@Entity
+@Table(name = "Usuario")
 public class Usuario {
-	private Integer idUsuario;
-	private String nombre;
-	private String pass;
-	private String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
 
-	public Usuario() {
-		super();
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
 
-	}
+    @Column(name = "pass", nullable = false)
+    private String pass;
+    
+    @Column(name = "nombre", nullable = false)
+    private String nombre; 
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "Usuario_Rol",
+        joinColumns = @JoinColumn(name = "id_usuario"),
+        inverseJoinColumns = @JoinColumn(name = "id_rol")
+    )
+    private Set<Rol> roles = new HashSet<>();
 
-	public Usuario(Integer idUsuario, String nombre, String pass, String email) {
-		super();
-		this.idUsuario = idUsuario;
-		this.nombre = nombre;
-		this.pass = pass;
-		this.email = email;
-	}
+    // Getters y Setters
+    public Integer getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
 
-	public Integer getIdUsuario() {
-		return idUsuario;
-	}
+    public String getNombre() { return nombre; } 
+    public void setNombre(String nombre) { this.nombre = nombre; } 
 
-	public void setIdUsuario(Integer idUsuario) {
-		this.idUsuario = idUsuario;
-	}
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public String getPass() { return pass; }
+    public void setPass(String pass) { this.pass = pass; }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getPass() {
-		return pass;
-	}
-
-	public void setPass(String pass) {
-		this.pass = pass;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
+    public Set<Rol> getRoles() { return roles; }
+    public void setRoles(Set<Rol> roles) { this.roles = roles; }
 }

@@ -1,44 +1,70 @@
 package es.prw.models;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+@Entity
+@Table(name = "Test")
 public class Test {
-	private Integer idTest;
-	private String test;
-	private Integer idMateria;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_test")
+    private Integer idTest;
 
-	public Test() {
-		super();
+    @Column(name = "nombre_test", nullable = false, unique = true)
+    private String nombreTest;
 
+    @ManyToOne
+    @JoinColumn(name = "id_materia", nullable = false)
+    @JsonIgnore
+    private Materia materia;
+
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pregunta> preguntas = new ArrayList<>();
+    public Test() {
+        // Se mantiene la inicialización en el constructor vacío
+    }
+
+    public Test(Integer idTest, String nombreTest, Materia materia) {
+        this.idTest = idTest;
+        this.nombreTest = nombreTest;
+        this.materia = materia;
+        this.preguntas = new ArrayList<>(); // Se inicializa aquí también
+    }
+
+    public Integer getIdTest() {
+        return idTest;
+    }
+
+    public void setIdTest(Integer idTest) {
+        this.idTest = idTest;
+    }
+
+   
+    public String getNombreTest() {
+		return nombreTest;
 	}
 
-	public Test(Integer idTest, String test, Integer idMateria) {
-		super();
-		this.idTest = idTest;
-		this.test = test;
-		this.idMateria = idMateria;
+	public void setNombreTest(String nombreTest) {
+		this.nombreTest = nombreTest;
 	}
 
-	public Integer getIdTest() {
-		return idTest;
-	}
+	public Materia getMateria() {
+        return materia;
+    }
 
-	public void setIdTest(Integer idTest) {
-		this.idTest = idTest;
-	}
+    public void setMateria(Materia materia) {
+        this.materia = materia;
+    }
 
-	public String getTest() {
-		return test;
-	}
+    public List<Pregunta> getPreguntas() {
+        return preguntas;
+    }
 
-	public void setTest(String test) {
-		this.test = test;
-	}
-
-	public Integer getIdMateria() {
-		return idMateria;
-	}
-
-	public void setIdMateria(Integer idMateria) {
-		this.idMateria = idMateria;
-	}
-
+    public void setPreguntas(List<Pregunta> preguntas) {
+        this.preguntas = preguntas;
+    }
 }
