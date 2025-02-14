@@ -111,6 +111,7 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/","/home","/auth/register", "/auth/login", "/styles/**", "/img/**", "/js/**").permitAll()
                 .requestMatchers("/api/asistente", "/chat.html").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuarios/api/current-user").authenticated()
                 .anyRequest().authenticated()
         )

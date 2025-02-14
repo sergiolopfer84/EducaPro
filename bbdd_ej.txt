@@ -1,0 +1,82 @@
+
+DROP DATABASE IF EXISTS educapro_db; 
+CREATE DATABASE educapro_db; 
+USE educapro_db;
+
+-- Tabla Rol
+CREATE TABLE Rol (
+  id_rol INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Tabla Usuario
+CREATE TABLE Usuario (
+  id_usuario INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(255) NOT NULL,
+  pass VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Tabla de relación Usuario_Rol (Muchos a Muchos)
+CREATE TABLE Usuario_Rol (
+  id_usuario INT NOT NULL,
+  id_rol INT NOT NULL,
+  PRIMARY KEY (id_usuario, id_rol),
+  CONSTRAINT UsuarioRol_id_usuario_fk FOREIGN KEY (id_usuario) REFERENCES Usuario (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT UsuarioRol_id_rol_fk FOREIGN KEY (id_rol) REFERENCES Rol (id_rol) ON DELETE CASCADE
+);
+
+-- Tabla Materia
+CREATE TABLE Materia (
+  id_materia INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  nombre_materia VARCHAR(255) NOT NULL, 
+  estado boolean NOT NULL
+);
+
+-- Tabla Test
+CREATE TABLE Test (
+  id_test INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  nombre_test VARCHAR(255) NOT NULL,
+  estado boolean NOT NULL,
+  id_materia INT NOT NULL,
+  CONSTRAINT Test_id_materia_fk FOREIGN KEY (id_materia) REFERENCES Materia (id_materia) ON DELETE CASCADE
+);
+
+-- Tabla Pregunta
+CREATE TABLE Pregunta (
+  id_pregunta INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  texto_pregunta VARCHAR(255) NOT NULL,
+  id_test INT NOT NULL,
+  CONSTRAINT Pregunta_id_test_fk FOREIGN KEY (id_test) REFERENCES Test (id_test) ON DELETE CASCADE
+);
+
+-- Tabla Respuesta
+CREATE TABLE Respuesta (
+  id_respuesta INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  texto_respuesta VARCHAR(255) NOT NULL,
+  texto_explicacion VARCHAR(255) NOT NULL,
+  nota FLOAT NOT NULL,
+  id_pregunta INT NOT NULL,
+  CONSTRAINT Respuesta_id_pregunta_fk FOREIGN KEY (id_pregunta) REFERENCES Pregunta (id_pregunta) ON DELETE CASCADE
+);
+
+-- Tabla Puntuación
+CREATE TABLE Puntuacion (
+  id_puntuacion INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id_usuario INT NOT NULL,
+  id_test INT NOT NULL,
+  nota_obtenida FLOAT NOT NULL,
+  fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT Puntuacion_id_usuario_fk FOREIGN KEY (id_usuario) REFERENCES Usuario (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT Puntuacion_id_test_fk FOREIGN KEY (id_test) REFERENCES Test (id_test) ON DELETE CASCADE
+);
+
+-- Tabla Usuario_Materia
+CREATE TABLE Usuario_Materia (
+  id_Usuario_Materia INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id_Usuario INT NOT NULL,
+  id_Materia INT NOT NULL,
+  CONSTRAINT UsuarioMateria_id_usuario_fk FOREIGN KEY (id_Usuario) REFERENCES Usuario (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT UsuarioMateria_id_materia_fk FOREIGN KEY (id_Materia) REFERENCES Materia (id_materia) ON DELETE CASCADE
+);
+

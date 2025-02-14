@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Materias (Admin)</title>
+</head>
+<body>
+<h1>Listado de Materias</h1>
+<ul>
+    <li th:each="materia : ${materias}">
+        <span th:text="${materia.nombreMateria}">Nombre Materia</span>
+        <!-- Botones para editar/eliminar -->
+    </li>
+</ul>
+<!-- Formulario para crear materia, etc. -->
+</body>
+</html>
