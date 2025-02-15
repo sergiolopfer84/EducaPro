@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Modal oculto de inicio -->
-    <!--<style>
+    <style>
       .modal {
         display: none; /* Oculto por defecto */
         position: fixed;
@@ -38,39 +38,12 @@
         cursor: pointer;
         font-size: 20px;
       }
-    </style>-->
+    </style>
 </head>
 
 <body>
     <header>
-        <div class="top-bar">
-            <!-- Logo e imágenes -->
-            <div class="logo-wrapper">
-                <a href="/" class="logo-container">
-                    <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
-                </a>
-                <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
-                <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
-                <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
-            </div>
-
-            <!-- Botones de auth -->
-            <div class="auth-buttons">
-                <a href="/index" id="Inicio" class="btn">
-                    <i class="fas fa-home"></i>
-                </a>
-                <button id="perfilBtn" class="btn btn-profile">
-                    <i class="fas fa-user"></i> Perfil
-                </button>
-                <div th:if="${usuario != null}" id="logoutTrigger">
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" style="background: none; border: none; cursor: pointer;">
-                            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+       	<div th:replace="~{fragments/header :: header}"></div>
     </header>
 
     <div class="container">
@@ -122,7 +95,7 @@
 
     <!-- jQuery y tu script -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/script.js"></script>
+   <script th:src="@{/js/script.js}" defer></script>
 
     <!-- Inyecta token CSRF -->
     <script>

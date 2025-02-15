@@ -1,9 +1,42 @@
 
+document.addEventListener("DOMContentLoaded", function() {
+    const currentPath = window.location.pathname;
+    console.log("Ruta actual:", currentPath);
+
+    const inicioBtn = document.querySelector("#Inicio");
+    const irATestsBtn = document.querySelector("#IrATests");
+    const perfilBtn = document.querySelector("#perfilBtn");
+    const adminBtn = document.querySelector("#adminBtn");
+
+    if (currentPath === "/index" && inicioBtn) {
+		console.log("entraando a ", currentPath)
+        console.log("Ocultando botón Inicio");
+        inicioBtn.style.display = "none";
+    }
+
+    if (currentPath === "/home" && irATestsBtn) {
+		console.log("entraando a ", currentPath)
+        console.log("Ocultando botón Ir a Tests");
+        irATestsBtn.style.display = "none";
+    }
+
+    if (currentPath === "/perfil" && perfilBtn) {
+		console.log("entraando a ", currentPath)
+        console.log("Ocultando botón Perfil");
+        perfilBtn.style.display = "none";
+    }
+
+    if (currentPath === "/admin" && adminBtn) {
+		console.log("entraando a ", currentPath)
+        console.log("Ocultando botón Admin");
+        adminBtn.style.display = "none";
+    }
+});
+
 $(document).ready(function() {
 
-
-
-
+	const currentPath = window.location.pathname;
+	
 	/***************************************************
 	 * 1. Dropdown personalizado para selects
 	 ***************************************************/
@@ -207,7 +240,7 @@ $(document).ready(function() {
 		console.error("Error al obtener datos del usuario.");
 	});
 
-	const currentPath = window.location.pathname;
+
 
 	// Configuración global CSRF
 	if (window.csrf && window.csrf.token && window.csrf.headerName) {
@@ -221,7 +254,7 @@ $(document).ready(function() {
 	if (currentPath === '/home') {
 
 		/*document.getElementById("adminBtn").addEventListener("click", function () {
-		    window.location.href = "/admin"; // Asegúrate de que esta sea la URL correcta del panel de administración
+			window.location.href = "/admin"; // Asegúrate de que esta sea la URL correcta del panel de administración
 		});*/
 
 		// Cargar materias

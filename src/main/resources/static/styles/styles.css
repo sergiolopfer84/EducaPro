@@ -20,6 +20,7 @@ body {
   background: linear-gradient(to bottom, #f4f4f9, #e6e6e6);
   color: #333;
   display: flex;
+  border: 5px solid red;
 }
 
 /* ======================================

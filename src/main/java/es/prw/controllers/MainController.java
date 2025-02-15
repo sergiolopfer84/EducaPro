@@ -22,6 +22,8 @@ public class MainController {
     	
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         model.addAttribute("csrfToken", csrfToken);
+        String currentUri = request.getRequestURI();
+        model.addAttribute("currentUri", currentUri);
         return "views/perfil";
     }
 
@@ -33,6 +35,8 @@ public class MainController {
             model.addAttribute("csrfToken", csrfToken);
             model.addAttribute("csrfHeaderName", csrfToken.getHeaderName());
         }
+        String currentUri = request.getRequestURI();
+        model.addAttribute("currentUri", currentUri);
         return "views/home";  // Verifica que tienes una vista llamada "home.html"
     }
 
@@ -43,6 +47,8 @@ public class MainController {
             model.addAttribute("csrfToken", csrfToken);
             model.addAttribute("csrfHeaderName", csrfToken.getHeaderName());
         }
+        String currentUri = request.getRequestURI();
+        model.addAttribute("currentUri", currentUri);
         return "views/index";
     }
     @GetMapping("/admin")
@@ -50,6 +56,8 @@ public class MainController {
     	
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         model.addAttribute("csrfToken", csrfToken);
+        String currentUri = request.getRequestURI();
+        model.addAttribute("currentUri", currentUri);
         return "views/admin";
     }
 }
