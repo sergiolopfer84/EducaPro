@@ -7,7 +7,6 @@ import es.prw.repositories.PuntuacionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Collections;
 
@@ -33,13 +32,14 @@ public class TestService {
     @Transactional(readOnly = true)
     public List<NotaHistorialDTO> obtenerHistorialNotas() {
         return testRepository.findAll().stream()
-            .map(test -> {
-                List<Double> notas = puntuacionRepository.findNotasByTest(test);
-                return new NotaHistorialDTO(test.getNombreTest(), (notas != null) ? notas : Collections.emptyList());
-            })
-            .collect(Collectors.toList());
+                .map(test -> {
+                    List<Double> notas = puntuacionRepository.findNotasByTest(test);
+                    return new NotaHistorialDTO(test.getNombreTest(),
+                            (notas != null) ? notas : Collections.emptyList());
+                })
+                .collect(Collectors.toList());
     }
-    
+
     @Transactional
     public Test guardarTest(Test test) {
         return testRepository.save(test);

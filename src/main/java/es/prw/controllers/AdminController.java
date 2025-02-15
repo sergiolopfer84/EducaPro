@@ -5,7 +5,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import es.prw.models.*;
 import es.prw.services.*;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -19,9 +18,9 @@ public class AdminController {
     private final RespuestaService respuestaService;
     private final UsuarioService usuarioService;
 
-    public AdminController(MateriaService materiaService, TestService testService, 
-                           PreguntaService preguntaService, RespuestaService respuestaService, 
-                           UsuarioService usuarioService) {
+    public AdminController(MateriaService materiaService, TestService testService,
+            PreguntaService preguntaService, RespuestaService respuestaService,
+            UsuarioService usuarioService) {
         this.materiaService = materiaService;
         this.testService = testService;
         this.preguntaService = preguntaService;
@@ -113,13 +112,13 @@ public class AdminController {
         return ResponseEntity.ok(usuarioService.obtenerTodos());
     }
 
-	/*
-	 * @PatchMapping("/usuarios/{id}/rol") public ResponseEntity<Usuario>
-	 * cambiarRolUsuario(@PathVariable int id, @RequestParam int idRol) { return
-	 * ResponseEntity.ok(usuarioService.cambiarRolUsuario(id, idRol)); }
-	 */
-    
- // Obtener solo las materias activas
+    /*
+     * @PatchMapping("/usuarios/{id}/rol") public ResponseEntity<Usuario>
+     * cambiarRolUsuario(@PathVariable int id, @RequestParam int idRol) { return
+     * ResponseEntity.ok(usuarioService.cambiarRolUsuario(id, idRol)); }
+     */
+
+    // Obtener solo las materias activas
     @GetMapping("/materias/activas")
     public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
         return ResponseEntity.ok(materiaService.obtenerMateriasActivas());

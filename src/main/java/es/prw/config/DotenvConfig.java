@@ -1,12 +1,11 @@
 package es.prw.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DotenvConfig {
-	static {
+    static {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
         System.out.println("DB_HOST: " + System.getProperty("DB_HOST"));
@@ -15,9 +14,5 @@ public class DotenvConfig {
         System.out.println("DB_USER: " + System.getProperty("DB_USER"));
         System.out.println("DB_PASSWORD: " + System.getProperty("DB_PASSWORD"));
     }
-	
-	
-	
-	
-	
+
 }

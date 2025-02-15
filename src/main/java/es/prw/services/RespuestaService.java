@@ -3,9 +3,7 @@ package es.prw.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import es.prw.models.Respuesta;
-import es.prw.models.Test;
 import es.prw.dtos.EvaluacionDTO;
-import es.prw.models.Pregunta;
 import es.prw.repositories.RespuestaRepository;
 import es.prw.repositories.TestRepository;
 import es.prw.repositories.PreguntaRepository;
@@ -21,7 +19,8 @@ public class RespuestaService {
     private final PreguntaRepository preguntaRepository;
 
     // Inyección de dependencias por constructor
-    public RespuestaService(RespuestaRepository respuestaRepository, TestRepository testRepository, PreguntaRepository preguntaRepository) {
+    public RespuestaService(RespuestaRepository respuestaRepository, TestRepository testRepository,
+            PreguntaRepository preguntaRepository) {
         this.respuestaRepository = respuestaRepository;
         this.testRepository = testRepository;
         this.preguntaRepository = preguntaRepository;
@@ -55,7 +54,7 @@ public class RespuestaService {
                 .mapToDouble(Respuesta::getNota)
                 .sum();
     }
-    
+
     @Transactional
     public Respuesta crearRespuesta(Respuesta respuesta) {
         return respuestaRepository.save(respuesta);
@@ -64,7 +63,7 @@ public class RespuestaService {
     @Transactional
     public Respuesta actualizarRespuesta(int id, Respuesta nuevaRespuesta) {
         Optional<Respuesta> respuestaExistente = respuestaRepository.findById(id);
-        
+
         if (respuestaExistente.isPresent()) {
             Respuesta respuesta = respuestaExistente.get();
             respuesta.setTextoRespuesta(nuevaRespuesta.getTextoRespuesta());
@@ -81,8 +80,5 @@ public class RespuestaService {
     public void eliminarRespuesta(int id) {
         respuestaRepository.deleteById(id);
     }
-    
-    
-    
-    
+
 }
