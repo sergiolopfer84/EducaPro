@@ -16,14 +16,19 @@ public class Materia {
     @Column(name = "nombre_materia", nullable = false, unique = true)
     private String nombreMateria;
 
+    @Column(name = "activa", nullable = false)
+    private boolean activa = false;
+
     @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Test> tests;
+
     public Materia() {}
 
-    public Materia(Integer idMateria, String nombreMateria) {
+    public Materia(Integer idMateria, String nombreMateria, boolean activa) {
         this.idMateria = idMateria;
         this.nombreMateria = nombreMateria;
+        this.activa = activa;
     }
 
     public Integer getIdMateria() {
@@ -34,17 +39,23 @@ public class Materia {
         this.idMateria = idMateria;
     }
 
-    
-
     public String getNombreMateria() {
-		return nombreMateria;
-	}
+        return nombreMateria;
+    }
 
-	public void setNombreMateria(String nombreMateria) {
-		this.nombreMateria = nombreMateria;
-	}
+    public void setNombreMateria(String nombreMateria) {
+        this.nombreMateria = nombreMateria;
+    }
 
-	public List<Test> getTests() {
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public List<Test> getTests() {
         return tests;
     }
 

@@ -45,4 +45,11 @@ public class MainController {
         }
         return "views/index";
     }
+    @GetMapping("/admin")
+    public String adminPage(Model model, HttpServletRequest request) {
+    	
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        model.addAttribute("csrfToken", csrfToken);
+        return "views/admin";
+    }
 }

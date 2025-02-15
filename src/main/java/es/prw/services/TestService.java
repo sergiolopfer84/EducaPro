@@ -39,4 +39,30 @@ public class TestService {
             })
             .collect(Collectors.toList());
     }
+    
+    @Transactional
+    public Test guardarTest(Test test) {
+        return testRepository.save(test);
+    }
+
+    @Transactional
+    public Test actualizarTest(int id, Test nuevoTest) {
+        return testRepository.findById(id).map(test -> {
+            test.setNombreTest(nuevoTest.getNombreTest());
+            return testRepository.save(test);
+        }).orElseThrow(() -> new RuntimeException("Test no encontrado"));
+    }
+
+    @Transactional
+    public void eliminarTest(int id) {
+        testRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Test cambiarEstadoTest(int id, boolean estado) {
+        return testRepository.findById(id).map(test -> {
+            test.setActivo(estado);
+            return testRepository.save(test);
+        }).orElseThrow(() -> new RuntimeException("Test no encontrado"));
+    }
 }

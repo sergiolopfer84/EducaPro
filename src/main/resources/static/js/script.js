@@ -220,6 +220,10 @@ $(document).ready(function() {
 
 	if (currentPath === '/home') {
 
+		/*document.getElementById("adminBtn").addEventListener("click", function () {
+		    window.location.href = "/admin"; // Asegúrate de que esta sea la URL correcta del panel de administración
+		});*/
+
 		// Cargar materias
 		$.get('/materias', function(data) {
 			let options = '<option value="">Elige una materia</option>';

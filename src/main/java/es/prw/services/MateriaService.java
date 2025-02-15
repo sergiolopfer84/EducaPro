@@ -40,6 +40,44 @@ public class MateriaService {
                         testRepository.countByMateria(materia),
                         puntuacionRepository.countAprobadosByMateria(materia.getIdMateria())
                 ))
-                .toList(); // Reemplaza collect(Collectors.toList())
+                .toList(); 
+    }
+    
+
+    @Transactional
+    public Materia guardarMateria(Materia materia) {
+        return materiaRepository.save(materia);
+    }
+
+    @Transactional
+    public Materia actualizarMateria(int id, Materia nuevaMateria) {
+        return materiaRepository.findById(id).map(materia -> {
+            materia.setNombreMateria(nuevaMateria.getNombreMateria());
+            materia.setActiva(nuevaMateria.isActiva());
+            return materiaRepository.save(materia);
+        }).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
+    }
+
+    @Transactional
+    public void eliminarMateria(int id) {
+        materiaRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Materia cambiarEstadoMateria(int id, boolean estado) {
+        return materiaRepository.findById(id).map(materia -> {
+            materia.setActiva(estado);
+            return materiaRepository.save(materia);
+        }).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Materia> obtenerMateriasActivas() {
+        return materiaRepository.findByActivaTrue();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Materia> obtenerMateriasInactivas() {
+        return materiaRepository.findByActivaFalse();
     }
 }

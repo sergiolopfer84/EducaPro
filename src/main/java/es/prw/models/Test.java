@@ -17,6 +17,9 @@ public class Test {
     @Column(name = "nombre_test", nullable = false, unique = true)
     private String nombreTest;
 
+    @Column(name = "activa", nullable = false)
+    private boolean activa = false;
+    
     @ManyToOne
     @JoinColumn(name = "id_materia", nullable = false)
     @JsonIgnore
@@ -28,10 +31,11 @@ public class Test {
         // Se mantiene la inicialización en el constructor vacío
     }
 
-    public Test(Integer idTest, String nombreTest, Materia materia) {
+    public Test(Integer idTest, String nombreTest, Materia materia, boolean activa) {
         this.idTest = idTest;
         this.nombreTest = nombreTest;
         this.materia = materia;
+        this.activa = activa;
         this.preguntas = new ArrayList<>(); // Se inicializa aquí también
     }
 
@@ -44,7 +48,15 @@ public class Test {
     }
 
    
-    public String getNombreTest() {
+    public boolean isActivo() {
+		return activa;
+	}
+
+	public void setActivo(boolean activa) {
+		this.activa = activa;
+	}
+
+	public String getNombreTest() {
 		return nombreTest;
 	}
 

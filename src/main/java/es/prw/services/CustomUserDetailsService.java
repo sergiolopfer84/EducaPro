@@ -68,7 +68,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
         List<GrantedAuthority> authorities = usuario.getRoles().stream()
-                .map(rol -> new SimpleGrantedAuthority(rol.getNombre())) // Se asume que en la BBDD ya tienen "ROLE_"
+                .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre())) // Se asume que en la BBDD ya tienen "ROLE_"
                 .collect(Collectors.toList());
 
         return new org.springframework.security.core.userdetails.User(

@@ -76,6 +76,14 @@ public class UsuarioService {
         }).orElse(false);
     }
     
+	/*
+	 * @Transactional public Usuario cambiarRolUsuario(int id, int idRol) { return
+	 * usuarioRepository.findById(id).map(usuario -> { usuario.setIdRol(idRol);
+	 * return usuarioRepository.save(usuario); }).orElseThrow(() -> new
+	 * RuntimeException("Usuario no encontrado")); }
+	 */
+    
+    
     @PostConstruct
     public void testInsertUser() {
         if (!usuarioRepository.existsByEmail("admin@educapro.es")) {
@@ -99,5 +107,11 @@ public class UsuarioService {
             System.out.println("ℹ️ Usuario ADMIN ya existe.");
         }
     }
+    @Transactional(readOnly = true)
+    public List<Usuario> obtenerTodos() {
+        return usuarioRepository.findAll();
+    }
+
+    
 
 }

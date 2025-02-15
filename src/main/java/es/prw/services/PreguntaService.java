@@ -14,6 +14,7 @@ import es.prw.repositories.TestRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PreguntaService {
@@ -28,16 +29,7 @@ public class PreguntaService {
 	        this.respuestaRepository = respuestaRepository;
 	    }
 
-		/*
-		 * // Obtener preguntas con respuestas de un test
-		 * 
-		 * @Transactional(readOnly = true) public List<Pregunta>
-		 * getPreguntasConRespuestas1(int idTest) { if
-		 * (!testRepository.existsById(idTest)) { throw new
-		 * IllegalStateException("Test no encontrado"); } return
-		 * preguntaRepository.findByTestIdTest(idTest); }
-		 */
-	    
+		
 	    
     @Transactional(readOnly = true)
     public List<Pregunta> getPreguntasConRespuestas(int idTest) {
@@ -65,5 +57,31 @@ public class PreguntaService {
         pregunta.setTest(test);
         return preguntaRepository.save(pregunta);
     }
+    
+	/*
+	 * @Transactional public Pregunta crearPregunta(Pregunta pregunta) { return
+	 * preguntaRepository.save(pregunta); }
+	 */
 
+    @Transactional
+    public Pregunta actualizarPregunta(int id, Pregunta nuevaPregunta) {
+        Optional<Pregunta> preguntaExistente = preguntaRepository.findById(id);
+        
+        if (preguntaExistente.isPresent()) {
+            Pregunta pregunta = preguntaExistente.get();
+            pregunta.setPregunta(nuevaPregunta.getPregunta());
+            pregunta.setTest(nuevaPregunta.getTest());
+            return preguntaRepository.save(pregunta);
+        } else {
+            throw new RuntimeException("Pregunta no encontrada con ID: " + id);
+        }
+    }
+
+    @Transactional
+    public void eliminarPregunta(int id) {
+        preguntaRepository.deleteById(id);
+    }
+    
+    
+    
 }

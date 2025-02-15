@@ -55,4 +55,34 @@ public class RespuestaService {
                 .mapToDouble(Respuesta::getNota)
                 .sum();
     }
+    
+    @Transactional
+    public Respuesta crearRespuesta(Respuesta respuesta) {
+        return respuestaRepository.save(respuesta);
+    }
+
+    @Transactional
+    public Respuesta actualizarRespuesta(int id, Respuesta nuevaRespuesta) {
+        Optional<Respuesta> respuestaExistente = respuestaRepository.findById(id);
+        
+        if (respuestaExistente.isPresent()) {
+            Respuesta respuesta = respuestaExistente.get();
+            respuesta.setTextoRespuesta(nuevaRespuesta.getTextoRespuesta());
+            respuesta.setTextoExplicacion(nuevaRespuesta.getTextoExplicacion());
+            respuesta.setNota(nuevaRespuesta.getNota());
+            respuesta.setPregunta(nuevaRespuesta.getPregunta());
+            return respuestaRepository.save(respuesta);
+        } else {
+            throw new RuntimeException("Respuesta no encontrada con ID: " + id);
+        }
+    }
+
+    @Transactional
+    public void eliminarRespuesta(int id) {
+        respuestaRepository.deleteById(id);
+    }
+    
+    
+    
+    
 }

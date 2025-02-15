@@ -17,7 +17,7 @@ public interface TestRepository extends JpaRepository<Test, Integer> {
 
 	@Transactional(readOnly = true)
     int countByMateria(Materia materia);
-
+//devuelve todos los tests asociados a una materia específica
     @Transactional(readOnly = true)
     List<Test> findByMateriaIdMateria(Integer idMateria);
 
