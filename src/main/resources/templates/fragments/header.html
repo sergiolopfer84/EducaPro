@@ -2,7 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link 
+	     href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	     rel="stylesheet">
+		 <!-- Tu CSS principal -->
+		 <link rel="stylesheet" th:href="@{/styles/styles.css}" />
 	<script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
 
 </head>
@@ -42,12 +47,12 @@
 				<!-- Si el usuario está autenticado -->
 				<div th:if="${usuario != null}">
 					
-					<a href="/index" id="Inicio" class="btn ">
-						<i class="fas fa-home"></i>
-					</a>
+					<button id="Inicio" class="btn" onclick="window.location.href='/index'">
+					    <i class="fas fa-home"></i>
+					</button>
 
 
-					<a href="/home" id="#IrATests" class="btn btn-test">
+					<a href="/home" id="IrATests" class="btn">
 						Ir a Tests
 					</a>
 
@@ -55,7 +60,7 @@
 						<i class="fas fa-user"></i> Perfil
 					</a>
 
-					<a href="/admin" id="#adminBtn" class="btn btn-admin">
+					<a href="/admin" id="adminBtn" class="btn btn-admin">
 						Admin
 					</a>
 

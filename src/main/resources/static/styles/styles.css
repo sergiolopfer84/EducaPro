@@ -20,7 +20,7 @@ body {
   background: linear-gradient(to bottom, #f4f4f9, #e6e6e6);
   color: #333;
   display: flex;
-  border: 5px solid red;
+
 }
 
 /* ======================================
@@ -91,10 +91,11 @@ header {
 ====================================== */
 .auth-buttons {
   display: flex;
+  position: re;
   align-items: center;
   justify-content: center; /* Si quieres centrarlos horizontalmente */
-  gap: 0.625rem;
-  margin-top: auto; /* Empuja los botones al fondo */
+  gap: 0.2rem;
+  margin-top: 5%; /* Empuja los botones al fondo */
 }
 /* Icono del login */
 .login-icon {
@@ -111,10 +112,9 @@ header {
 
 /* Botón "Ir a Tests" */
 .btn-test {
-  background-color: rgb(220, 147, 10) !important;
+  background-color:#f5b029!important;
   color: white !important;
   max-width: 10.75rem !important; /* 140px → 8.75rem */
-  font-weight: bold !important;
   padding: 0.625rem 0.9375rem;   /* 10px 15px */
   border-radius: 0.3125rem;      /* 5px */
   border: none;
@@ -125,12 +125,14 @@ header {
 .btn-test:hover {
   background-color: #f5b029 !important;
   transform: scale(1.15);
+  font-weight: bold;
 }
 
 /* Botón Logout (icono) */
 .logout-icon {
-  max-width: 4.5rem; /* 40px */
+  max-width: 3rem; /* 40px */
   height: auto;
+ inset-inline-end: initial;
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 .logout-icon:hover {
@@ -150,7 +152,8 @@ header {
   transition: color 0.3s ease;
 }
 #Inicio:hover {
-  color: #ffcc00;
+	background-color: #f5b029 !important;
+	transform: scale(1.15);
 }
 
 /* "Cerrar Sesión" */
@@ -171,6 +174,11 @@ header {
 .btn btn-profile{
 	background-color: yellow;
 }
+.btn btn-profile:hover{
+	background-color: #f5b029 !important;
+	  transform: scale(1.15);
+	  font-weight: bold;
+  }
 /* ======================================
    6. LOGIN (FORMULARIOS Y MODAL)
 ====================================== */
@@ -302,7 +310,10 @@ header {
 ====================================== */
 .container {
   display: flex;
+  max-width: 120%;
   flex-grow: 1;
+  padding-right: 0px;
+  padding-left: 0px;
 }
 
 /* Sidebar (ejemplo si lo usas) */
@@ -380,7 +391,9 @@ select {
   transition: background-color 0.3s;
 }
 .btn:hover {
-  transform: scale(1.05);
+	background-color: rgb(255, 255, 255) !important;
+	color: #f5b029;
+	
 }
 
 /* ======================================
@@ -1001,11 +1014,7 @@ width: 70rem;
     margin-left: 0;   /* Quita margen extra */
     max-width: 70%;   /* Ajusta el ancho si quieres */
   }
-  .auth-buttons {
-   margin-left: 50%;
-   height: 80%;
-  
-  }
+
   .login-icon {
 	width: 70%;
   }

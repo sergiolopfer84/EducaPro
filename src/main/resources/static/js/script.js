@@ -9,26 +9,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const adminBtn = document.querySelector("#adminBtn");
 
     if (currentPath === "/index" && inicioBtn) {
-		console.log("entraando a ", currentPath)
-        console.log("Ocultando botón Inicio");
-        inicioBtn.style.display = "none";
+		inicioBtn.style.display = "none";
     }
 
     if (currentPath === "/home" && irATestsBtn) {
-		console.log("entraando a ", currentPath)
-        console.log("Ocultando botón Ir a Tests");
         irATestsBtn.style.display = "none";
     }
 
     if (currentPath === "/perfil" && perfilBtn) {
-		console.log("entraando a ", currentPath)
-        console.log("Ocultando botón Perfil");
         perfilBtn.style.display = "none";
     }
 
     if (currentPath === "/admin" && adminBtn) {
-		console.log("entraando a ", currentPath)
-        console.log("Ocultando botón Admin");
         adminBtn.style.display = "none";
     }
 });
