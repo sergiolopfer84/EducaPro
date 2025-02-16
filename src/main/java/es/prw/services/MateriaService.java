@@ -66,7 +66,6 @@ public class MateriaService {
     @Transactional
     public Materia cambiarEstadoMateria(int id, boolean estado) {
         return materiaRepository.findById(id).map(materia -> {
-            materia.setActiva(estado);
             return materiaRepository.save(materia);
         }).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
     }
@@ -80,4 +79,12 @@ public class MateriaService {
     public List<Materia> obtenerMateriasInactivas() {
         return materiaRepository.findByActivaFalse();
     }
+    
+    public void toggleEstadoMateria(Integer id) {
+        Materia materia = materiaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Materia no encontrada"));
+        materia.setActiva(!materia.isActiva());
+        materiaRepository.save(materia);
+    }
+
 }

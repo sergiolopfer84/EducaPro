@@ -270,7 +270,7 @@ $(document).ready(function() {
 		});*/
 
 		// Cargar materias
-		$.get('/materias', function(data) {
+		$.get('/materias/activas', function(data) {
 			let options = '<option value="">Elige una materia</option>';
 			data.forEach(materia => {
 				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
@@ -287,7 +287,7 @@ $(document).ready(function() {
 				transformSelectToDropdown('tests', 'testsDropdown');
 				return;
 			}
-			$.get(`/tests/materia/${idMateria}`, function(data) {
+			$.get(`/tests/materia/{idMateria}/activos`, function(data) {
 				let options = '<option value="">Elige un test</option>';
 				data.forEach(test => {
 					options += `<option value="${test.idTest}">${test.nombreTest || test.test}</option>`;

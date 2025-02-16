@@ -40,54 +40,152 @@
 			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 				<h2 class="mt-4">Panel de Administración</h2>
 
-				<!-- Secciones de gestión -->
+
+				<!-- Contenedor de gestión de secciones -->
 				<div id="materiasSection" class="admin-section">
 					<h3>Gestión de Materias</h3>
-					<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#materiaModal">Añadir
-						Materia</button>
 				</div>
-
 				<div id="testsSection" class="admin-section" style="display:none;">
 					<h3>Gestión de Tests</h3>
-					<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#testModal">Añadir
-						Test</button>
 				</div>
-
 				<div id="preguntasSection" class="admin-section" style="display:none;">
 					<h3>Gestión de Preguntas</h3>
-					<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#preguntaModal">Añadir
-						Pregunta</button>
 				</div>
-
 				<div id="respuestasSection" class="admin-section" style="display:none;">
 					<h3>Gestión de Respuestas</h3>
-					<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#respuestaModal">Añadir
-						Respuesta</button>
 				</div>
-
-				<div id="usuariosSection" class="admin-section" style="display:none;">
-					<h3>Gestión de Usuarios</h3>
+				
+				<!-- Contenedor dinámico de acciones -->
+				<div id="accionesContainer" style="display: none;">
+				    <button class="btn btn-success" onclick="openFormModal('add')">Añadir</button>
+				    <button class="btn btn-warning" onclick="openFormModal('edit')">Editar</button>
+				    <button class="btn btn-danger" onclick="eliminarElemento()">Eliminar</button>
+				    <button class="btn btn-info" onclick="mostrarListaEstados()">Activar/Inactivar</button>
 				</div>
+				<div id="estadoContainer" class="admin-section" style="display: none;">
+								    <h3>Activar/Inactivar Materias/Tests</h3>
+								    <div id="listaEstados" class="list-group"></div>
+								    <button id="guardarCambiosEstado" class="btn btn-primary mt-3" onclick="guardarCambiosEstados()" style="display:none;">
+								        Guardar Cambios
+								    </button>
+								</div>
 			</main>
 		</div>
 	</div>
 
-	<!-- Modales para formularios -->
-	<div class="modal fade" id="materiaModal" tabindex="-1" aria-labelledby="materiaModalLabel" aria-hidden="true">
+	<!-- Modal Dinámico para Añadir/Editar -->
+	<div class="modal fade" id="modalFormulario" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Añadir Materia</h5>
+					<h5 class="modal-title" id="modalLabel">Formulario</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body">
-					<input type="text" id="materiaNombre" class="form-control" placeholder="Nombre de la materia">
-					<button class="btn btn-primary mt-3" onclick="crearMateria()">Guardar</button>
+
+					<form id="dynamicForm">
+						<input type="hidden" id="elementId">
+						<!-- Selección de elemento a eliminar -->
+
+
+						<!-- Selección de elemento a modificar -->
+						<div class="mb-3" id="selectElementoContainer" style="display:none;">
+							<label for="selectElemento" class="form-label">Seleccionar:</label>
+							<select class="form-control" id="selectElemento"></select>
+						</div>
+
+						<!-- Nombre del elemento -->
+						<div class="mb-3">
+							<label for="nombreElemento" class="form-label">Nuevo nombre:</label>
+							<input type="text" class="form-control" id="nombreElemento" required>
+						</div>
+
+						<!-- Checkbox para activar/desactivar (Solo para Materias y Tests) -->
+						<div class="mb-3" id="activoContainer" style="display:none;">
+							<label class="form-label">Activo:</label>
+							<input type="checkbox" id="activoCheckbox">
+						</div>
+
+						<!-- Selección de Materia (Para Tests) -->
+						<div class="mb-3" id="materiaSelectContainer" style="display:none;">
+							<label for="materiaSelect" class="form-label">Materia:</label>
+							<select class="form-control" id="materiaSelect"></select>
+						</div>
+
+						<!-- Selección de Test (Para Preguntas) -->
+						<div class="mb-3" id="testSelectContainer" style="display:none;">
+							<label for="testSelect" class="form-label">Test:</label>
+							<select class="form-control" id="testSelect"></select>
+						</div>
+
+						<!-- Selección de Pregunta (Para Respuestas) -->
+						<div class="mb-3" id="preguntaSelectContainer" style="display:none;">
+							<label for="preguntaSelect" class="form-label">Pregunta:</label>
+							<select class="form-control" id="preguntaSelect"></select>
+						</div>
+
+						<!-- Respuestas dinámicas (Solo para Preguntas) -->
+						<div id="respuestasContainer" style="display:none;">
+							<h5>Respuestas</h5>
+							<button type="button" class="btn btn-secondary btn-sm" onclick="addRespuesta()">Añadir
+								Respuesta</button>
+							<div id="respuestasLista"></div>
+						</div>
+
+						<button type="submit" class="btn btn-primary">Guardar</button>
+					</form>
 				</div>
 			</div>
 		</div>
 	</div>
 
+
+
+	<!-- Modal de Confirmación para Eliminar -->
+	<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalEliminarLabel">Eliminar Elemento</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3" id="selectEliminarContainer" style="display:none;">
+						<label for="selectEliminar" class="form-label">Seleccionar elemento a eliminar:</label>
+						<select class="form-control" id="selectEliminar"></select>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-danger" onclick="confirmarEliminar()">Eliminar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal de Confirmación para Activar/Inactivar -->
+	<!--<div class="modal fade" id="modalToggleEstado" tabindex="-1" aria-labelledby="modalToggleEstadoLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="modalToggleEstadoLabel">Activar/Inactivar Elemento</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+	            </div>
+	            <div class="modal-body">
+	                <div class="mb-3">
+	                    <label for="selectToggleEstado" class="form-label">Seleccionar elemento:</label>
+	                    <select class="form-control" id="selectToggleEstado"></select>
+	                </div>
+	                <p class="text-warning">⚠ ¿Estás seguro de que deseas cambiar el estado de este elemento?</p>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+	                <button type="button" class="btn btn-primary" onclick="confirmarToggleEstado()">Confirmar</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+-->
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script th:src="@{/js/admin.js}" defer></script>

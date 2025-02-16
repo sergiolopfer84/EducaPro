@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import es.prw.models.Materia;
 import es.prw.models.Pregunta;
 import es.prw.models.Respuesta;
 import es.prw.models.Test;
@@ -29,7 +30,12 @@ public class PreguntaService {
 	        this.respuestaRepository = respuestaRepository;
 	    }
 
-		
+	    @Transactional(readOnly = true)
+	    public List<Pregunta> getPreguntas() {
+	    	 List<Pregunta> preguntas = preguntaRepository.findAll();
+	    	System.out.println(preguntas);
+	        return preguntas;
+	    }
 	    
     @Transactional(readOnly = true)
     public List<Pregunta> getPreguntasConRespuestas(int idTest) {
