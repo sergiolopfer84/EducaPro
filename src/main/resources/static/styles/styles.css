@@ -863,6 +863,25 @@ input {
   transform: translateY(-20px);
   animation: fadeIn 0.3s ease-in-out forwards;
 }
+.quick-questions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center; /* o left, según quieras */
+}
+
+.quick-question-btn {
+  background-color: rgb(0, 128, 0);
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.quick-question-btn:hover {
+  background-color: #0056b3;
+}
+
 
 /* Animación de entrada suave */
 @keyframes fadeIn {

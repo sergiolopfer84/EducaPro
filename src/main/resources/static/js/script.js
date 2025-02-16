@@ -1,5 +1,25 @@
 
 document.addEventListener("DOMContentLoaded", function() {
+	 // Seleccionamos todos los botones de "pregunta rápida"
+	    const quickQuestionButtons = document.querySelectorAll('.quick-question-btn');
+	    const userInput = document.getElementById('user-input');
+	    const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+	    // Al hacer clic en cada botón, enviamos la pregunta directamente
+	    quickQuestionButtons.forEach(button => {
+	        button.addEventListener('click', () => {
+	            // Tomamos la pregunta del atributo data-question
+	            const question = button.getAttribute('data-question');
+	            
+	            // Si prefieres rellenar el input y que el usuario le dé a "Enviar" manualmente:
+	            // userInput.value = question;
+
+	            // O si prefieres enviar directamente:
+	            userInput.value = question;
+	            sendMessageBtn.click(); // Llamamos al clic del botón "Enviar" para que vaya al backend
+	        });
+	    });
+	
     const currentPath = window.location.pathname;
     console.log("Ruta actual:", currentPath);
 
