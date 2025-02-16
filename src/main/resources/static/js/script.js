@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function() {
 	 // Seleccionamos todos los botones de "pregunta rápida"
 	    const quickQuestionButtons = document.querySelectorAll('.quick-question-btn');
@@ -270,7 +269,7 @@ $(document).ready(function() {
 		});*/
 
 		// Cargar materias
-		$.get('/materias/activas', function(data) {
+		$.get('/materias', function(data) {
 			let options = '<option value="">Elige una materia</option>';
 			data.forEach(materia => {
 				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
@@ -287,7 +286,7 @@ $(document).ready(function() {
 				transformSelectToDropdown('tests', 'testsDropdown');
 				return;
 			}
-			$.get(`/tests/materia/{idMateria}/activos`, function(data) {
+			$.get(`/tests/materia/${idMateria}`, function(data) {
 				let options = '<option value="">Elige un test</option>';
 				data.forEach(test => {
 					options += `<option value="${test.idTest}">${test.nombreTest || test.test}</option>`;
@@ -456,6 +455,7 @@ $(document).ready(function() {
 			$('#finalizar').prop('disabled', false);
 		});
 
+		
 		// ASISTENTE
 		const openAssistantBtn = document.getElementById("openAssistantBtn");
 		const modal = document.getElementById("assistantModal");
@@ -464,39 +464,58 @@ $(document).ready(function() {
 		const userInput = document.getElementById("user-input");
 		const sendMessageBtn = document.getElementById("sendMessageBtn");
 
+		// Función para enviar mensaje
+		function sendMessage() {
+		    let mensaje = userInput.value.trim();
+		    if (mensaje === "") return;
+
+		    chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+		    userInput.value = "";
+
+		    // Petición al backend
+		    fetch('/api/asistente', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            [window.csrf.headerName]: window.csrf.token
+		        },
+		        body: JSON.stringify(mensaje)
+		    })
+		        .then(response => response.text())
+		        .then(data => {
+		            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+		            chatBox.scrollTop = chatBox.scrollHeight;
+		        });
+		}
+
+		// Evento para abrir el asistente
 		openAssistantBtn.addEventListener("click", function() {
-			modal.style.display = "flex";
+		    modal.style.display = "flex";
 		});
+
+		// Evento para cerrar el asistente
 		closeBtn.addEventListener("click", function() {
-			modal.style.display = "none";
+		    modal.style.display = "none";
 		});
-		sendMessageBtn.addEventListener("click", function() {
-			let mensaje = userInput.value.trim();
-			if (mensaje === "") return;
 
-			chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
-			userInput.value = "";
+		// Evento para enviar mensaje con el botón de enviar
+		sendMessageBtn.addEventListener("click", sendMessage);
 
-			// Petición al backend
-			fetch('/api/asistente', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					[window.csrf.headerName]: window.csrf.token
-				},
-				body: JSON.stringify(mensaje)
-			})
-				.then(response => response.text())
-				.then(data => {
-					chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
-					chatBox.scrollTop = chatBox.scrollHeight;
-				});
+		// Evento para enviar mensaje al presionar Enter
+		userInput.addEventListener("keydown", function(event) {
+		    if (event.key === "Enter" && !event.shiftKey) {
+		        event.preventDefault(); // Evita el salto de línea en el input
+		        sendMessage(); // Llama a la función de enviar mensaje
+		    }
 		});
+
+		// Evento para cerrar el asistente al hacer clic fuera del modal
 		window.addEventListener("click", function(event) {
-			if (event.target === modal) {
-				modal.style.display = "none";
-			}
+		    if (event.target === modal) {
+		        modal.style.display = "none";
+		    }
 		});
+
 	} // Fin if /home
 
 }); // Fin document.ready

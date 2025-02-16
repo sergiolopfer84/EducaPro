@@ -1,5 +1,3 @@
-
-
 package es.prw.services;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -46,7 +44,7 @@ public class OpenAIService {
                 Map.of("role", "user", "content", datosChat.get("mensaje"))
             ));
 
-            requestBody.put("max_tokens", 150);
+            requestBody.put("max_tokens", 400);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

@@ -850,7 +850,7 @@ input {
   /* Puedes crear un contenedor interno si deseas 600×600 fijos */
 }
 .modal-content2 {
-  background: #ffffff; /* Blanco puro para un look limpio */
+  background: rgb(192, 192, 192); /* Blanco puro para un look limpio */
   padding: 2rem; /* Espacio más generoso */
   border-radius: 10px; /* Bordes más suaves */
   width: 60rem; /* Mejor proporción */
@@ -870,7 +870,7 @@ input {
 }
 
 .quick-question-btn {
-  background-color: rgb(0, 128, 0);
+  background-color: rgb(10, 92, 245);
   color: white;
   padding: 6px 10px;
   border: none;
@@ -879,7 +879,8 @@ input {
 }
 
 .quick-question-btn:hover {
-  background-color: #0056b3;
+  background-color: rgb(0, 128, 0);
+ 
 }
 
 
@@ -922,15 +923,22 @@ input {
 #chat-box {
   height: 18.75rem; /* 300px */
   overflow-y: auto;
-  background: rgb(239, 239, 239);
-  padding: 0.625rem;    /* 10px */
+  background: url('/img/FondoAsistente.png') no-repeat center center;
+  background-size: cover;
+  flood-opacity: 0.3;
+  padding: 0.625rem; /* 10px */
   margin-bottom: 0.625rem;
-  gap: 1.875rem;        /* 30px */
+  gap: 1.875rem; /* 30px */
   align-items: flex-start;
+  border-radius: 8px; /* Opcional: Bordes redondeados */
 }
+
+
 #chat-box p {
   margin-top: 0.625rem; /* 10px */
   text-align: left;
+  font-weight: bold;
+
 }
 #user-input {
   padding: 0.625rem;    /* 10px */
