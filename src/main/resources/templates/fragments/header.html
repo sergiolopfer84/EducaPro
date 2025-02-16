@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link 
+	     href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	     rel="stylesheet">
+		 <!-- Tu CSS principal -->
+		 <link rel="stylesheet" th:href="@{/styles/styles.css}" />
+	<script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
+
+</head>
+
+<body>
+	<header th:fragment="header">
+		<div class="top-bar">
+			<!-- Contenedor de logos e imágenes -->
+			<div class="logo-wrapper">
+				<!-- Logo principal -->
+				<a href="/" class="logo-container">
+					<img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
+				</a>
+
+
+				<!-- Imagen adicional (opcional) -->
+				<img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
+
+				<!-- Imagen de chavalada -->
+				<img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+
+				<!-- Imagen “TuAcademia” -->
+				<img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
+			</div>
+
+			<!-- Contenedor de botones de autenticación -->
+			<div class="auth-buttons">
+				<!-- Si el usuario NO está autenticado, solo mostrar login -->
+				<div th:if="${usuario == null}" id="loginTrigger"
+					style="background: none; border: none; cursor: pointer;"
+					th:attr="data-toggle='modal', data-target='#authModal'">
+					<img th:src="@{/img/LoginImage.png}" alt="Login" class="login-icon">
+				</div>
+
+				
+
+				<!-- Si el usuario está autenticado -->
+				<div th:if="${usuario != null}">
+					
+					<button id="Inicio" class="btn" onclick="window.location.href='/index'">
+					    <i class="fas fa-home"></i>
+					</button>
+
+
+					<a href="/home" id="IrATests" class="btn">
+						Ir a Tests
+					</a>
+
+					<a href="/perfil" id="perfilBtn" class="btn btn-profile">
+						<i class="fas fa-user"></i> Perfil
+					</a>
+
+					<a href="/admin" id="adminBtn" class="btn btn-admin">
+						Admin
+					</a>
+
+
+					<!-- Botón de LOGOUT -->
+					<div th:if="${usuario != null}" id="logoutTrigger">
+						<form th:action="@{/logout}" method="post" style="display: inline;">
+							<button type="submit" style="background: none; border: none; cursor: pointer; padding: 0;">
+								<img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<script th:src="@{/js/script.js}" defer></script>
+</body>
+
+</html>

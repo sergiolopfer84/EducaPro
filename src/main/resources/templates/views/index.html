@@ -1,151 +1,164 @@
 <!DOCTYPE html>
-<html lang="es">
-	<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <!-- Etiqueta meta para responsive en dispositivos móviles -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EducaPro - Home</title>
-    <link rel="stylesheet" th:href="@{/styles/styles.css}" />
+
+  
+    <!-- Fuentes y Bootstrap -->
+	
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+		 <!-- Tu CSS principal -->
+		 <link rel="stylesheet" th:href="@{/styles/styles.css}" />
 </head>
 <body>
-	   <!-- <video autoplay loop muted playsinline id="background-video">
-	    <source th:src="@{/img/IndexBackground.mp4}" type="video/mp4">
-	    Tu navegador no soporta el video en HTML5.
-	</video>-->
-
     <!-- Barra superior -->
-	<header>
-	  <div class="top-bar">
-	    <!-- Elemento que quedará a la izquierda -->
-		<div class="logo-wrapper">
-		    <a href="/" class="logo-container">
-		        <img th:src="@{/img/EducaPro EP.png}" alt="EducaPro Logo" class="logo">
-		    </a>
-		    <img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
-		    <img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
-		    <img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
-		</div>
+    <header>
+     <div th:replace="~{fragments/header :: header}"></div>
+    </header>
 
-	    <!-- Aquí colocamos los botones que queremos a la derecha -->
-		<div class="auth-buttons">
-		    <!-- Solo mostrar "Ir a Tests" si hay un usuario autenticado -->
-			<a th:if="${usuario != null}"
-			   href="/home"
-			   class="btn btn-test">
-			   Ir a Tests
-			</a>
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <!-- Sección sobre la academia -->
+        <section class="about-section">
+            <h2>¿Qué es EducaPro?</h2>
+            <p>
+                EducaPro es una academia online diseñada para estudiantes de todos los niveles. 
+                Ofrecemos contenido interactivo, ejercicios personalizados y tests que te 
+                ayudarán a alcanzar tus objetivos académicos desde la comodidad de tu hogar.
+            </p>
+        </section>
 
-		    <!-- Solo mostrar el botón "Iniciar sesión / Registrarse" si NO hay usuario -->
-			<!-- Botón con imagen en lugar de texto, mismas condiciones y mismo modal -->
-			<!-- Solo se muestra si NO hay usuario autenticado -->
-			<!--<button th:if="${usuario == null}"
-			        id="loginTrigger"
-			        style="background: none; border: none; cursor: pointer;"
-			        th:attr="data-toggle='modal', data-target='#authModal'">
-			    
-			    <img th:src="@{/images/LoginImage.png}" alt="Login" width="32" height="32">
-			</button> -->
+        <!-- Sección de video -->
+        <section class="video-section">
+            <video autoplay loop muted playsinline disablePictureInPicture>
+                <source th:src="@{/img/indexVideo.mp4}" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+            </video>
+        </section>
 
-			<div th:if="${usuario == null}"
-					        id="loginTrigger"
-					        style="background: none; border: none; cursor: pointer;"
-					        th:attr="data-toggle='modal', data-target='#authModal'">
-					    
-							<img th:src="@{/img/LoginImage.png}" alt="Login" class="login-icon">
-					</div>
+        <!-- Sección de localización -->
+        <section class="location-section">
+            <h2>¿Dónde estamos?</h2>
+            <p>Estamos disponibles online 24/7, pero nuestro centro principal está ubicado en:</p>
+            <p><strong>
+                Industrial José Sánchez Peñate, s/n, 
+                35001 Las Palmas de Gran Canaria, Las Palmas
+            </strong></p>
 
-		    <!-- Solo mostrar "Cerrar sesión" si hay un usuario autenticado -->
-			<div th:if="${usuario != null}" id="logoutTrigger">
-			    <form th:action="@{/logout}" method="post" style="display: inline;">
-			        <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0;">
-			            <img th:src="@{/img/LogoutImage.png}" alt="Logout" class="logout-icon">
-			        </button>
-			    </form>
-			</div>
-		</div>
-	  </div>
-	</header>
-
-	<!-- Contenido principal -->
-	<main class="main-content">
-	    <!-- Sección sobre la academia -->
-	    <section class="about-section">
-	        <h2>¿Qué es EducaPro?</h2>
-	        <p>
-	            EducaPro es una academia online diseñada para estudiantes de todos los niveles. Ofrecemos contenido interactivo, 
-	            ejercicios personalizados y tests que te ayudarán a alcanzar tus objetivos académicos desde la comodidad de tu hogar.
-	        </p>
-	    </section>
-
-	    <!-- Sección de video -->
-		<section class="video-section">
-		    <video autoplay loop muted playsinline disablePictureInPicture>
-		        <source th:src="@{/img/indexVideo.mp4}" type="video/mp4">
-		        Tu navegador no soporta el elemento de video.
-		    </video>
-		</section>
-
-	    <!-- Sección de localización -->
-	    <section class="location-section">
-	        <h2>¿Dónde estamos?</h2>
-	        <p>Estamos disponibles online 24/7, pero nuestro centro principal está ubicado en:</p>
-	        <p><strong>Industrial José Sánchez Peñate, s/n, 35001 Las Palmas de Gran Canaria, Las Palmas</strong></p>
-	        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3518.626260833984!2d-15.449318323875708!3d28.12741740683795!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc40951c8a18a0f3%3A0x142cb0d09763a325!2sIES%20El%20Rinc%C3%B3n!5e0!3m2!1ses!2ses!4v1737324540594!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-	    </section>
-	</main>
+            <!-- Para hacer el mapa más responsive, 
+                 puedes envolverlo en un div con width:100% 
+                 y usar un style inline en el iframe 
+                 (o clase) con max-width -->
+            <div style="max-width: 600px; margin: 0 auto;">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3518.626260833984!2d-15.449318323875708!3d28.12741740683795!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc40951c8a18a0f3%3A0x142cb0d09763a325!2sIES%20El%20Rinc%C3%B3n!5e0!3m2!1ses!2ses!4v1737324540594!5m2!1ses!2ses"
+                    width="100%"
+                    height="450"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </section>
+    </main>
 
     <!-- Modal de autenticación -->
-	<div class="modal fade" id="authModal" tabindex="-1" role="dialog" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div class="modal fade" id="authModal" tabindex="-1" 
+         role="dialog" aria-labelledby="authModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="authModalLabel">Iniciar sesión / Registrarse</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="authModalLabel">
+                        Iniciar sesión / Registrarse
+                    </h5>
+                    <button type="button" class="close" 
+                            data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-					<!-- Formulario de inicio de sesión -->
-					<!-- Formulario de inicio de sesión (dentro del modal) -->
-					<form id="loginForm" onsubmit="return false;">
-					    <h6>Iniciar sesión</h6>
-					    <input type="text" id="loginUsername" placeholder="Email" class="form-control mb-2">
-					    <input type="password" id="loginPassword" placeholder="Contraseña" class="form-control mb-2">
-					    <button id="loginBtn" class="btn btn-primary" type="button">Iniciar sesión</button>
-					    <div id="loginError" class="mt-2"></div> <!-- Mensajes de error aparecerán aquí -->
-					    <p class="mt-2">¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate aquí</a></p>
-					</form>
+                    <!-- Formulario de inicio de sesión -->
+                    <form id="loginForm" onsubmit="return false;">
+                        <h6>Iniciar sesión</h6>
+                        <input type="text" 
+                               id="loginUsername" 
+                               placeholder="Email" 
+                               class="form-control mb-2">
+                        <input type="password" 
+                               id="loginPassword" 
+                               placeholder="Contraseña" 
+                               class="form-control mb-2">
+                        <button id="loginBtn" 
+                                class="btn btn-primary" 
+                                type="button">
+                            Iniciar sesión
+                        </button>
+                        <div id="loginError" class="mt-2"></div>
+                        <p class="mt-2">
+                            ¿No tienes una cuenta? 
+                            <a href="#" id="showRegister">Regístrate aquí</a>
+                        </p>
+                    </form>
 
                     <!-- Formulario de registro -->
-				
-					<div id="registerForm" style="display: none;">
-					    <h6>Registrarse</h6>
-					    <input type="text" id="registerName" placeholder="Nombre" class="form-control mb-2">
-					    <input type="text" id="registerEmail" placeholder="Email" class="form-control mb-2">
-					    <input type="password" id="registerPassword" placeholder="Contraseña" class="form-control mb-2">
-					    <button id="registerBtn" class="btn btn-primary">Registrarse</button>
+                    <div id="registerForm" style="display: none;">
+                        <h6>Registrarse</h6>
+                        <input type="text" 
+                               id="registerName" 
+                               placeholder="Nombre" 
+                               class="form-control mb-2">
+                        <input type="text" 
+                               id="registerEmail" 
+                               placeholder="Email" 
+                               class="form-control mb-2">
+                        <input type="password" 
+                               id="registerPassword" 
+                               placeholder="Contraseña" 
+                               class="form-control mb-2">
+                        <button id="registerBtn" 
+                                class="btn btn-primary">
+                            Registrarse
+                        </button>
+                        <div id="registerError" class="mt-2"></div>
 
-					    <!-- DIV para mostrar errores de validación en rojo -->
-					    <div id="registerError" class="mt-2"></div>
+                        <p class="mt-2">
+                            ¿Ya tienes una cuenta?
+                            <a href="#" id="showLogin">Inicia sesión aquí</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-					    <p class="mt-2">¿Ya tienes una cuenta? 
-					       <a href="#" id="showLogin">Inicia sesión aquí</a>
-					    </p>
-					</div>
+    <!-- Scripts de jQuery y Bootstrap -->
+    <script 
+     src="https://code.jquery.com/jquery-3.3.1.min.js">
+    </script>
+    <script 
+     src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js">
+    </script>
+    <script 
+     src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+    </script>
 
-    <!-- Cargar jQuery y Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="/js/script.js"></script>
-	<script>
-	    window.csrf = {
-	        token: '[[${csrfToken.token}]]',
-	        headerName: '[[${csrfToken.headerName}]]'
-	    };
-	    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
-	</script>
+    <!-- Tu script principal -->
+    <script th:src="@{/js/script.js}" defer></script>
+
+    <!-- CSRF tokens, si los usas en tu app -->
+    <script>
+        window.csrf = {
+            token: '[[${csrfToken.token}]]',
+            headerName: '[[${csrfToken.headerName}]]'
+        };
+        console.log("csrf.token:", window.csrf.token, 
+                    "csrf.headerName:", window.csrf.headerName);
+    </script>
 </body>
 </html>

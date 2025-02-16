@@ -1,24 +1,41 @@
 package es.prw.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "Respuesta")
 public class Respuesta {
-	private Integer idRespuesta;
-	private String respuesta;
-	private String explicacion;
-	private float nota;
-	private Integer idPregunta;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_respuesta")
+    private Integer idRespuesta;
 
-	public Respuesta() {
-		super();
+    @Column(name = "texto_respuesta", nullable = false)
+    private String textoRespuesta;
 
-	}
+    @Column(name = "texto_explicacion", nullable = false)
+    private String textoExplicacion;
 
-	public Respuesta(Integer idRespuesta, String respuesta, String explicacion, float nota, Integer idPregunta) {
+    @Column(name = "nota", nullable = false)
+    private Double nota;
+
+    @ManyToOne
+    @JoinColumn(name = "id_pregunta", nullable = false)
+    @JsonIgnore
+    private Pregunta pregunta;
+
+    public Respuesta() {}
+
+	public Respuesta(Integer idRespuesta, String textoRespuesta, String textoExplicacion, Double nota,
+			Pregunta pregunta) {
 		super();
 		this.idRespuesta = idRespuesta;
-		this.respuesta = respuesta;
-		this.explicacion = explicacion;
+		this.textoRespuesta = textoRespuesta;
+		this.textoExplicacion = textoExplicacion;
 		this.nota = nota;
-		this.idPregunta = idPregunta;
+		this.pregunta = pregunta;
 	}
 
 	public Integer getIdRespuesta() {
@@ -29,36 +46,37 @@ public class Respuesta {
 		this.idRespuesta = idRespuesta;
 	}
 
-	public String getRespuesta() {
-		return respuesta;
+	public String getTextoRespuesta() {
+		return textoRespuesta;
 	}
 
-	public void setRespuesta(String respuesta) {
-		this.respuesta = respuesta;
+	public void setTextoRespuesta(String textoRespuesta) {
+		this.textoRespuesta = textoRespuesta;
 	}
 
-	public String getExplicacion() {
-		return explicacion;
+	public String getTextoExplicacion() {
+		return textoExplicacion;
 	}
 
-	public void setExplicacion(String explicacion) {
-		this.explicacion = explicacion;
+	public void setTextoExplicacion(String textoExplicacion) {
+		this.textoExplicacion = textoExplicacion;
 	}
 
-	public float getNota() {
+	public Double getNota() {
 		return nota;
 	}
 
-	public void setNota(float nota) {
+	public void setNota(Double nota) {
 		this.nota = nota;
 	}
 
-	public Integer getIdPregunta() {
-		return idPregunta;
+	public Pregunta getPregunta() {
+		return pregunta;
 	}
 
-	public void setIdPregunta(Integer idPregunta) {
-		this.idPregunta = idPregunta;
+	public void setPregunta(Pregunta pregunta) {
+		this.pregunta = pregunta;
 	}
 
+    
 }
