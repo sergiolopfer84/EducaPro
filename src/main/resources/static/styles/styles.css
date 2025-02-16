@@ -27,10 +27,10 @@ body {
    3. ENCABEZADO (HEADER) Y TOP-BAR
 ====================================== */
 header {
-  background: linear-gradient(to right, #1e3148, #3b82f6);
+  background: #1e3148;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.25rem 0.375rem rgb(0, 0, 0);
   border-radius: 0.625rem; /* 10px */
 }
 
@@ -47,8 +47,7 @@ header {
   font-size: 2rem;
   border-radius: 5px;
   padding: 1rem;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
-}
+  box-shadow: 0 0.25rem 0.375rem rgb(0, 0, 0);}
 
 /* ======================================
    4. LOGOS E IMÁGENES DEL HEADER
@@ -77,6 +76,34 @@ header {
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
+
+@keyframes glowingText {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgb(228, 199, 27)); /* Brillo dorado */
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  }
+}
+
+
+.logo  {
+	animation: glowingText 2s infinite alternate ease-in-out; /* Aplica la animación */
+
+}
+.chavalada-img {
+  width: auto; /* Mantiene la proporción */
+  height: 100%; /* Ocupa todo el alto disponible */
+  max-height: 180vh; /* Se adapta a la altura de la pantalla */
+  object-fit: cover; /* Evita deformaciones y rellena el espacio */
+  border-radius: 8px; /* Bordes redondeados opcionales */
+}
+
+
+
 /* Ajustes específicos para el .logo */
 .logo {
   /* 20px → 1.25rem */
@@ -95,7 +122,7 @@ header {
   align-items: center;
   justify-content: center; /* Si quieres centrarlos horizontalmente */
   gap: 0.2rem;
-  margin-top: 5%; /* Empuja los botones al fondo */
+  margin-top: 7%; /* Empuja los botones al fondo */
 }
 /* Icono del login */
 .login-icon {
@@ -140,6 +167,13 @@ header {
   filter: brightness(1.2);
   cursor: pointer;
 }
+#logoutTrigger {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: auto;
+}
+
 
 /* Botón "Inicio" o icono Home */
 #Inicio {
@@ -158,7 +192,6 @@ header {
 
 /* "Cerrar Sesión" */
 #logoutBtn {
-  background: #dc3545;
   color: white;
   padding: 0.5rem 0.9375rem; /* 8px 15px */
   border: none;
@@ -167,16 +200,13 @@ header {
   font-size: 1rem;
   transition: background-color 0.3s;
 }
-#logoutBtn:hover {
-  background: #c82333;
-}
 
 .btn btn-profile{
 	background-color: yellow;
 }
 .btn btn-profile:hover{
 	background-color: #f5b029 !important;
-	  transform: scale(1.15);
+	
 	  font-weight: bold;
   }
 /* ======================================
@@ -402,7 +432,8 @@ select {
 .main-content {
   flex: 1;
   padding: 1.25rem; /* 20px */
-  background: url('/img/IndexBackground.png') center/cover;
+  background: url('/img/IndexBackground.png') no-repeat center center fixed;
+
   background-size: cover;
   background-blend-mode: overlay;
   border-radius: 0.625rem; /* 10px */
@@ -696,8 +727,9 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 37.5rem;   /* 600px */
-  height: 59.375rem;/* 950px */
+  width: 30rem;   /* 480px */
+  height: 47.5rem;/* 760px */
+
   overflow: hidden;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.8);
   border-radius: 0.9375rem; /* 15px */
@@ -818,15 +850,52 @@ input {
   /* Puedes crear un contenedor interno si deseas 600×600 fijos */
 }
 .modal-content2 {
-  background-color: white;
-  padding: 1.25rem; /* 20px */
-  border-radius: 0.625rem; /* 10px */
-width: 70rem;
+  background: rgb(192, 192, 192); /* Blanco puro para un look limpio */
+  padding: 2rem; /* Espacio más generoso */
+  border-radius: 10px; /* Bordes más suaves */
+  width: 60rem; /* Mejor proporción */
+  max-width: 90vw; /* Evita que se desborde en pantallas pequeñas */
   text-align: center;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 20px rgb(0, 0, 0); /* Sombra más marcada para profundidad */
   margin: auto;
-  z-index: 11;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeIn 0.3s ease-in-out forwards;
 }
+.quick-questions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center; /* o left, según quieras */
+}
+
+.quick-question-btn {
+  background-color: rgb(10, 92, 245);
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.quick-question-btn:hover {
+  background-color: rgb(0, 128, 0);
+ 
+}
+
+
+/* Animación de entrada suave */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-30px);
+  }
+}
+
 .modal-content {
   background-color: white;
   padding: 1.25rem; /* 20px */
@@ -854,15 +923,22 @@ width: 70rem;
 #chat-box {
   height: 18.75rem; /* 300px */
   overflow-y: auto;
-  background: rgb(239, 239, 239);
-  padding: 0.625rem;    /* 10px */
+  background: url('/img/FondoAsistente.png') no-repeat center center;
+  background-size: cover;
+  flood-opacity: 0.3;
+  padding: 0.625rem; /* 10px */
   margin-bottom: 0.625rem;
-  gap: 1.875rem;        /* 30px */
+  gap: 1.875rem; /* 30px */
   align-items: flex-start;
+  border-radius: 8px; /* Opcional: Bordes redondeados */
 }
+
+
 #chat-box p {
   margin-top: 0.625rem; /* 10px */
   text-align: left;
+  font-weight: bold;
+
 }
 #user-input {
   padding: 0.625rem;    /* 10px */
@@ -937,7 +1013,8 @@ width: 70rem;
 	width: 30%;
 	height: 100%;
   }
-
+  
+ 
   /* Modal centrado en tablets */
   .modal.show .modal-dialog {
     top: 50%;

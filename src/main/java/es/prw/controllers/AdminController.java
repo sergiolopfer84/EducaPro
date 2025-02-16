@@ -53,6 +53,7 @@ public class AdminController {
     // CRUD Test
     @PostMapping("/tests")
     public ResponseEntity<Test> crearTest(@RequestBody Test test) {
+    	System.out.println("crearTest adminController "+ test);
         return ResponseEntity.ok(testService.guardarTest(test));
     }
 

@@ -2,6 +2,8 @@ package es.prw.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import es.prw.models.Materia;
 import es.prw.models.Pregunta;
 import es.prw.models.Respuesta;
 import es.prw.services.PreguntaService;
@@ -21,6 +23,13 @@ public class PreguntaController {
         this.preguntaService = preguntaService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Pregunta>> obtenerMaterias() {
+        List<Pregunta> preguntas = preguntaService.getPreguntas();
+        
+        return ResponseEntity.ok(preguntas);
+    }
+    
     @GetMapping("/test/{idTest}")
     public ResponseEntity<List<Pregunta>> obtenerPreguntasPorTest(
             @PathVariable int idTest,

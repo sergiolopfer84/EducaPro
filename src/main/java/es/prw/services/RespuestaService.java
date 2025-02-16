@@ -2,6 +2,8 @@ package es.prw.services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import es.prw.models.Pregunta;
 import es.prw.models.Respuesta;
 import es.prw.dtos.EvaluacionDTO;
 import es.prw.repositories.RespuestaRepository;
@@ -24,6 +26,13 @@ public class RespuestaService {
         this.respuestaRepository = respuestaRepository;
         this.testRepository = testRepository;
         this.preguntaRepository = preguntaRepository;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Respuesta> getRespuestas() {
+    	 List<Respuesta> respuestas = respuestaRepository.findAll();
+    	System.out.println(respuestas);
+        return respuestas;
     }
 
     // Obtener respuestas de una pregunta

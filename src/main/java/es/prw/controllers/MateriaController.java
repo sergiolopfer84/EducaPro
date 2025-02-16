@@ -18,6 +18,12 @@ public class MateriaController {
     public MateriaController(MateriaService materiaService) {
         this.materiaService = materiaService;
     }
+    @GetMapping("/activas")
+    public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
+        List<Materia> materiasActivas = materiaService.obtenerMateriasActivas(); // Nuevo método en el servicio
+        return ResponseEntity.ok(materiasActivas);
+    }
+
 
     @GetMapping
     public ResponseEntity<List<Materia>> obtenerMaterias() {
@@ -31,4 +37,10 @@ public class MateriaController {
         List<MateriaProgresoDTO> progreso = materiaService.obtenerProgresoMaterias();
         return ResponseEntity.ok(progreso);
     }
+    @PutMapping("/{id}/toggle-activa")
+    public ResponseEntity<Void> cambiarEstadoMateria(@PathVariable Integer id) {
+        materiaService.toggleEstadoMateria(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

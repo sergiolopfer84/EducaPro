@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import es.prw.dtos.EvaluacionDTO;
+import es.prw.models.Pregunta;
 import es.prw.models.Respuesta;
 import es.prw.services.RespuestaService;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,12 @@ public class RespuestaController {
         this.respuestaService = respuestaService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Respuesta>> obtenerMaterias() {
+        List<Respuesta> respuestas = respuestaService.getRespuestas();
+        
+        return ResponseEntity.ok(respuestas);
+    }
     @GetMapping("/pregunta/{idPregunta}")
     public ResponseEntity<List<Respuesta>> obtenerRespuestasPorPregunta(@PathVariable int idPregunta) {
         List<Respuesta> respuestas = respuestaService.getRespuestasByPregunta(idPregunta);

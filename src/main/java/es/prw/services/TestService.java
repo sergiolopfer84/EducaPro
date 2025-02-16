@@ -1,6 +1,7 @@
 package es.prw.services;
 
 import es.prw.dtos.NotaHistorialDTO;
+import es.prw.models.Materia;
 import es.prw.models.Test;
 import es.prw.repositories.TestRepository;
 import es.prw.repositories.PuntuacionRepository;
@@ -22,6 +23,14 @@ public class TestService {
         this.puntuacionRepository = puntuacionRepository;
     }
 
+    
+    // Obtener todas las materias
+    @Transactional(readOnly = true)
+    public List<Test> getTests() {
+    	 List<Test> tests = testRepository.findAll();
+    	System.out.println(tests);
+        return tests;
+    }
     // Obtener tests por materia
     @Transactional(readOnly = true)
     public List<Test> getTestsByMateria(int idMateria) {
@@ -42,6 +51,7 @@ public class TestService {
 
     @Transactional
     public Test guardarTest(Test test) {
+    	System.out.println("GGuardar tests  testService "+ test);
         return testRepository.save(test);
     }
 
@@ -65,4 +75,22 @@ public class TestService {
             return testRepository.save(test);
         }).orElseThrow(() -> new RuntimeException("Test no encontrado"));
     }
+    
+    
+    public void toggleEstadoTest(Integer id) {
+        Test test = testRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Test no encontrado"));
+        test.setActivo(!test.isActivo());
+        testRepository.save(test);
+    }
+    @Transactional(readOnly = true)
+    public List<Test> obtenerTestActivos() {
+        return testRepository.findByActivaTrue();
+    }
+    public List<Test> obtenerTestsActivosPorMateria(int idMateria) {
+        return testRepository.findByMateria_IdMateriaAndActivaTrue(idMateria);
+    }
+
+    
+
 }
