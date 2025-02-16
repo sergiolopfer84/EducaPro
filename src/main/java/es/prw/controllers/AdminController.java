@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
-@PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Solo accesible para administradores
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')") // Solo accesible para administradores
 public class AdminController {
 
     private final MateriaService materiaService;
