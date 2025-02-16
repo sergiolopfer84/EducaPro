@@ -32,4 +32,5 @@ public interface TestRepository extends JpaRepository<Test, Integer> {
 	List<Test> findByActivaTrue();
 	List<Test> findByMateria_IdMateriaAndActivaTrue(int idMateria);
 
+
 }

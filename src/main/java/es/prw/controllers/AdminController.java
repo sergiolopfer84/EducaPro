@@ -3,6 +3,8 @@ package es.prw.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import es.prw.dtos.TestDTO;
 import es.prw.models.*;
 import es.prw.services.*;
 import java.util.List;
@@ -18,7 +20,8 @@ public class AdminController {
     private final RespuestaService respuestaService;
     private final UsuarioService usuarioService;
 
-    public AdminController(MateriaService materiaService, TestService testService,
+    public AdminController(
+            MateriaService materiaService, TestService testService,
             PreguntaService preguntaService, RespuestaService respuestaService,
             UsuarioService usuarioService) {
         this.materiaService = materiaService;
@@ -28,7 +31,10 @@ public class AdminController {
         this.usuarioService = usuarioService;
     }
 
-    // CRUD Materia
+    // ============================
+    // 📌 CRUD MATERIAS
+    // ============================
+
     @PostMapping("/materias")
     public ResponseEntity<Materia> crearMateria(@RequestBody Materia materia) {
         return ResponseEntity.ok(materiaService.guardarMateria(materia));
@@ -45,16 +51,39 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/materias/{id}/estado")
-    public ResponseEntity<Materia> cambiarEstadoMateria(@PathVariable int id, @RequestParam boolean estado) {
-        return ResponseEntity.ok(materiaService.cambiarEstadoMateria(id, estado));
+    @PatchMapping("/materias/{id}/toggle-activa")
+    public ResponseEntity<Void> toggleEstadoMateria(@PathVariable int id) {
+        materiaService.toggleEstado(id); // 🔹 Llamamos al servicio pero no intentamos devolver nada
+        return ResponseEntity.noContent().build(); // ✅ Devuelve 204 No Content
     }
 
-    // CRUD Test
+    @GetMapping("/materias/activas")
+    public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
+        return ResponseEntity.ok(materiaService.obtenerMateriasActivas());
+    }
+
+    @GetMapping("/materias/inactivas")
+    public ResponseEntity<List<Materia>> obtenerMateriasInactivas() {
+        return ResponseEntity.ok(materiaService.obtenerMateriasInactivas());
+    }
+
+    // ============================
+    // 📌 CRUD TESTS
+    // ============================
+
     @PostMapping("/tests")
-    public ResponseEntity<Test> crearTest(@RequestBody Test test) {
-    	System.out.println("crearTest adminController "+ test);
-        return ResponseEntity.ok(testService.guardarTest(test));
+    public ResponseEntity<Test> crearTest(@RequestBody TestDTO testDTO) {
+        Materia materia = materiaService.buscarPorId(testDTO.getIdMateria());
+        if (materia == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Test nuevoTest = new Test();
+        nuevoTest.setNombreTest(testDTO.getNombreTest());
+        nuevoTest.setMateria(materia);
+        nuevoTest.setActivo(testDTO.isActiva());
+
+        return ResponseEntity.ok(testService.guardarTest(nuevoTest));
     }
 
     @PutMapping("/tests/{id}")
@@ -68,12 +97,15 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/tests/{id}/estado")
-    public ResponseEntity<Test> cambiarEstadoTest(@PathVariable int id, @RequestParam boolean estado) {
-        return ResponseEntity.ok(testService.cambiarEstadoTest(id, estado));
+    @PatchMapping("/tests/{id}/toggle-activa")
+    public ResponseEntity<Test> toggleEstadoTest(@PathVariable int id) {
+        return ResponseEntity.ok(testService.toggleEstado(id));
     }
 
-    // CRUD Pregunta
+    // ============================
+    // 📌 CRUD PREGUNTAS
+    // ============================
+
     @PostMapping("/preguntas")
     public ResponseEntity<Pregunta> crearPregunta(@RequestBody Pregunta pregunta) {
         return ResponseEntity.ok(preguntaService.crearPregunta(pregunta));
@@ -90,7 +122,10 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    // CRUD Respuesta
+    // ============================
+    // 📌 CRUD RESPUESTAS
+    // ============================
+
     @PostMapping("/respuestas")
     public ResponseEntity<Respuesta> crearRespuesta(@RequestBody Respuesta respuesta) {
         return ResponseEntity.ok(respuestaService.crearRespuesta(respuesta));
@@ -107,28 +142,12 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    // CRUD Usuario
+    // ============================
+    // 📌 CRUD USUARIOS
+    // ============================
+
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> obtenerUsuarios() {
         return ResponseEntity.ok(usuarioService.obtenerTodos());
     }
-
-    /*
-     * @PatchMapping("/usuarios/{id}/rol") public ResponseEntity<Usuario>
-     * cambiarRolUsuario(@PathVariable int id, @RequestParam int idRol) { return
-     * ResponseEntity.ok(usuarioService.cambiarRolUsuario(id, idRol)); }
-     */
-
-    // Obtener solo las materias activas
-    @GetMapping("/materias/activas")
-    public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
-        return ResponseEntity.ok(materiaService.obtenerMateriasActivas());
-    }
-
-    // Obtener solo las materias inactivas
-    @GetMapping("/materias/inactivas")
-    public ResponseEntity<List<Materia>> obtenerMateriasInactivas() {
-        return ResponseEntity.ok(materiaService.obtenerMateriasInactivas());
-    }
-
 }

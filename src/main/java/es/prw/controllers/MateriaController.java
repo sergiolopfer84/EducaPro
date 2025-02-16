@@ -9,38 +9,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/materias")
-
 public class MateriaController {
 
     private final MateriaService materiaService;
 
-    // Inyección de dependencias en el constructor
     public MateriaController(MateriaService materiaService) {
         this.materiaService = materiaService;
     }
-    @GetMapping("/activas")
-    public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
-        List<Materia> materiasActivas = materiaService.obtenerMateriasActivas(); // Nuevo método en el servicio
-        return ResponseEntity.ok(materiasActivas);
-    }
 
-
+    // ✅ Obtener todas las materias
     @GetMapping
     public ResponseEntity<List<Materia>> obtenerMaterias() {
-        List<Materia> materias = materiaService.getMaterias();
-        
-        return ResponseEntity.ok(materias);
+        return ResponseEntity.ok(materiaService.getMaterias());
     }
 
+    // ✅ Obtener solo las materias activas
+    @GetMapping("/activas")
+    public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
+        return ResponseEntity.ok(materiaService.obtenerMateriasActivas());
+    }
+
+    // ✅ Obtener progreso de materias
     @GetMapping("/progreso")
     public ResponseEntity<List<MateriaProgresoDTO>> obtenerProgresoMaterias() {
-        List<MateriaProgresoDTO> progreso = materiaService.obtenerProgresoMaterias();
-        return ResponseEntity.ok(progreso);
+        return ResponseEntity.ok(materiaService.obtenerProgresoMaterias());
     }
-    @PutMapping("/{id}/toggle-activa")
-    public ResponseEntity<Void> cambiarEstadoMateria(@PathVariable Integer id) {
-        materiaService.toggleEstadoMateria(id);
-        return ResponseEntity.noContent().build();
-    }
-
 }

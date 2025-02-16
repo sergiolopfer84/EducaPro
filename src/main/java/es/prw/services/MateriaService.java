@@ -26,9 +26,7 @@ public class MateriaService {
     // Obtener todas las materias
     @Transactional(readOnly = true)
     public List<Materia> getMaterias() {
-    	 List<Materia> materias = materiaRepository.findAll();
-    	System.out.println(materias);
-        return materias;
+        return materiaRepository.findAll();
     }
 
     // Obtener progreso de materias con DTO
@@ -36,13 +34,12 @@ public class MateriaService {
     public List<MateriaProgresoDTO> obtenerProgresoMaterias() {
         return materiaRepository.findAll().stream()
                 .map(materia -> new MateriaProgresoDTO(
-                        materia.getNombreMateria(), // Corregido
+                        materia.getNombreMateria(),
                         testRepository.countByMateria(materia),
                         puntuacionRepository.countAprobadosByMateria(materia.getIdMateria())
                 ))
-                .toList(); 
+                .toList();
     }
-    
 
     @Transactional
     public Materia guardarMateria(Materia materia) {
@@ -66,6 +63,7 @@ public class MateriaService {
     @Transactional
     public Materia cambiarEstadoMateria(int id, boolean estado) {
         return materiaRepository.findById(id).map(materia -> {
+            materia.setActiva(estado); // 🔹 Ahora sí cambia el estado antes de guardar
             return materiaRepository.save(materia);
         }).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
     }
@@ -79,12 +77,18 @@ public class MateriaService {
     public List<Materia> obtenerMateriasInactivas() {
         return materiaRepository.findByActivaFalse();
     }
-    
-    public void toggleEstadoMateria(Integer id) {
+
+    @Transactional
+    public void toggleEstado(Integer id) {
         Materia materia = materiaRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Materia no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Materia no encontrada"));
         materia.setActiva(!materia.isActiva());
         materiaRepository.save(materia);
     }
 
+    @Transactional(readOnly = true)
+    public Materia buscarPorId(int idMateria) {
+        return materiaRepository.findById(idMateria)
+                .orElseThrow(() -> new RuntimeException("Materia no encontrada con id: " + idMateria));
+    }
 }

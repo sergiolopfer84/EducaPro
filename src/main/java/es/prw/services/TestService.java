@@ -1,15 +1,15 @@
 package es.prw.services;
 
 import es.prw.dtos.NotaHistorialDTO;
-import es.prw.models.Materia;
 import es.prw.models.Test;
 import es.prw.repositories.TestRepository;
 import es.prw.repositories.PuntuacionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TestService {
@@ -17,80 +17,83 @@ public class TestService {
     private final TestRepository testRepository;
     private final PuntuacionRepository puntuacionRepository;
 
-    // Inyección de dependencias por constructor
     public TestService(TestRepository testRepository, PuntuacionRepository puntuacionRepository) {
         this.testRepository = testRepository;
         this.puntuacionRepository = puntuacionRepository;
     }
 
-    
-    // Obtener todas las materias
+    // Obtener todos los tests
     @Transactional(readOnly = true)
     public List<Test> getTests() {
-    	 List<Test> tests = testRepository.findAll();
-    	System.out.println(tests);
-        return tests;
+        return testRepository.findAll();
     }
+
     // Obtener tests por materia
     @Transactional(readOnly = true)
     public List<Test> getTestsByMateria(int idMateria) {
-        return testRepository.findByMateriaIdMateria(idMateria); // Optimizado
+        return testRepository.findByMateriaIdMateria(idMateria);
     }
 
     // Obtener historial de notas por test
     @Transactional(readOnly = true)
     public List<NotaHistorialDTO> obtenerHistorialNotas() {
         return testRepository.findAll().stream()
-                .map(test -> {
-                    List<Double> notas = puntuacionRepository.findNotasByTest(test);
-                    return new NotaHistorialDTO(test.getNombreTest(),
-                            (notas != null) ? notas : Collections.emptyList());
-                })
+                .map(test -> new NotaHistorialDTO(
+                        test.getNombreTest(),
+                        puntuacionRepository.findNotasByTest(test)
+                ))
                 .collect(Collectors.toList());
     }
 
+    // Guardar nuevo test
     @Transactional
     public Test guardarTest(Test test) {
-    	System.out.println("GGuardar tests  testService "+ test);
+        if (test.getMateria() == null) {
+            throw new IllegalArgumentException("❌ No se puede guardar un Test sin Materia");
+        }
         return testRepository.save(test);
     }
 
+    // Actualizar test
     @Transactional
     public Test actualizarTest(int id, Test nuevoTest) {
-        return testRepository.findById(id).map(test -> {
-            test.setNombreTest(nuevoTest.getNombreTest());
-            return testRepository.save(test);
-        }).orElseThrow(() -> new RuntimeException("Test no encontrado"));
+        Test testExistente = testRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Test no encontrado"));
+
+        testExistente.setNombreTest(nuevoTest.getNombreTest());
+        testExistente.setActivo(nuevoTest.isActivo());
+        
+        return testRepository.save(testExistente);
     }
 
+    // Eliminar test
     @Transactional
     public void eliminarTest(int id) {
+        if (!testRepository.existsById(id)) {
+            throw new RuntimeException("❌ No se puede eliminar. Test no encontrado");
+        }
         testRepository.deleteById(id);
     }
 
+    // Alternar estado del test (activar/desactivar)
     @Transactional
-    public Test cambiarEstadoTest(int id, boolean estado) {
-        return testRepository.findById(id).map(test -> {
-            test.setActivo(estado);
-            return testRepository.save(test);
-        }).orElseThrow(() -> new RuntimeException("Test no encontrado"));
-    }
-    
-    
-    public void toggleEstadoTest(Integer id) {
+    public Test toggleEstado(int id) {
         Test test = testRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Test no encontrado"));
+                .orElseThrow(() -> new RuntimeException("❌ Test no encontrado"));
+        
         test.setActivo(!test.isActivo());
-        testRepository.save(test);
+        return testRepository.save(test);
     }
+
+    // Obtener tests activos
     @Transactional(readOnly = true)
     public List<Test> obtenerTestActivos() {
         return testRepository.findByActivaTrue();
     }
+
+    // Obtener tests activos por materia
+    @Transactional(readOnly = true)
     public List<Test> obtenerTestsActivosPorMateria(int idMateria) {
         return testRepository.findByMateria_IdMateriaAndActivaTrue(idMateria);
     }
-
-    
-
 }

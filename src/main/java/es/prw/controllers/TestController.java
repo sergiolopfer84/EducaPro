@@ -2,11 +2,10 @@ package es.prw.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import es.prw.dtos.NotaHistorialDTO;
-import es.prw.models.Materia;
 import es.prw.models.Test;
 import es.prw.services.TestService;
+
 import java.util.List;
 
 @RestController
@@ -19,38 +18,33 @@ public class TestController {
         this.testService = testService;
     }
 
-    
+    // ✅ Obtener todos los tests
     @GetMapping
     public ResponseEntity<List<Test>> obtenerTests() {
-        List<Test> tests = testService.getTests() ;
-        return tests.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(tests);
-    }
-    @GetMapping("/materia/{idMateria}")
-    public ResponseEntity<List<Test>> obtenerTestsPorMateria(@PathVariable int idMateria) {
-        List<Test> tests = testService.getTestsByMateria(idMateria);
-        return tests.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(tests);
+        return ResponseEntity.ok(testService.getTests());
     }
 
-    @GetMapping("/historial")
-    public ResponseEntity<List<NotaHistorialDTO>> obtenerHistorialNotas() {
-        List<NotaHistorialDTO> historialNotas = testService.obtenerHistorialNotas();
-        return historialNotas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(historialNotas);
-    }
+    // ✅ Obtener solo los tests activos
     @GetMapping("/activos")
     public ResponseEntity<List<Test>> obtenertestsActivos() {
-        List<Test> testActivos = testService.obtenerTestActivos(); // Nuevo método en el servicio
-        return ResponseEntity.ok(testActivos);
+        return ResponseEntity.ok(testService.obtenerTestActivos());
     }
-    @PutMapping("/{id}/toggle-activa")
-    public ResponseEntity<Void> cambiarEstadoTest(@PathVariable Integer id) {
-        testService.toggleEstadoTest(id);
-        return ResponseEntity.noContent().build();
+
+    // ✅ Obtener tests de una materia específica
+    @GetMapping("/materia/{idMateria}")
+    public ResponseEntity<List<Test>> obtenerTestsPorMateria(@PathVariable int idMateria) {
+        return ResponseEntity.ok(testService.getTestsByMateria(idMateria));
     }
+
+    // ✅ Obtener solo los tests activos de una materia específica
     @GetMapping("/materia/{idMateria}/activos")
     public ResponseEntity<List<Test>> obtenerTestsActivosPorMateria(@PathVariable int idMateria) {
-        List<Test> testsActivos = testService.obtenerTestsActivosPorMateria(idMateria);
-        return testsActivos.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(testsActivos);
+        return ResponseEntity.ok(testService.obtenerTestsActivosPorMateria(idMateria));
     }
 
-
+    // ✅ Obtener historial de notas
+    @GetMapping("/historial")
+    public ResponseEntity<List<NotaHistorialDTO>> obtenerHistorialNotas() {
+        return ResponseEntity.ok(testService.obtenerHistorialNotas());
+    }
 }

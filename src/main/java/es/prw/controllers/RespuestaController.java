@@ -4,13 +4,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import es.prw.dtos.EvaluacionDTO;
-import es.prw.models.Pregunta;
 import es.prw.models.Respuesta;
 import es.prw.services.RespuestaService;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/respuestas")
@@ -22,40 +20,39 @@ public class RespuestaController {
         this.respuestaService = respuestaService;
     }
 
+    // ✅ Obtener todas las respuestas
     @GetMapping
-    public ResponseEntity<List<Respuesta>> obtenerMaterias() {
-        List<Respuesta> respuestas = respuestaService.getRespuestas();
-        
-        return ResponseEntity.ok(respuestas);
+    public ResponseEntity<List<Respuesta>> obtenerRespuestas() {
+        return ResponseEntity.ok(respuestaService.getRespuestas());
     }
+
+    // ✅ Obtener respuestas por pregunta
     @GetMapping("/pregunta/{idPregunta}")
     public ResponseEntity<List<Respuesta>> obtenerRespuestasPorPregunta(@PathVariable int idPregunta) {
         List<Respuesta> respuestas = respuestaService.getRespuestasByPregunta(idPregunta);
         return respuestas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(respuestas);
     }
 
+    // ✅ Obtener respuestas por múltiples IDs
     @PostMapping("/ids")
     public ResponseEntity<List<Respuesta>> obtenerRespuestasPorIds(@RequestBody List<Integer> idsRespuestas) {
         List<Respuesta> respuestas = respuestaService.getRespuestasByIds(idsRespuestas);
         return respuestas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(respuestas);
     }
 
+    // ✅ Evaluar respuestas de un test
     @PostMapping("/evaluar")
     public ResponseEntity<Double> evaluarRespuestas(@RequestBody EvaluacionDTO evaluacionDTO) {
-        double nota = respuestaService.evaluarRespuestas(evaluacionDTO);
-        return ResponseEntity.ok(nota);
+        return ResponseEntity.ok(respuestaService.evaluarRespuestas(evaluacionDTO));
     }
 
-    @GetMapping("/obtenerRespuestasSesion")
+    // ✅ Obtener respuestas de sesión de un test
+    @GetMapping("/sesion")
     public ResponseEntity<List<Respuesta>> obtenerRespuestasSesion(@RequestParam("idTest") int idTest, HttpSession session) {
-        Object respuestasObj = session.getAttribute("respuestasTest_" + idTest);
-        
-        if (respuestasObj instanceof List<?>) {
-            List<?> respuestasList = (List<?>) respuestasObj;
-            
-            if (!respuestasList.isEmpty() && respuestasList.get(0) instanceof Respuesta) {
-                return ResponseEntity.ok((List<Respuesta>) respuestasList);
-            }
+        List<?> respuestasList = (List<?>) session.getAttribute("respuestasTest_" + idTest);
+
+        if (respuestasList != null && !respuestasList.isEmpty() && respuestasList.get(0) instanceof Respuesta) {
+            return ResponseEntity.ok((List<Respuesta>) respuestasList);
         }
 
         return ResponseEntity.noContent().build();

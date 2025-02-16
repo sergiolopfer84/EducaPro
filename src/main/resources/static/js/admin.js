@@ -164,10 +164,15 @@ document.addEventListener("DOMContentLoaded", function() {
 			console.log("Payload en materiasSection  ", payload)
 			console.log("apiUrl en materiasSection ", apiUrl)
 		} else if (selectedSection === "testsSection") {
+			const idMateria = document.getElementById("materiaSelect").value;
+			if (!idMateria) {
+			            alert("⚠ Debes seleccionar una materia.");
+			            return;
+			        }
 			payload = {
 				idTest: id || null,
 				nombreTest: nombre,
-				materia: { idMateria: document.getElementById("materiaSelect").value },
+				idMateria: parseInt(idMateria) ,
 				activa
 			};
 			console.log("Payload en testsSection ", payload)
