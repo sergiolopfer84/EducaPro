@@ -520,6 +520,69 @@ $(document).ready(function() {
 		        modal.style.display = "none";
 		    }
 		});
+		// Función para mostrar animación de carga
+		function mostrarCargando() {
+		    const chatBox = document.getElementById("chat-box");
+		    const loadingDiv = document.createElement("div");
+		    loadingDiv.id = "loading-indicator";
+		    loadingDiv.innerHTML = `<p><strong>IA:</strong> <span class="loading-dots"></span></p>`;
+		    chatBox.appendChild(loadingDiv);
+		    chatBox.scrollTop = chatBox.scrollHeight;
+		}
+
+		// Función para eliminar la animación de carga
+		function ocultarCargando() {
+		    const loadingDiv = document.getElementById("loading-indicator");
+		    if (loadingDiv) {
+		        loadingDiv.remove();
+		    }
+		}
+
+		// Función para enviar mensaje con animación de carga
+		function sendMessage() {
+		    let mensaje = userInput.value.trim();
+		    if (mensaje === "") return;
+
+		    // Agregar el mensaje del usuario con una clase personalizada
+		    chatBox.innerHTML += `<p class="mensaje-usuario"><strong>Tú:</strong> ${mensaje}</p>`;
+		    userInput.value = "";
+
+		    // Muestra el indicador de carga
+		    mostrarCargando();
+
+		    // Petición al backend
+		    fetch('/api/asistente', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		            [window.csrf.headerName]: window.csrf.token
+		        },
+		        body: JSON.stringify(mensaje)
+		    })
+		    .then(response => response.text())
+		    .then(data => {
+		        ocultarCargando(); // Oculta el indicador de carga
+		        chatBox.innerHTML += `<p class="mensaje-ia"><strong>IA:</strong> ${data}</p>`;
+		        chatBox.scrollTop = chatBox.scrollHeight;
+		    })
+		    .catch(error => {
+		        ocultarCargando();
+		        chatBox.innerHTML += `<p class="mensaje-ia error"><strong>IA:</strong> Hubo un error al procesar la respuesta.</p>`;
+		        console.error(error);
+		    });
+		}
+
+
+		// Evento para enviar mensaje con botón
+		sendMessageBtn.addEventListener("click", sendMessage);
+
+		// Evento para enviar mensaje con Enter
+		userInput.addEventListener("keydown", function(event) {
+		    if (event.key === "Enter" && !event.shiftKey) {
+		        event.preventDefault();
+		        sendMessage();
+		    }
+		});
 
 	} // Fin if /home
 

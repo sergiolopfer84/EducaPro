@@ -897,6 +897,42 @@ input {
   background-color: rgb(0, 128, 0);
  
 }
+/* Animación de puntos de carga */
+@keyframes typingDots {
+    0% { content: "."; }
+    33% { content: ".."; }
+    66% { content: "..."; }
+    100% { content: "."; }
+}
+
+/* Aplicar la animación al indicador de carga */
+.loading-dots::after {
+    content: ".";
+    animation: typingDots 1.5s infinite;
+}
+/* Estilos para los mensajes del usuario */
+
+/* Estilos para los mensajes de la IA */
+.mensaje-ia {
+	background-color: rgb(50, 82, 120);  /* Azul oscuro (ajústalo según tu diseño) */
+	   color: white;
+	   padding: 10px;
+	   border-radius: 8px;
+	   max-width: 80%;
+	   align-self: flex-end;
+	   text-align: right;
+}
+
+/* Agregar margen entre mensajes */
+.mensaje-usuario, .mensaje-ia {
+    margin: 5px 0;
+}
+
+/* Estilo de error en caso de fallo */
+.mensaje-ia.error {
+    background-color: #ff4d4d; /* Rojo */
+    color: white;
+}
 
 
 /* Animación de entrada suave */
@@ -952,7 +988,7 @@ input {
 #chat-box p {
   margin-top: 0.625rem; /* 10px */
   text-align: left;
-  font-weight: bold;
+  
 
 }
 #user-input {
