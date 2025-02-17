@@ -482,5 +482,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	        alert(`Error: ${error.message}`);
 	    }
 	}
+	
 
 });

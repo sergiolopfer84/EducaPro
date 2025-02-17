@@ -44,6 +44,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+/***************************************************
+ * Botón de admin oculto para user *
+ ***************************************************/
+
+
 $(document).ready(function() {
 
 	const currentPath = window.location.pathname;

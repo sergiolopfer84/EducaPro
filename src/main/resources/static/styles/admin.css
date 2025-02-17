@@ -1,0 +1,95 @@
+/* Estilos generales */
+body {
+    background-color: rgb(0, 0, 255) !important;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    background: linear-gradient(180deg, rgb(23, 55, 79) 40%, #007bff 100%);
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+.sidebar h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ffffff;
+}
+.sidebar .nav-link {
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease, transform 0.2s;
+}
+.sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* Contenido principal */
+.main-content {
+    padding: 40px;
+}
+.main-content h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.admin-section {
+	background-color: rgb(23, 55, 79);
+	display: none;
+	width: 50%;
+    padding: 20px;
+	color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+	margin-top: 1rem;
+
+}
+
+/* Botones */
+.btn {
+    font-size: 1rem;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* Modales */
+.modal-content {
+    border-radius: 10px;
+}
+.modal-header {
+    background: rgb(23, 55, 79);
+    color: white;
+	justify-content: center;
+
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.modal-body {
+    padding: 20px;
+}
+#fondoAdmin {
+    background: url('/img/FondoAdmin.png') no-repeat center center fixed;
+    background-size: cover;
+  
+}
+/* Formularios */
+.form-label {
+    font-weight: bold;
+}
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}

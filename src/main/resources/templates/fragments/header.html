@@ -60,8 +60,9 @@
 						<i class="fas fa-user"></i> Perfil
 					</a>
 
-					<a href="/admin" id="adminBtn" class="btn btn-admin">
-						Admin
+					<a href="/admin" id="adminBtn" class="btn btn-admin"
+					   th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+					    Admin
 					</a>
 
 
