@@ -41,7 +41,7 @@ header {
   align-items: center; /* En lugar de stretch, para centrar verticalmente */
   /* Elimina height fija: se adaptará a su contenido */
   flex-wrap: wrap; 
-  background: #1e3148;
+  background: #1e3148 !important;
   color: #050505;
   font-weight: bold;
   font-size: 2rem;
@@ -56,7 +56,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 80%; /* Ocupará todo el ancho disponible */
+  width: 50%; /* Ocupará todo el ancho disponible */
 }
 
 
@@ -68,7 +68,6 @@ header {
 */
 .logo,
 .header-img,
-.chavalada-img,
 .tuacademia-img {
   /* Para escritorio grande */
   margin-left: 10%;
@@ -94,12 +93,28 @@ header {
 	animation: glowingText 2s infinite alternate ease-in-out; /* Aplica la animación */
 
 }
-.chavalada-img {
-  width: auto; /* Mantiene la proporción */
-  height: 100%; /* Ocupa todo el alto disponible */
-  max-height: 180vh; /* Se adapta a la altura de la pantalla */
+.videoHeader {
+  width: 50%; /* Mantiene la proporción */
+  background-color: transparent !important;
+  margin-left: 15%;
+  height: 20%; /* Ocupa todo el alto disponible */
+  max-height: 100vh; /* Se adapta a la altura de la pantalla */
   object-fit: cover; /* Evita deformaciones y rellena el espacio */
   border-radius: 8px; /* Bordes redondeados opcionales */
+  background-color: #1e3148 !important;
+  background-blend-mode: normal !important;
+  opacity: 1 !important;
+  will-change: transform, opacity;
+  image-rendering: auto;
+  filter: brightness(1.2) contrast(1) saturate(1) hue-rotate(2deg) !important;
+
+  /* Sombra con efecto glow amarillo */
+  box-shadow: 0px 0px 2px #f5b029, 
+              0px 0px 4px #f5b029, 
+              0px 0px 6px #f5b029;
+  
+  /* Transición para suavizar los cambios */
+  transition: box-shadow 0.8s ease-in-out;
 }
 
 
@@ -122,7 +137,7 @@ header {
   align-items: center;
   justify-content: center; /* Si quieres centrarlos horizontalmente */
   gap: 0.2rem;
-  margin-top: 7%; /* Empuja los botones al fondo */
+  margin-top: 10%; /* Empuja los botones al fondo */
 }
 /* Icono del login */
 .login-icon {

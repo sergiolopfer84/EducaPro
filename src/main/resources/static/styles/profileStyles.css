@@ -47,7 +47,29 @@ header {
   justify-content: space-between;
   width: 80%; /* Ocupará todo el ancho disponible */
 }
+.videoHeader {
+  width: 30%; /* Mantiene la proporción */
+  background-color: transparent !important;
+  margin-left: 10%;
+  height: 20%; /* Ocupa todo el alto disponible */
+  max-height: 100vh; /* Se adapta a la altura de la pantalla */
+  object-fit: cover; /* Evita deformaciones y rellena el espacio */
+  border-radius: 8px; /* Bordes redondeados opcionales */
+  background-color: #1e3148 !important;
+  background-blend-mode: normal !important;
+  opacity: 1 !important;
+  will-change: transform, opacity;
+  image-rendering: auto;
+  filter: brightness(1.2) contrast(1) saturate(1) hue-rotate(2deg) !important;
 
+  /* Sombra con efecto glow amarillo */
+  box-shadow: 0px 0px 2px #f5b029, 
+              0px 0px 4px #f5b029, 
+              0px 0px 6px #f5b029;
+  
+  /* Transición para suavizar los cambios */
+  transition: box-shadow 0.8s ease-in-out;
+}
 /* ====== Información Personal ====== */
 h2 {
     border-bottom: 2px solid #3b82f6;
@@ -92,7 +114,7 @@ h2 {
   gap: 1rem; /* Espaciado entre botones */
   width: 100%; /* Asegura que ocupa todo el ancho */
   position: absolute; /* Opcional, si el header tiene posición relativa */
-  top: 12%; /* Ajusta según sea necesario */
+  top: 18%; /* Ajusta según sea necesario */
   right: 1rem; /* Distancia del borde derecho */
 }
 .top-bar {

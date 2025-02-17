@@ -27,7 +27,10 @@
 				<img th:src="@{/img/EducaPro Header.png}" alt="EducaPro Header" class="header-img">
 
 				<!-- Imagen de chavalada -->
-				<img th:src="@{/img/ImagenChavalada.png}" alt="Imagen Chavalada" class="chavalada-img">
+				<video autoplay loop muted playsinline class="videoHeader">
+				    <source th:src="@{/img/videoHeader.mp4}"  type="video/mp4">
+				    Tu navegador no soporta la reproducción de video.
+				</video>
 
 				<!-- Imagen “TuAcademia” -->
 				<img th:src="@{/img/TuAcademia.png}" alt="Tu Academia" class="tuacademia-img">
