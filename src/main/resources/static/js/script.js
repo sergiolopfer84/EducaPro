@@ -583,6 +583,76 @@ $(document).ready(function() {
 		        sendMessage();
 		    }
 		});
+		document.addEventListener("DOMContentLoaded", function() {
+		    const modal = document.getElementById("resizableModal");
+		    const resizeHandle = document.querySelector(".resize-handle");
+
+		    let isResizing = false;
+
+		    resizeHandle.addEventListener("mousedown", function(e) {
+		        isResizing = true;
+		        document.addEventListener("mousemove", resizeModal);
+		        document.addEventListener("mouseup", () => {
+		            isResizing = false;
+		            document.removeEventListener("mousemove", resizeModal);
+		        });
+		    });
+
+		    function resizeModal(e) {
+		        if (!isResizing) return;
+		        let newWidth = e.clientX - modal.offsetLeft;
+		        let newHeight = e.clientY - modal.offsetTop;
+
+		        // Asegurar que el tamaño no sea demasiado pequeño
+		        if (newWidth > 300) modal.style.width = newWidth + "px";
+		        if (newHeight > 300) modal.style.height = newHeight + "px";
+		    }
+		});
+		document.addEventListener("DOMContentLoaded", function() {
+		    const modal = document.querySelector(".modal-content2");
+		    const chatBox = document.getElementById("chat-box");
+
+		    new ResizeObserver(() => {
+		        const modalPadding = 40; // Ajuste para evitar que toque los bordes
+		        chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
+		    }).observe(modal);
+		});
+		document.addEventListener("DOMContentLoaded", function() {
+		    const modal = document.querySelector(".modal-content2");
+		    const chatBox = document.getElementById("chat-box");
+		    const header = document.querySelector(".modal-header");
+
+		    let isDragging = false;
+		    let offsetX = 0, offsetY = 0;
+
+		    // ✅ Hacemos la ventana redimensionable
+		    new ResizeObserver(() => {
+		        const modalPadding = 40;
+		        chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
+		    }).observe(modal);
+
+		    // ✅ Evento para iniciar el arrastre
+		    header.addEventListener("mousedown", (e) => {
+		        isDragging = true;
+		        offsetX = e.clientX - modal.offsetLeft;
+		        offsetY = e.clientY - modal.offsetTop;
+		        modal.style.cursor = "grabbing";
+		    });
+
+		    // ✅ Evento para mover la ventana
+		    document.addEventListener("mousemove", (e) => {
+		        if (!isDragging) return;
+		        modal.style.left = e.clientX - offsetX + "px";
+		        modal.style.top = e.clientY - offsetY + "px";
+		    });
+
+		    // ✅ Evento para soltar la ventana
+		    document.addEventListener("mouseup", () => {
+		        isDragging = false;
+		        modal.style.cursor = "grab";
+		    });
+		});
+
 
 	} // Fin if /home
 

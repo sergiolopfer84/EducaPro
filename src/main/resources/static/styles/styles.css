@@ -133,7 +133,6 @@ header {
 ====================================== */
 .auth-buttons {
   display: flex;
-  position: re;
   align-items: center;
   justify-content: center; /* Si quieres centrarlos horizontalmente */
   gap: 0.2rem;
@@ -141,9 +140,9 @@ header {
 }
 /* Icono del login */
 .login-icon {
-  max-width: 8.625rem; /* ~90px */
+  max-width: 7.625rem; /* ~90px */
   height: auto;
-  margin-top: 70%;
+  margin-top: 30%;
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 .login-icon:hover {
@@ -262,13 +261,14 @@ header {
 .modal.fade .modal-dialog {
   position: fixed;
   top: 10%;
-  right: -50%;
-  transform: translate(50%, -50%);
+align-items: center;
+justify-content: center;
   opacity: 0;
   transition: transform 2s ease-out, opacity 0.4s ease-out;
 }
 .modal.show .modal-dialog {
   top: 20%;
+
   right: 62.5rem; /* ~1000px. Ajusta si quieres otra posición */
   transform: translate(50%, -50%);
   opacity: 1;
@@ -279,6 +279,7 @@ header {
   box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(8px);
   border: none;
+  max-width: 60%;
 }
 
 .modal-header {
@@ -751,7 +752,7 @@ input {
 }
 .video-section video {
   object-fit: cover;
-  max-width: 100%;
+  max-width: 80%;
   /* Quita width/height fijos si quieres que se adapte al contenedor */
   /* width: 100%; height: 100%; */
 }
@@ -864,28 +865,83 @@ input {
   align-items: center;
   /* Puedes crear un contenedor interno si deseas 600×600 fijos */
 }
+/* Hacer el modal redimensionable */
 .modal-content2 {
-  background: rgb(192, 192, 192); /* Blanco puro para un look limpio */
-  padding: 2rem; /* Espacio más generoso */
-  border-radius: 10px; /* Bordes más suaves */
-  width: 60rem; /* Mejor proporción */
-  max-width: 90vw; /* Evita que se desborde en pantallas pequeñas */
-  text-align: center;
-  box-shadow: 0 5px 20px rgb(0, 0, 0); /* Sombra más marcada para profundidad */
-  margin: auto;
-  z-index: 1000;
-  opacity: 0;
-  transform: translateY(-20px);
-  animation: fadeIn 0.3s ease-in-out forwards;
+           display: flex;
+           flex-direction: column;
+           resize: both; /* Redimensionable */
+           overflow: hidden;
+           min-width: 30rem;
+           min-height: 30rem;
+           max-width: 90vw;
+           max-height: 90vh;
+           width: 60rem;
+           height: 40rem;
+           position: absolute;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           background-color: rgb(202, 194, 189);
+           padding: 2rem;
+           border-radius: 10px;
+           text-align: center;
+           box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.5);
+           border: 2px solid #333;
+        
+       }
+
+       /* ======= BARRA SUPERIOR ======= */
+       .drag-handle {
+           background-color: #1e3148;
+           color: white;
+           padding: 10px;
+           font-weight: bold;
+           user-select: none;
+           cursor: grab;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+       }
+
+       .drag-handle:active {
+           cursor: grabbing;
+       }
+
+/* ✅ Hacemos el título arrastrable */
+.modal-header {
+    cursor: move;
+    background-color: #1e3148;
+    color: white;
+    padding: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: left;
+    user-select: none; /* Evita selección de texto al mover */
 }
+
+
+
+/* Estilo para el botón de redimensionar */
+.resize-handle {
+        width: 16px;
+        height: 16px;
+        background: #888;
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        cursor: nwse-resize;
+        border-radius: 4px;
+    }
+
 .quick-questions {
   display: flex;
+  margin-top:2%;
   gap: 0.5rem;
   justify-content: center; /* o left, según quieras */
 }
 
 .quick-question-btn {
-  background-color: rgb(10, 92, 245);
+  background-color: rgb(55, 119, 106);
   color: white;
   padding: 6px 10px;
   border: none;
@@ -918,9 +974,18 @@ input {
 	   color: white;
 	   padding: 10px;
 	   border-radius: 8px;
-	   max-width: 80%;
+	   max-width: 90%;
 	   align-self: flex-end;
 	   text-align: right;
+}
+.mensaje-usuario{
+	background-color: rgb(55, 119, 106);  /* Azul oscuro (ajústalo según tu diseño) */
+		   color: white;
+		   padding: 10px;
+		   border-radius: 8px;
+		   max-width: 90%;
+		   align-self: flex-end;
+		   text-align: right;
 }
 
 /* Agregar margen entre mensajes */
@@ -948,21 +1013,38 @@ input {
 }
 
 .modal-content {
-  background-color: white;
-  padding: 1.25rem; /* 20px */
-  border-radius: 0.625rem; /* 10px */
-  max-width: 45.25rem; /* 500px */
-  text-align: center;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
-  margin: auto;
-  z-index: 11;
+    display: flex;
+    flex-direction: column;
+    resize: both; /* Permite redimensionar */
+    overflow: hidden;
+    max-width: 90vw; /* Se adapta al 90% del ancho de la pantalla */
+    max-height: 90vh; /* Se adapta al 90% de la altura de la pantalla */
+    width: 40rem; /* Valor predeterminado en pantallas grandes */
+    height: auto; /* Se ajusta al contenido */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid #333;
+    backdrop-filter: blur(8px);
+}
+.modal.fade .modal-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
 }
 .modal.show .modal-dialog {
-	width: 60%;
-	height: 60%;
-	right: 50%;
-	margin-top: 20%;
-	}
+    opacity: 1;
+}
+
 
 .close-btn {
   position: absolute;
@@ -972,17 +1054,14 @@ input {
   cursor: pointer;
 }
 #chat-box {
-  height: 18.75rem; /* 300px */
-  overflow-y: auto;
-  background: url('/img/FondoAsistente.png') no-repeat center center;
-  background-size: cover;
-  flood-opacity: 0.3;
-  padding: 0.625rem; /* 10px */
-  margin-bottom: 0.625rem;
-  gap: 1.875rem; /* 30px */
-  align-items: flex-start;
-  border-radius: 8px; /* Opcional: Bordes redondeados */
-}
+           flex-grow: 1;
+           overflow-y: auto;
+           background: url('/img/FondoAsistente.png') no-repeat center center;
+           background-size: cover;
+           padding: 10px;
+           border-radius: 0 0 10px 10px;
+       }
+
 
 
 #chat-box p {
@@ -994,15 +1073,18 @@ input {
 #user-input {
   padding: 0.625rem;    /* 10px */
   margin-bottom: 0.625rem;
-  width: 50rem;
+  width: 100%;
 }
 #sendMessageBtn {
-  background: #4CAF50;
-  color: white;
-  padding: 0.625rem;    /* 10px */
-  border: none;
-  cursor: pointer;
-}
+           margin: 5px;
+           background: rgb(55, 119, 106);
+           color: white;
+		   border-radius: 6px;
+           padding: 8px 16px;
+           border: none;
+           cursor: pointer;
+       }
+
 #sendMessageBtn:hover {
   background: #45a049;
 }
@@ -1048,7 +1130,7 @@ input {
 
 
   .logo-wrapper {
-    width: 70%; /* Hace que ocupe todo el ancho disponible */
+    width:75%; /* Hace que ocupe todo el ancho disponible */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1062,14 +1144,14 @@ input {
   .tuacademia-img {
     margin-left: 2%; /* o 2% si quieres un ligero offset */
 	width: 30%;
-	height: 100%;
+	height: 30%;
   }
   
  
   /* Modal centrado en tablets */
   .modal.show .modal-dialog {
     top: 50%;
-    left: 120%;
+    
     transform: translate(-50%, -50%);
     max-width: 70vw; 
   }
@@ -1113,6 +1195,31 @@ input {
  
    }
 }
+@media (max-width: 1024px) {
+    .modal-content {
+        width: 80vw;
+        max-width: 90vw;
+        max-height: 85vh;
+        padding: 1.5rem;
+    }
+}
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95vw;
+        max-width: 95vw;
+        max-height: 85vh;
+        padding: 1rem;
+    }
+}
+@media (max-width: 480px) {
+    .modal-content {
+        width: 98vw;
+        max-width: 98vw;
+        height: auto;
+        padding: 0.8rem;
+		
+    }
+}
 
 /* -- MÓVIL: <= 480px (o 430px) -- */
 @media (max-width: 930px) {
@@ -1140,7 +1247,7 @@ input {
   .header-img,
   .tuacademia-img {
     margin-left: 0;   /* Quita margen extra */
-    max-width: 70%;   /* Ajusta el ancho si quieres */
+    max-width: 50%;   /* Ajusta el ancho si quieres */
   }
 
   .login-icon {
@@ -1150,11 +1257,10 @@ input {
   /* Modal en móviles: centrado */
   .modal.show .modal-dialog {
     top: 50%;
-    left: 10%;
     right: auto;
     transform: translate(-50%, -50%);
     max-width: 100vw; 
-	width: 80%;
+	width: 50%;
     margin: 0 auto;
   }
   .video-section{
