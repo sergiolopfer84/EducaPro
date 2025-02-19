@@ -84,20 +84,26 @@
 	<div id="assistantModal" class="modal">
 	    <div class="modal-content2" id="resizableModal">
 	        <span class="close-btn">&times;</span>
-	        <h2>Asistente Educapro</h2>
-	        
+	        <h2 style="font-family: 'Georgia', serif; color: white; background-color: rgb(55, 119, 106); padding: 10px; border-radius: 5px; display: inline-block;">
+	            Asistente EducaPro
+	        </h2>
+
 	        <!-- Contenedor del chat -->
 	        <div id="chat-box"></div>
 
 	        <!-- Botones de "pregunta rápida" -->
 	        <div class="quick-questions" style="margin-bottom: 10px;">
-	            <button class="quick-question-btn" data-question="Progreso actual">Progreso actual</button>
-	            <button class="quick-question-btn" data-question="¿Estoy preparado para aprobar?">¿Estoy preparado para aprobar?</button>
+	            <button class="quick-question-btn" data-question="Progreso actual">📊 Progreso actual</button>
+	            <button class="quick-question-btn" data-question="¿Estoy preparado para aprobar?">✅ ¿Estoy preparado para aprobar?</button>
 	        </div>
-	        
+
 	        <!-- Input y botón para enviar -->
-	        <input type="text" id="user-input" placeholder="Escribe tu pregunta...">
-	        <button id="sendMessageBtn">Enviar</button>
+	        <div style="display: flex; gap: 5px;">
+	            <input type="text" id="user-input" placeholder="Escribe tu pregunta..." style="flex-grow: 1;">
+	            <button id="sendMessageBtn">Enviar</button>
+			
+	        </div>
+
 
 	        <!-- Botón de redimensionar -->
 	        <div class="resize-handle"></div>

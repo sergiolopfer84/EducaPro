@@ -6,6 +6,9 @@ import es.prw.repositories.UsuarioRepository;
 import es.prw.services.OpenAIService;
 import es.prw.services.ProgresoService;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -109,6 +112,8 @@ public class AsistenteController {
 			return "Biología";
 		return null;
 	}
+
+
 
 	private int obtenerIdMateriaPorNombre(String materia) {
 		return switch (materia.toLowerCase()) {
