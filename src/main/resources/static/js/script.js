@@ -21,6 +21,18 @@ document.addEventListener("DOMContentLoaded", function() {
 	
     const currentPath = window.location.pathname;
     console.log("Ruta actual:", currentPath);
+	$('.toggle-password').click(function() {
+		    let input = $("#" + $(this).data("target"));
+		    let icon = $(this).find("i");
+
+		    if (input.attr("type") === "password") {
+		        input.attr("type", "text");
+		        icon.removeClass("fa-eye").addClass("fa-eye-slash");
+		    } else {
+		        input.attr("type", "password");
+		        icon.removeClass("fa-eye-slash").addClass("fa-eye");
+		    }
+		});
 
     const inicioBtn = document.querySelector("#Inicio");
     const irATestsBtn = document.querySelector("#IrATests");
@@ -45,7 +57,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 $(document).ready(function() {
-
+	if (window.csrf && window.csrf.token && window.csrf.headerName) {
+		       $.ajaxSetup({
+		           beforeSend: function(xhr) {
+		               xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+		           },
+		       });
+		   }
 	const currentPath = window.location.pathname;
 	
 	/***************************************************
@@ -271,6 +289,7 @@ $(document).ready(function() {
 		// Cargar materias
 		$.get('/materias/activas', function(data) {
 			let options = '<option value="">Elige una materia</option>';
+		
 			data.forEach(materia => {
 				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
 			});
@@ -291,6 +310,7 @@ $(document).ready(function() {
 				data.forEach(test => {
 					options += `<option value="${test.idTest}">${test.nombreTest || test.test}</option>`;
 				});
+				console.log(data)
 				$('#tests').html(options).prop('disabled', false);
 				transformSelectToDropdown('tests', 'testsDropdown');
 			});
@@ -330,7 +350,7 @@ $(document).ready(function() {
                         </div>
                     `;
 				});
-				questionsHTML += `<button type='submit' id='finalizar' class='btn-finalizar'>Finalizar</button>`;
+				questionsHTML += `<button type="button" id="finalizar" class="btn-finalizar">Finalizar</button>`;
 				$('#questions-container').html(questionsHTML);
 			});
 
@@ -406,7 +426,7 @@ $(document).ready(function() {
 
 					// Resaltar correctas/incorrectas
 					$.ajax({
-						url: '/respuestas/obtenerRespuestasSesion', // Ajusta al path real si es "/respuestas/obtenerRespuestasSesion"
+						url: '/respuestas/sesion', // Ajusta al path real si es "/respuestas/obtenerRespuestasSesion"
 						type: 'GET',
 						data: { idTest: idTest },
 						success: function(data) {

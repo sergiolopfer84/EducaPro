@@ -4,135 +4,311 @@ document.addEventListener("DOMContentLoaded", function() {
 	let selectedSection = "";
 	let selectedElementId = null;
 
-	// Cargar datos en sesión si no existen
 	function cargarDatosDesdeBackend() {
-		if (!sessionStorage.getItem("materias")) {
-			sendRequest("/materias", "GET").then(materias => {
-				sessionStorage.setItem("materias", JSON.stringify(materias));
+		const endpoints = {
+			"materias": "/admin/materias",
+			"tests": "/admin/tests",
+			"preguntas": "/admin/preguntas",
+			"respuestas": "/admin/respuestas"
+		};
+
+		Object.entries(endpoints).forEach(([key, url]) => {
+			console.log(`🔄 Cargando datos desde: ${url}`);
+			sendRequest(url, "GET").then(data => {
+				console.log(`📥 Datos recibidos de ${url}:`, data);
+				sessionStorage.setItem(key, JSON.stringify(data));
 			});
-		}
-		if (!sessionStorage.getItem("tests")) {
-			sendRequest("/tests", "GET").then(tests => {
-				sessionStorage.setItem("tests", JSON.stringify(tests));
-			});
-		}
-		if (!sessionStorage.getItem("preguntas")) {
-			sendRequest("/preguntas", "GET").then(preguntas => {
-				sessionStorage.setItem("preguntas", JSON.stringify(preguntas));
-			});
-		}
-		if (!sessionStorage.getItem("respuestas")) {
-			sendRequest("/respuestas", "GET").then(respuestas => {
-				sessionStorage.setItem("respuestas", JSON.stringify(respuestas));
-			});
-		}
+		});
 	}
 
-	cargarDatosDesdeBackend(); // Ejecutar al inicio
+	cargarDatosDesdeBackend();
+
+	function actualizarSessionStorage(section) {
+		const storageKey = section.replace("Section", "");
+		console.log(`🔄 Actualizando sessionStorage para ${storageKey}`);
+		sendRequest(`/${storageKey}`, "GET").then(data => {
+			console.log(`📥 Datos actualizados de ${storageKey}:`, data);
+			sessionStorage.setItem(storageKey, JSON.stringify(data));
+		});
+	}
+
+	async function sendRequest(url, method = "GET", body = null) {
+		console.log(`📡 Enviando petición: ${method} ${url}`, body);
+		const csrfToken = window.csrf.token;
+		if (!csrfToken) {
+			console.error("❌ CSRF Token no encontrado");
+			return;
+		}
+
+		const options = {
+			method,
+			headers: {
+				"Content-Type": "application/json",
+				[window.csrf.headerName]: csrfToken
+			}
+		};
+
+		if (body) options.body = JSON.stringify(body);
+
+		try {
+			const response = await fetch(url, options);
+			console.log(`📩 Respuesta de ${url}:`, response);
+
+			if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+
+			return response.status === 204 ? null : await response.json();
+		} catch (error) {
+			console.error(`❌ Error en la petición: ${error.message}`);
+			alert(`Error: ${error.message}`);
+		}
+	}
+	
+	window.showSection = function(sectionId) {
+			document.querySelectorAll(".admin-section").forEach(section => section.style.display = "none");
+
+			const targetSection = document.getElementById(sectionId);
+			if (targetSection) {
+				targetSection.style.display = "block";
+				document.getElementById("accionesContainer").style.display = "block";
+				selectedSection = sectionId;
+			}
+		};
+
+
+//	function llenarSelect(selectId, storageKey, idField, textField, filterField = null, filterValue = null) {
+//	    console.log("FilterField en select:", filterField);
+//	    console.log("FilterValue en select:", filterValue);
+//	    console.log(`🎯 Llenando select #${selectId} desde ${storageKey} con filtro: ${filterField}=${filterValue}`);
+//
+//	    const selectElement = document.getElementById(selectId);
+//	    if (!selectElement) {
+//	        console.error(`❌ Error: No se encontró el elemento select con ID '${selectId}'`);
+//	        return;
+//	    }
+//
+//	    selectElement.innerHTML = `<option value="">Seleccione...</option>`;
+//
+//	    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+//	    console.log(`🔍 Datos cargados desde sessionStorage (${storageKey}):`, data);
+//		if (filterField && filterValue !== null) {
+//			console.log ("data dentro del if de filterFieeld y filterValue: ", data)
+//		    data = data.filter(item => {
+//		        let fieldValue;
+//console.log("item dentro de data.filter: ", item)
+//		        if (filterField.includes(".")) {
+//		            // ✅ Acceder correctamente a propiedades anidadas (ejemplo: "materia.idMateria")
+//		            const fieldParts = filterField.split(".");
+//					console.log("fieldParts dentro del includes de filterField: ", fieldParts)
+//		            fieldValue = fieldParts.reduce((obj, key) => obj && obj[key] !== undefined ? obj[key] : undefined, item);
+//					
+//					console.log("FieldValaaue dentro de includes filterfield: ", fieldValue)
+//		        } else {
+//		            fieldValue = item[filterField];
+//					console.log("itemm dentro del else: ", item)
+//					console.log("filterfield denntro del else: ", filterField)
+//					console.log("fieldValue dentro del else: ", fieldValue )
+//		        }
+//
+//		        console.log(`🔎 Comprobando item:`, item);
+//		        console.log(`📌 Comparando ${fieldValue} con ${filterValue}`);
+//
+//		        return fieldValue == filterValue; // Comparación correcta
+//		    });
+//		}
+//
+//
+//	    console.log(`📌 Datos después de filtrar (${selectId}):`, data);
+//
+//	    data.forEach(item => {
+//	        const option = document.createElement("option");
+//	        option.value = item[idField];
+//	        option.textContent = item[textField];
+//	        selectElement.appendChild(option);
+//			console.log("Antes de cargar opciones :", selectElement)
+//	    });
+//
+//	    console.log(`📌 Opciones cargadas en ${selectId}:`, [...selectElement.options].map(opt => opt.text));
+//		// 🔹 Verificar si el `select` es visible, si no, mostrarlo
+//		 const containerId = `${selectId}Container`;
+//		 const containerElement = document.getElementById(containerId);
+//		 if (containerElement) {
+//		     containerElement.style.display = "block";
+//		     console.log(`📌 Mostrando ${containerId}`);
+//		 }
+//	}
+
+
+	function llenarSelect(selectId, storageKey, idField, textField, filterField = null, filterValue = null) {
+	    console.log(`🎯 Llenando select #${selectId} desde ${storageKey} con filtro: ${filterField}=${filterValue}`);
+
+	    const selectElement = document.getElementById(selectId);
+	    if (!selectElement) {
+	        console.error(`❌ Error: No se encontró el elemento select con ID '${selectId}'`);
+	        return;
+	    }
+
+	    // Limpiar el select antes de llenarlo
+	    selectElement.innerHTML = `<option value="">Seleccione...</option>`;
+
+	    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+	    console.log(`🔍 Datos cargados desde sessionStorage (${storageKey}):`, data);
+
+	    // Filtrar si hay filterField y filterValue
+	    if (filterField && filterValue !== null) {
+	        console.log("📌 Filtrando datos...");
+	        data = data.filter(item => {
+	            let fieldValue = filterField.split(".").reduce((obj, key) => obj && obj[key] !== undefined ? obj[key] : undefined, item);
+	            console.log(`🔎 Comprobando item:`, item);
+	            console.log(`📌 Comparando ${fieldValue} con ${filterValue}`);
+	            return fieldValue == filterValue;
+	        });
+	    }
+
+	    console.log(`📌 Datos después de filtrar (${selectId}):`, data);
+
+	    // Poblar el select con los datos filtrados
+	    data.forEach(item => {
+	        const option = document.createElement("option");
+	        option.value = item[idField];
+	        option.textContent = item[textField];
+	        selectElement.appendChild(option);
+	    });
+
+	    console.log(`📌 Opciones cargadas en ${selectId}:`, [...selectElement.options].map(opt => opt.text));
+
+	    // 🔹 Verificar si el `select` es visible, si no, mostrarlo
+	    const containerId = `${selectId}Container`;
+	    const containerElement = document.getElementById(containerId);
+	    if (containerElement) {
+	        containerElement.style.display = "block";
+	        console.log(`📌 Mostrando ${containerId}`);
+	    }
+	}
+
+
+
 
 	window.showSection = function(sectionId) {
-		const allSections = document.querySelectorAll(".admin-section");
-		allSections.forEach(section => section.style.display = "none");
+		console.log(`📌 Mostrando sección: ${sectionId}`);
+		document.querySelectorAll(".admin-section").forEach(section => section.style.display = "none");
 
 		const targetSection = document.getElementById(sectionId);
 		if (targetSection) {
 			targetSection.style.display = "block";
 			document.getElementById("accionesContainer").style.display = "block";
-			selectedSection = sectionId; // Guardar la sección activa
+			selectedSection = sectionId;
 		}
 	};
+
+	document.getElementById("materiaSelect").addEventListener("change", function() {
+		console.log(`🔄 Cambio en materiaSelect: ${this.value}`);
+		llenarSelect("testSelect", "tests", "idTest", "nombreTest", "materia.idMateria", this.value);
+	});
+
+	document.getElementById("testSelect").addEventListener("change", function() {
+		console.log(`🔄 Cambio en testSelect: ${this.value}`);
+		llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta", "idTest", this.value);
+	});
+
+	document.getElementById("preguntaSelect").addEventListener("change", function() {
+		console.log(`🔄 Cambio en preguntaSelect: ${this.value}`);
+		llenarSelect("respuestaSelect", "respuestas", "idRespuesta", "textoRespuesta", "idPregunta", this.value);
+	});
+
 	window.openFormModal = function(actionType) {
-		const modalLabel = document.getElementById("modalLabel");
+		console.log(`📌 Abriendo modal para: ${actionType} en ${selectedSection}`);
+
 		const inputNombre = document.getElementById("nombreElemento");
 		const inputId = document.getElementById("elementId");
 		const selectElemento = document.getElementById("selectElemento");
+		const activoCheckboxContainer = document.getElementById("activoContainer");
+		const activoCheckbox = document.getElementById("activoCheckbox");
 
 		inputNombre.value = "";
 		inputId.value = "";
 		selectElemento.innerHTML = "";
 
-		let data = JSON.parse(sessionStorage.getItem(selectedSection.replace("Section", ""))) || [];
-		console.log("Datos cargados desde sesión:", data);
+		let idField, nameField, storageKey;
 
-		// Determinar dinámicamente los nombres de los campos de ID y nombre
-		let idField = selectedSection === "materiasSection" ? "idMateria" :
-			selectedSection === "testsSection" ? "idTest" :
-				selectedSection === "preguntasSection" ? "idPregunta" :
-					selectedSection === "respuestasSection" ? "idRespuesta" : "id";
+		switch (selectedSection) {
+			case "materiasSection":
+				idField = "idMateria";
+				nameField = "nombreMateria";
+				storageKey = "materias";
+				break;
+			case "testsSection":
+				idField = "idTest";
+				nameField = "nombreTest";
+				storageKey = "tests";
+				llenarSelect("materiaSelect", "materias", "idMateria", "nombreMateria");
+				document.getElementById("materiaSelectContainer").style.display = "block"; 
 
-		let nameField = selectedSection === "materiasSection" ? "nombreMateria" :
-			selectedSection === "testsSection" ? "nombreTest" :
-				selectedSection === "preguntasSection" ? "textoPregunta" :
-					selectedSection === "respuestasSection" ? "textoRespuesta" : "nombre";
+				break;
+			case "preguntasSection":
+				idField = "idPregunta";
+				nameField = "textoPregunta";
+				storageKey = "preguntas";
+				llenarSelect("materiaSelect", "materias", "idMateria", "nombreMateria");
+				llenarSelect("testSelect", "tests", "idTest", "nombreTest");
+				break;
+			case "respuestasSection":
+				idField = "idRespuesta";
+				nameField = "textoRespuesta";
+				storageKey = "respuestas";
+				llenarSelect("materiaSelect", "materias", "idMateria", "nombreMateria");
+				llenarSelect("testSelect", "tests", "idTest", "nombreTest");
+				llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta");
+				break;
+		}
+
+		let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+		console.log(`📥 Datos cargados para edición en ${selectedSection}:`, data);
 
 		if (actionType === "edit") {
-			// Cargar el select con los elementos de la sección actual
-			selectElemento.innerHTML = data.map(item => `<option value="${item[idField]}">${item[nameField]}</option>`).join("");
-			document.getElementById("selectElementoContainer").style.display = "block";
+		       // Cargar el select con los elementos de la sección actual
+		       //selectElemento.innerHTML = data.map(item => `<option value="${item[idField]}">${item[nameField]}</option>`).join("");
+		      // document.getElementById("selectElementoContainer").style.display = "block";
+			   console.log("action type ", actionType)
+		       // Cuando se seleccione un elemento, cargar sus datos en los inputs
+		       selectElemento.addEventListener("change", function() {
+				console.log(" Entrando en evento change de selectElemento ", selectElemento)
+		           let selectedItem = data.find(item => item[idField] == this.value);
+		           console.log(`📌 Elemento seleccionado para edición:`, selectedItem);
 
-			// Cuando se seleccione un elemento, cargar sus datos en los inputs
-			selectElemento.addEventListener("change", function() {
-				let selectedItem = data.find(item => item[idField] == this.value);
-				if (selectedItem) {
-					inputId.value = selectedItem[idField];
-					inputNombre.value = selectedItem[nameField];
+		           if (selectedItem) {
+		               inputId.value = selectedItem[idField];
+		               inputNombre.value = selectedItem[nameField];
 
-					// Si el elemento tiene estado activo, mostrar el checkbox
-					if (selectedItem.activa !== undefined || selectedItem.activo !== undefined) {
-						document.getElementById("activoCheckbox").checked = selectedItem.activa || selectedItem.activo;
-						document.getElementById("activoContainer").style.display = "block";
-					} else {
-						document.getElementById("activoContainer").style.display = "none";
-					}
-				}
-			});
-		} else {
-			document.getElementById("selectElementoContainer").style.display = "none";
-			document.getElementById("activoContainer").style.display = "none";
-		}
+					   console.log("dentro del ", selectedItem)
+		             
 
-		// Mostrar selects según la sección activa y precargar datos si se edita
-		if (selectedSection === "testsSection") {
-			document.getElementById("materiaSelectContainer").style.display = "block";
-			llenarSelect("materiaSelect", "materias", "idMateria", "nombreMateria");
-			selectElemento.addEventListener("change", function() {
-				let selectedTest = data.find(item => item[idField] == this.value);
-				if (selectedTest) {
-					document.getElementById("materiaSelect").value = selectedTest.materia.idMateria;
-				}
-			});
-		} else {
-			document.getElementById("materiaSelectContainer").style.display = "none";
-		}
-
-		if (selectedSection === "preguntasSection") {
-			document.getElementById("testSelectContainer").style.display = "block";
-			llenarSelect("testSelect", "tests", "idTest", "nombreTest");
-
-			selectElemento.addEventListener("change", function() {
-				let selectedPregunta = data.find(item => item[idField] == this.value);
-				if (selectedPregunta) {
-					document.getElementById("testSelect").value = selectedPregunta.test.idTest;
-				}
-			});
-		} else {
-			document.getElementById("testSelectContainer").style.display = "none";
-		}
-
-		if (selectedSection === "respuestasSection") {
-			document.getElementById("preguntaSelectContainer").style.display = "block";
-			llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta");
-
-			selectElemento.addEventListener("change", function() {
-				let selectedRespuesta = data.find(item => item[idField] == this.value);
-				if (selectedRespuesta) {
-					document.getElementById("preguntaSelect").value = selectedRespuesta.pregunta.idPregunta;
-				}
-			});
-		} else {
-			document.getElementById("preguntaSelectContainer").style.display = "none";
-		}
-
+		               // 🔹 SI ES UN TEST, FILTRAR LOS TESTS POR MATERIA
+		               if (selectedSection === "testsSection") {
+						console.log("selectedSection ",selectedSection)
+						console.log(selectedItem)
+		                   console.log(`🔄 Filtrando tests para la materia ID: ${selectedItem.materia.idMateria}`);
+		                  llenarSelect("testSelect", "tests", "idTest", "nombreTest", "idMateria", selectedItem.idMateria);
+		               }
+					   
+					   // Si el elemento tiene estado activo, mostrar el checkbox
+					   if (selectedItem.activa !== undefined || selectedItem.activo !== undefined) {
+					   	                   activoCheckbox.checked = selectedItem.activa || selectedItem.activo;
+					   	                   activoCheckboxContainer.style.display = "block";
+					   	               } else {
+					   	                   activoCheckboxContainer.style.display = "none";
+					   	               }
+		               // 🔹 SI ES UNA PREGUNTA, FILTRAR LOS TESTS Y LAS PREGUNTAS
+		               if (selectedSection === "preguntasSection") {
+		                   console.log(`🔄 Filtrando tests y preguntas para la materia ID: ${selectedItem.test.idMateria}`);
+		                   llenarSelect("testSelect", "tests", "idTest", "nombreTest", "idMateria", selectedItem.test.idMateria);
+		                   llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta", "idTest", selectedItem.test.idTest);
+		               }
+		           }
+		       });
+		   } else {
+		       document.getElementById("selectElementoContainer").style.display = "none";
+		       document.getElementById("activoContainer").style.display = "none";
+		   }
 		document.getElementById("dynamicForm").onsubmit = function(event) {
 			event.preventDefault();
 			guardarElemento();
@@ -141,13 +317,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		new bootstrap.Modal(document.getElementById("modalFormulario")).show();
 	};
 
-
-	function llenarSelect(selectId, storageKey, idField, textField) {
-		let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
-		let select = document.getElementById(selectId);
-		select.innerHTML = `<option value="">Seleccione...</option>` +
-			data.map(item => `<option value="${item[idField]}">${item[textField]}</option>`).join("");
-	}
 
 	window.guardarElemento = function() {
 		const id = document.getElementById("elementId").value;
@@ -160,93 +329,46 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		if (selectedSection === "materiasSection") {
 			payload = { idMateria: id || null, nombreMateria: nombre, activa };
-
-			console.log("Payload en materiasSection  ", payload)
-			console.log("apiUrl en materiasSection ", apiUrl)
 		} else if (selectedSection === "testsSection") {
-			const idMateria = document.getElementById("materiaSelect").value;
-			if (!idMateria) {
-			            alert("⚠ Debes seleccionar una materia.");
-			            return;
-			        }
 			payload = {
 				idTest: id || null,
 				nombreTest: nombre,
-				idMateria: parseInt(idMateria) ,
+				idMateria: document.getElementById("materiaSelect").value,
 				activa
 			};
-			console.log("Payload en testsSection ", payload)
-			console.log("apiUrl en testsSection ", apiUrl)
 		} else if (selectedSection === "preguntasSection") {
 			payload = {
 				idPregunta: id || null,
 				textoPregunta: nombre,
 				test: { idTest: document.getElementById("testSelect").value }
 			};
-			console.log("Payload en preguntasSection ", payload)
-			console.log("apiUrl en preguntasSection ", apiUrl)
 		} else if (selectedSection === "respuestasSection") {
-			const nota = document.querySelector("input[name='respuestaCorrecta']:checked") ? 1.0 : 0.0;
 			payload = {
 				idRespuesta: id || null,
 				textoRespuesta: nombre,
 				textoExplicacion: document.getElementById("explicacionRespuesta").value.trim(),
-				nota: nota,
+				nota: document.querySelector("input[name='respuestaCorrecta']:checked") ? 1.0 : 0.0,
 				pregunta: { idPregunta: document.getElementById("preguntaSelect").value }
 			};
-			console.log("Payload en respuestasSection ", payload)
-			console.log("apiUrl en respuestasSection ", apiUrl)
 		}
+
+		console.log(`📡 Guardando elemento en ${apiUrl}`, payload);
 
 		if (id) apiUrl += `/${id}`;
 
-		sendRequest(apiUrl, id ? "PUT" : "POST", payload).then((result) => {
-			console.log("Payload en sendRequest ", payload)
-			console.log("apiUrl en sendRequest ", apiUrl)
-			if (result) {
-				actualizarSessionStorage(selectedSection);
-				setTimeout(() => {
-					new bootstrap.Modal(document.getElementById("modalFormulario")).hide();
-				}, 300);
-				alert(id ? "Elemento actualizado" : "Elemento creado");
-			}
+		sendRequest(apiUrl, id ? "PUT" : "POST", payload).then(() => {
+			actualizarSessionStorage(selectedSection);
+			new bootstrap.Modal(document.getElementById("modalFormulario")).hide();
+			alert(id ? "Elemento actualizado" : "Elemento creado");
 		});
 	};
 
+	window.eliminarElemento = function() {
+	    console.log("🗑 Eliminando elemento en:", selectedSection);
 
-	/**
-	 * 🔹 Función para actualizar los datos en `sessionStorage` después de cada cambio
-	 */
-	function actualizarSessionStorage(section) {
-		let endpoint = "";
-		let storageKey = "";
-
-		if (section === "materiasSection") {
-			endpoint = "/materias";
-			storageKey = "materias";
-		} else if (section === "testsSection") {
-			endpoint = "/tests";
-			storageKey = "tests";
-		} else if (section === "preguntasSection") {
-			endpoint = "/preguntas";
-			storageKey = "preguntas";
-		} else if (section === "respuestasSection") {
-			endpoint = "/respuestas";
-			storageKey = "respuestas";
-		}
-
-		if (endpoint && storageKey) {
-			sendRequest(endpoint, "GET").then(data => {
-				sessionStorage.setItem(storageKey, JSON.stringify(data));
-			});
-		}
-	}
-
-	window.eliminarElemento = function () {
 	    const selectEliminar = document.getElementById("selectEliminar");
 	    const selectEliminarContainer = document.getElementById("selectEliminarContainer");
-
-	    selectEliminar.innerHTML = "";
+	    selectEliminar.innerHTML = ""; // Limpiar opciones previas
 
 	    let storageKey, idField, nameField;
 
@@ -284,45 +406,70 @@ document.addEventListener("DOMContentLoaded", function() {
 	        return;
 	    }
 
-	    // Usamos la función de llenado de select
+	    // Llenar select con elementos disponibles
 	    llenarSelect("selectEliminar", storageKey, idField, nameField);
+	    console.log("📌 Opciones cargadas en selectEliminar:", data);
 
-	    // 🔹 Forzar el repaint del select para asegurar que se actualiza en la UI
-	    selectEliminar.style.display = "block";
+	    // Mostrar el contenedor del select
 	    selectEliminarContainer.style.display = "block";
-		console.log(selectEliminar.innerHTML);
 
-	    // 🔹 Asegurar que el modal se abre después de llenar el select
-	    setTimeout(() => {
-	        new bootstrap.Modal(document.getElementById("modalEliminar")).show();
-	    }, 300);
+	    // Mostrar modal de eliminación
+	    const modalEliminar = new bootstrap.Modal(document.getElementById("modalEliminar"), {
+	        backdrop: "static", // No se cierra al hacer clic fuera
+	        keyboard: false // No se cierra con ESC
+	    });
+
+	    modalEliminar.show();
+	    console.log("📌 Modal de eliminación abierto correctamente.");
+
+	    // Asegurar que el botón de confirmación está vinculado correctamente
+	    document.getElementById("btnConfirmarEliminar").onclick = function () {
+	        confirmarEliminar(modalEliminar);
+	    };
 	};
 
-	window.confirmarEliminar = function () {
+	window.confirmarEliminar = function (modalEliminar) {
 	    const selectEliminar = document.getElementById("selectEliminar");
 	    const idSeleccionado = selectEliminar.value;
-
+	    const mensajeEliminar = document.getElementById("mensajeEliminar");
+		const advertenciaEliminar = document.getElementById("advertenciaEliminar");
+		const btnCancelarEliminar = document.getElementById("btnCancelarEliminar");
+		const btnConfirmarEliminar = document.getElementById("btnConfirmarEliminar");
 	    if (!idSeleccionado) {
 	        alert("⚠ Debes seleccionar un elemento para eliminar.");
 	        return;
 	    }
 
-	    if (!confirm("❗ ¿Estás seguro de que quieres eliminar este elemento?")) return;
-	    if (!confirm("⚠ Esta acción es irreversible. ¿Confirmas eliminar?")) return;
-
+	    console.log("🗑 Confirmando eliminación de ID:", idSeleccionado);
 	    const apiUrl = `/admin/${selectedSection.replace("Section", "")}/${idSeleccionado}`;
 
 	    sendRequest(apiUrl, "DELETE").then((response) => {
 	        if (response !== undefined) {
-	            alert("✅ Elemento eliminado correctamente.");
-	            actualizarSessionStorage(selectedSection);
+	            console.log(`✅ Elemento ${idSeleccionado} eliminado correctamente.`);
 
-	            // 🔹 Esconder el modal correctamente después de eliminar
-	            const modal = bootstrap.Modal.getInstance(document.getElementById("modalEliminar"));
-	            if (modal) modal.hide();
+	            // Actualizar datos en sessionStorage
+	            actualizarSessionStorage(selectedSection);
+				advertenciaEliminar.style.display = "none";
+				btnCancelarEliminar.style.display = "none";
+				btnConfirmarEliminar.style.display = "none";
+	            // Mostrar mensaje de éxito
+	            mensajeEliminar.textContent = "✅ Elemento eliminado correctamente.";
+	            mensajeEliminar.style.display = "block"; // Mostrar el mensaje
+
+	            // Cerrar el modal después de un breve retraso
+	            setTimeout(() => {
+	                modalEliminar.hide();
+	                console.log("📌 Modal de eliminación cerrado.");
+	            }, 1500);
+	        } else {
+	            console.error("❌ No se pudo eliminar el elemento.");
 	        }
+	    }).catch(error => {
+	        console.error("❌ Error al eliminar:", error);
 	    });
 	};
+
+
 
 	window.mostrarListaEstados = function () {
 	    const listaEstados = document.getElementById("listaEstados");
@@ -416,7 +563,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	    // Enviar peticiones solo por los elementos que cambiaron
 	    cambios.forEach(cambio => {
-	        let apiUrl = selectedSection === "materiasSection" ? "/materias/" : "/tests/";
+			console.log(cambio)
+	        let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
 	        apiUrl += cambio.id + "/toggle-activa";
 
 	        sendRequest(apiUrl, "PUT").then(() => {
@@ -434,58 +582,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-	window.addRespuesta = function() {
-		let div = document.createElement("div");
-		div.className = "input-group mb-2";
-		div.innerHTML = `
-            <input type="text" class="form-control respuesta-input" placeholder="Texto de la respuesta">
-            <input type="text" class="form-control explicacion-input" placeholder="Explicación">
-            <input type="radio" name="respuestaCorrecta">
-            <button class="btn btn-danger" onclick="this.parentElement.remove()">✖</button>
-        `;
-		document.getElementById("respuestasLista").appendChild(div);
-	};
 
-	function getRespuestas() {
-		let respuestas = [];
-		document.querySelectorAll(".respuesta-input").forEach((input, index) => {
-			respuestas.push({
-				textoRespuesta: input.value,
-				textoExplicacion: document.querySelectorAll(".explicacion-input")[index].value,
-				nota: document.querySelectorAll("input[name='respuestaCorrecta']")[index].checked ? 1.0 : 0.0
-			});
-		});
-		return respuestas;
-	}
 
-	async function sendRequest(url, method = "GET", body = null) {
-	    const csrfToken = window.csrf.token;
-	    if (!csrfToken) return;
 
-	    const options = {
-	        method,
-	        headers: {
-	            "Content-Type": "application/json",
-	            [window.csrf.headerName]: csrfToken
-	        }
-	    };
 
-	    if (body) options.body = JSON.stringify(body);
 
-	    try {
-	        const response = await fetch(url, options);
 
-	        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
 
-	        // 🔹 Si la respuesta es 204 (No Content), no intentar parsear JSON
-	        if (response.status === 204) {
-	            return null; // No hay contenido que procesar
-	        }
-
-	        return await response.json();
-	    } catch (error) {
-	        alert(`Error: ${error.message}`);
-	    }
-	}
 
 });

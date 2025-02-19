@@ -61,20 +61,33 @@ public class UsuarioService {
     }
 
     // Método para buscar un usuario por email
-    @Transactional(readOnly = true)
-    public Optional<Usuario> findByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
+  
     // Método para cambiar la contraseña de un usuario
     @Transactional
     public boolean cambiarPassword(Integer idUsuario, String nuevaPassword) {
         return usuarioRepository.findById(idUsuario).map(usuario -> {
-            usuario.setPass(passwordEncoder.encode(nuevaPassword));
+            System.out.println("✅ Contraseña ANTES del cambio: " + usuario.getPass());
+
+            String encodedPassword = passwordEncoder.encode(nuevaPassword);
+            usuario.setPass(encodedPassword);
+            
             usuarioRepository.save(usuario);
+            
+            System.out.println("✅ Contraseña DESPUÉS del cambio: " + usuario.getPass());
+            
+            // Comprobamos si se guardó correctamente
+            Usuario verificado = usuarioRepository.findById(idUsuario).orElse(null);
+            if (verificado != null) {
+                System.out.println("🔍 Contraseña en la BD después del cambio: " + verificado.getPass());
+            } else {
+                System.out.println("❌ ERROR: No se pudo verificar la nueva contraseña en la BD.");
+            }
+            
             return true;
         }).orElse(false);
     }
+
+
     
 	/*
 	 * @Transactional public Usuario cambiarRolUsuario(int id, int idRol) { return

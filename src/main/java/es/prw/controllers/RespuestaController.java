@@ -50,6 +50,7 @@ public class RespuestaController {
     @GetMapping("/sesion")
     public ResponseEntity<List<Respuesta>> obtenerRespuestasSesion(@RequestParam("idTest") int idTest, HttpSession session) {
         List<?> respuestasList = (List<?>) session.getAttribute("respuestasTest_" + idTest);
+        System.out.println("Respuestas recuperadas de sesión: " + respuestasList);
 
         if (respuestasList != null && !respuestasList.isEmpty() && respuestasList.get(0) instanceof Respuesta) {
             return ResponseEntity.ok((List<Respuesta>) respuestasList);

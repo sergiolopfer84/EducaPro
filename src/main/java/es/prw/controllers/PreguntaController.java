@@ -39,6 +39,7 @@ public class PreguntaController {
         List<Respuesta> respuestas = preguntas.stream()
                 .flatMap(p -> p.getRespuestas().stream())
                 .collect(Collectors.toList());
+        System.out.println("Guardando en sesión respuestasTest_" + idTest + ": " + respuestas);
 
         session.setAttribute("respuestasTest_" + idTest, respuestas);
 

@@ -2,7 +2,13 @@ package es.prw.models;
 
 import jakarta.persistence.*;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import java.util.HashSet;
+import java.util.List;
 
 @Entity
 @Table(name = "Usuario")
@@ -44,4 +50,10 @@ public class Usuario {
 
     public Set<Rol> getRoles() { return roles; }
     public void setRoles(Set<Rol> roles) { this.roles = roles; }
+    
+    public List<GrantedAuthority> getAuthorities() {
+        return roles.stream()
+            .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre()))
+            .collect(Collectors.toList());
+    }
 }

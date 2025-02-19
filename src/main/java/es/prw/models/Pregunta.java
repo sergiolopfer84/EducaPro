@@ -41,23 +41,25 @@ public class Pregunta {
         this.idPregunta = idPregunta;
     }
 
-    public String getPregunta() {
-        return textoPregunta;
-    }
+   
 
-    public void setPregunta(String textoPregunta) {
-        this.textoPregunta = textoPregunta;
-    }
+    public String getTextoPregunta() {
+		return textoPregunta;
+	}
 
-    public Test getTest() {
-        return test;
-    }
+	public void setTextoPregunta(String textoPregunta) {
+		this.textoPregunta = textoPregunta;
+	}
 
-    public void setTest(Test test) {
-        this.test = test;
-    }
+	public Test getTest() {
+		return test;
+	}
 
-    public List<Respuesta> getRespuestas() {
+	public void setTest(Test test) {
+		this.test = test;
+	}
+
+	public List<Respuesta> getRespuestas() {
         return respuestas;
     }
 

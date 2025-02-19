@@ -1,5 +1,6 @@
 package es.prw.services;
 
+import es.prw.dtos.MateriaDTO;
 import es.prw.dtos.MateriaProgresoDTO;
 import es.prw.models.Materia;
 import es.prw.repositories.MateriaRepository;
@@ -8,6 +9,7 @@ import es.prw.repositories.PuntuacionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MateriaService {
@@ -28,6 +30,15 @@ public class MateriaService {
     public List<Materia> getMaterias() {
         return materiaRepository.findAll();
     }
+
+    @Transactional(readOnly = true)
+    public List<MateriaDTO> getMateriasDTO() {
+        return materiaRepository.findAll()
+                .stream()
+                .map(MateriaDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     // Obtener progreso de materias con DTO
     @Transactional(readOnly = true)

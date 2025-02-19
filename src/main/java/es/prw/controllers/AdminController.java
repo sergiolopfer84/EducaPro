@@ -4,6 +4,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import es.prw.dtos.MateriaDTO;
+import es.prw.dtos.PreguntaDTO;
+import es.prw.dtos.RespuestaDTO;
 import es.prw.dtos.TestDTO;
 import es.prw.models.*;
 import es.prw.services.*;
@@ -34,9 +37,19 @@ public class AdminController {
     // ============================
     // 📌 CRUD MATERIAS
     // ============================
+    @GetMapping("/materias")
+    public ResponseEntity<List<MateriaDTO>> obtenerMateriasDTO() {
+        return ResponseEntity.ok(materiaService.getMateriasDTO());
+    }
 
     @PostMapping("/materias")
     public ResponseEntity<Materia> crearMateria(@RequestBody Materia materia) {
+        System.out.println("📩 Recibiendo solicitud para crear materia: " + materia);
+
+        if (materia.getNombreMateria() == null || materia.getNombreMateria().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(null); // ⚠ Evita insertar valores nulos o vacíos
+        }
+
         return ResponseEntity.ok(materiaService.guardarMateria(materia));
     }
 
@@ -51,7 +64,7 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/materias/{id}/toggle-activa")
+    @PutMapping("/materias/{id}/toggle-activa")
     public ResponseEntity<Void> toggleEstadoMateria(@PathVariable int id) {
         materiaService.toggleEstado(id); // 🔹 Llamamos al servicio pero no intentamos devolver nada
         return ResponseEntity.noContent().build(); // ✅ Devuelve 204 No Content
@@ -70,6 +83,10 @@ public class AdminController {
     // ============================
     // 📌 CRUD TESTS
     // ============================
+    @GetMapping("/tests")
+    public ResponseEntity<List<TestDTO>> obtenerTestsDTO() {
+        return ResponseEntity.ok(testService.getTestsDTO());
+    }
 
     @PostMapping("/tests")
     public ResponseEntity<Test> crearTest(@RequestBody TestDTO testDTO) {
@@ -81,7 +98,7 @@ public class AdminController {
         Test nuevoTest = new Test();
         nuevoTest.setNombreTest(testDTO.getNombreTest());
         nuevoTest.setMateria(materia);
-        nuevoTest.setActivo(testDTO.isActiva());
+        nuevoTest.setActiva(testDTO.isActiva());
 
         return ResponseEntity.ok(testService.guardarTest(nuevoTest));
     }
@@ -97,7 +114,7 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/tests/{id}/toggle-activa")
+    @PutMapping("/tests/{id}/toggle-activa")
     public ResponseEntity<Test> toggleEstadoTest(@PathVariable int id) {
         return ResponseEntity.ok(testService.toggleEstado(id));
     }
@@ -105,16 +122,26 @@ public class AdminController {
     // ============================
     // 📌 CRUD PREGUNTAS
     // ============================
+    
+    
+    @GetMapping("/preguntas")
+    public ResponseEntity<List<PreguntaDTO>> obtenerPreguntasDTO() {
+        return ResponseEntity.ok(preguntaService.getPreguntasDTO());
+    }
 
     @PostMapping("/preguntas")
-    public ResponseEntity<Pregunta> crearPregunta(@RequestBody Pregunta pregunta) {
-        return ResponseEntity.ok(preguntaService.crearPregunta(pregunta));
+    public ResponseEntity<Pregunta> crearPregunta(@RequestBody PreguntaDTO preguntaDTO) {
+        Pregunta preguntaGuardada = preguntaService.crearPreguntaDesdeDTO(preguntaDTO);
+        return ResponseEntity.ok(preguntaGuardada);
     }
 
+
     @PutMapping("/preguntas/{id}")
-    public ResponseEntity<Pregunta> actualizarPregunta(@PathVariable int id, @RequestBody Pregunta pregunta) {
-        return ResponseEntity.ok(preguntaService.actualizarPregunta(id, pregunta));
+    public ResponseEntity<Pregunta> actualizarPregunta(@PathVariable int id, @RequestBody PreguntaDTO preguntaDTO) {
+        Pregunta preguntaActualizada = preguntaService.actualizarPreguntaDesdeDTO(id, preguntaDTO);
+        return ResponseEntity.ok(preguntaActualizada);
     }
+
 
     @DeleteMapping("/preguntas/{id}")
     public ResponseEntity<Void> eliminarPregunta(@PathVariable int id) {
@@ -125,17 +152,23 @@ public class AdminController {
     // ============================
     // 📌 CRUD RESPUESTAS
     // ============================
+    @GetMapping("/respuestas")
+    public ResponseEntity<List<RespuestaDTO>> obtenerRespuestasDTO() {
+        return ResponseEntity.ok(respuestaService.getRespuestasDTO());
+    }
 
     @PostMapping("/respuestas")
-    public ResponseEntity<Respuesta> crearRespuesta(@RequestBody Respuesta respuesta) {
-        return ResponseEntity.ok(respuestaService.crearRespuesta(respuesta));
+    public ResponseEntity<Respuesta> crearRespuesta(@RequestBody RespuestaDTO respuestaDTO) {
+        Respuesta respuestaGuardada = respuestaService.crearRespuestaDesdeDTO(respuestaDTO);
+        return ResponseEntity.ok(respuestaGuardada);
     }
 
     @PutMapping("/respuestas/{id}")
-    public ResponseEntity<Respuesta> actualizarRespuesta(@PathVariable int id, @RequestBody Respuesta respuesta) {
-        return ResponseEntity.ok(respuestaService.actualizarRespuesta(id, respuesta));
+    public ResponseEntity<Respuesta> actualizarRespuesta(@PathVariable Integer id,
+                                                         @RequestBody RespuestaDTO respuestaDTO) {
+        Respuesta respuestaActualizada = respuestaService.actualizarRespuestaDesdeDTO(id, respuestaDTO);
+        return ResponseEntity.ok(respuestaActualizada);
     }
-
     @DeleteMapping("/respuestas/{id}")
     public ResponseEntity<Void> eliminarRespuesta(@PathVariable int id) {
         respuestaService.eliminarRespuesta(id);

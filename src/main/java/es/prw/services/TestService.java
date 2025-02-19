@@ -1,6 +1,7 @@
 package es.prw.services;
 
 import es.prw.dtos.NotaHistorialDTO;
+import es.prw.dtos.TestDTO;
 import es.prw.models.Test;
 import es.prw.repositories.TestRepository;
 import es.prw.repositories.PuntuacionRepository;
@@ -27,6 +28,15 @@ public class TestService {
     public List<Test> getTests() {
         return testRepository.findAll();
     }
+    
+    @Transactional(readOnly = true)
+    public List<TestDTO> getTestsDTO() {
+        return testRepository.findAll()
+                .stream()
+                .map(TestDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     // Obtener tests por materia
     @Transactional(readOnly = true)
@@ -40,8 +50,7 @@ public class TestService {
         return testRepository.findAll().stream()
                 .map(test -> new NotaHistorialDTO(
                         test.getNombreTest(),
-                        puntuacionRepository.findNotasByTest(test)
-                ))
+                        puntuacionRepository.findNotasByTest(test)))
                 .collect(Collectors.toList());
     }
 
@@ -61,8 +70,8 @@ public class TestService {
                 .orElseThrow(() -> new RuntimeException("❌ Test no encontrado"));
 
         testExistente.setNombreTest(nuevoTest.getNombreTest());
-        testExistente.setActivo(nuevoTest.isActivo());
-        
+        testExistente.setActiva(nuevoTest.isActiva());
+
         return testRepository.save(testExistente);
     }
 
@@ -80,8 +89,8 @@ public class TestService {
     public Test toggleEstado(int id) {
         Test test = testRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("❌ Test no encontrado"));
-        
-        test.setActivo(!test.isActivo());
+
+        test.setActiva(!test.isActiva());
         return testRepository.save(test);
     }
 
@@ -96,4 +105,11 @@ public class TestService {
     public List<Test> obtenerTestsActivosPorMateria(int idMateria) {
         return testRepository.findByMateria_IdMateriaAndActivaTrue(idMateria);
     }
+    
+    @Transactional(readOnly = true)
+    public Test buscarPorId(int id) {
+        return testRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Test no encontrado con id: " + id));
+    }
+
 }

@@ -35,7 +35,7 @@ public interface PuntuacionRepository extends JpaRepository<Puntuacion, Integer>
     @Transactional(readOnly = true)
     @Query("SELECT p.test.materia.nombreMateria, p.test.nombreTest, p.notaObtenida "
          + "FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario "
-         + "ORDER BY p.test.materia.nombreMateria, p.test.nombreTest, p.fecha DESC")
+         + "ORDER BY p.test.materia.nombreMateria, p.test.nombreTest, p.fecha ASC")
     List<Object[]> obtenerHistorialNotasPorUsuario(Integer idUsuario);
 
     @Transactional(readOnly = true)

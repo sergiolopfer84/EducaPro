@@ -24,7 +24,7 @@ public class MainController {
 
     @GetMapping("/perfil")
     public String perfilPage(Model model, HttpServletRequest request) {
-    	
+
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         model.addAttribute("csrfToken", csrfToken);
         String currentUri = request.getRequestURI();
@@ -34,7 +34,7 @@ public class MainController {
 
     @GetMapping("/home")
     public String homePage(Model model, HttpServletRequest request) {
-       
+
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         if (csrfToken != null) {
             model.addAttribute("csrfToken", csrfToken);
@@ -42,10 +42,10 @@ public class MainController {
         }
         String currentUri = request.getRequestURI();
         model.addAttribute("currentUri", currentUri);
-        return "views/home";  // Verifica que tienes una vista llamada "home.html"
+        return "views/home"; // Verifica que tienes una vista llamada "home.html"
     }
 
-    @GetMapping({"/index", "/"})
+    @GetMapping({ "/index", "/" })
     public String indexPage(Model model, HttpServletRequest request) {
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         if (csrfToken != null) {
@@ -56,6 +56,7 @@ public class MainController {
         model.addAttribute("currentUri", currentUri);
         return "views/index";
     }
+
     @GetMapping("/admin")
     public String adminPage(Model model, HttpServletRequest request) {
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
@@ -71,8 +72,8 @@ public class MainController {
         System.out.println(roles);
         return "views/admin";
     }
- // Agrega esto en cualquier controlador accesible
-  
+    // Agrega esto en cualquier controlador accesible
+
     @GetMapping("/debug/roles")
     public ResponseEntity<String> getUserRoles() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -82,10 +83,10 @@ public class MainController {
                 .toString();
         return ResponseEntity.ok("Roles del usuario autenticado: " + roles);
     }
+
     @PostMapping("/admin/debug")
     public String debugPost() {
-    	   return "OK from admin debug";
-    	}
-
+        return "OK from admin debug";
+    }
 
 }

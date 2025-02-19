@@ -7,28 +7,48 @@ $(document).ready(function() {
 	       });
 	   }
     // ======================= Cargar Perfil de Usuario =======================
-    function cargarPerfil() {
-        $.ajax({
-            url: '/usuarios/perfil',
-            type: 'GET',
-            success: function(data) {
-                $('#perfil-nombre').text(data.nombre);
-                $('#perfil-email').text(data.email);
-                $('#perfil-rol').text(data.roles.length > 0 ? data.roles[0].nombre : 'Sin rol');
-                $('#welcome-text').text(`Perfil de ${data.nombre}`);
-            },
-            error: function() {
-                alert('Error al cargar perfil');
-            }
-        });
-    }
+	function cargarPerfil() {
+	  $.ajax({
+	    url: '/usuarios/perfil',
+	    type: 'GET',
+	    success: function(data) {
+	      // 'data' tiene la forma { usuario: { ... } }
+	      // y dentro de 'data.usuario' vienen los campos y roles
+
+	      const usuario = data.usuario;
+	      console.log(usuario);
+
+	      // Nombre y email
+	      $('#perfil-nombre').text(usuario.nombre);
+	      $('#perfil-email').text(usuario.email);
+
+	      // Mostrar TODOS los roles
+	      if (usuario.roles && usuario.roles.length > 0) {
+	        // 'roles' es un array de objetos, ej. [{id:1, nombre:"USER"}, {id:2, nombre:"ADMIN"}]
+	        const rolesConcatenados = usuario.roles
+	          .map(rol => rol.nombre) // extraemos "USER", "ADMIN"
+	          .join(', ');           // unimos en una sola cadena con comas
+	        $('#perfil-rol').text(rolesConcatenados);
+	      } else {
+	        $('#perfil-rol').text('Sin rol');
+	      }
+
+	      // Texto de bienvenida
+	      $('#welcome-text').text(`Perfil de ${usuario.nombre}`);
+	    },
+	    error: function() {
+	      alert('Error al cargar perfil');
+	    }
+	  });
+	}
 
     // ======================= Cambio de Contraseña =======================
     $('#changePasswordForm').submit(function(e) {
         e.preventDefault();
         let newPassword = $('#newPassword').val().trim();
+		console.log("la  nueva contraseña ", newPassword)
         let confirmPassword = $('#confirmPassword').val().trim();
-
+		console.log( "confirmar conttraseña ", confirmPassword)
         if (newPassword.length < 6) {
             $('#passwordMessage').text('La contraseña debe tener al menos 6 caracteres.').css('color', 'red');
             return;
@@ -47,7 +67,7 @@ $(document).ready(function() {
 
         $.ajax({
             url: '/usuarios/cambiar-password',
-            type: 'POST',
+            type: 'PATCH',
             contentType: 'application/json',
             data: JSON.stringify({ nuevaPassword: newPassword }),
             beforeSend: function(xhr) {
@@ -194,6 +214,19 @@ $(document).ready(function() {
             }
         });
     }
+//	$('.toggle-password').click(function() {
+//	    let input = $("#" + $(this).data("target"));
+//	    let icon = $(this).find("i");
+//
+//	    if (input.attr("type") === "password") {
+//	        input.attr("type", "text");
+//	        icon.removeClass("fa-eye").addClass("fa-eye-slash");
+//	    } else {
+//	        input.attr("type", "password");
+//	        icon.removeClass("fa-eye-slash").addClass("fa-eye");
+//	    }
+//	});
+
 
     function abrirModalGrafico(chartData, chartOptions, testNombre) {
         $('#modalTitulo').text(`Notas de ${testNombre}`);

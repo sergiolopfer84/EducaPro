@@ -64,20 +64,13 @@ public class LoginAttemptService {
     }
 
     public boolean isBlocked(String username) {
-        return Optional.ofNullable(lockTimeCache.get(username))
-                .map(lockTime -> {
-                    if (System.currentTimeMillis() - lockTime > LOCK_TIME_DURATION) {
-                        loginSucceeded(username); // Restablece el estado si ha expirado el bloqueo
-                        return false;
-                    }
-                    return true;
-                })
-                .orElse(false);
+        return getRemainingLockTime(username) > 0;
     }
 
     public long getRemainingLockTime(String username) {
         return Optional.ofNullable(lockTimeCache.get(username))
-                .map(lockTime -> Math.max((LOCK_TIME_DURATION - (System.currentTimeMillis() - lockTime)) / 1000, 0))
-                .orElse(0L);
+            .map(lockTime -> Math.max((LOCK_TIME_DURATION - (System.currentTimeMillis() - lockTime)) / 1000, 0))
+            .orElse(0L);
     }
+
 }

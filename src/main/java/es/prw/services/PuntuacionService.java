@@ -60,9 +60,9 @@ public class PuntuacionService {
     }
 
     // Obtener últimas 2 puntuaciones de un usuario en un test
-    @Transactional(readOnly = true)
     public List<Double> getUltimasPuntuacionesByTest(Integer idUsuario, int idTest) {
-        return puntuacionRepository.findUltimasPuntuacionesByUsuarioAndTest(idUsuario, idTest, PageRequest.of(0, 2));
+        List<Double> puntuaciones = puntuacionRepository.findUltimasPuntuacionesByUsuarioAndTest(idUsuario, idTest, PageRequest.of(0, 10)); // Recupera más por seguridad
+        return puntuaciones.size() > 2 ? puntuaciones.subList(0, 2) : puntuaciones;
     }
 
     // Obtener todas las puntuaciones de un usuario

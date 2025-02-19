@@ -73,13 +73,13 @@ public class PuntuacionController {
 
         List<Double> notas = puntuacionService.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest);
 
-        Map<String, Object> response = Map.of(
-                "ultimaNota", notas.isEmpty() ? null : notas.get(0),
-                "penultimaNota", notas.size() > 1 ? notas.get(1) : null
-        );
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("ultimaNota", notas.isEmpty() ? null : notas.get(0));
+        response.put("penultimaNota", notas.size() > 1 ? notas.get(1) : null);
 
         return ResponseEntity.ok(response);
     }
+
 
     // ✅ Evaluar respuestas de un test y guardar la puntuación
 
@@ -147,14 +147,22 @@ public class PuntuacionController {
     }
 
     // 🔹 Método privado para obtener usuario autenticado
+ // Método corregido en PuntuacionController
     private Usuario obtenerUsuarioDesdeAuth(Authentication authentication) {
         if (authentication == null) {
             throw new RuntimeException("Usuario no autenticado");
         }
 
-        String email = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal()).getUsername();
+        Object principal = authentication.getPrincipal();
+        
+        if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
+            String email = springUser.getUsername();
+            
+            return usuarioRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado en la BD: " + email));
+        }
 
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
+        throw new RuntimeException("No se pudo obtener el usuario autenticado");
     }
+
 }

@@ -67,16 +67,17 @@ public class CustomUserDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
-        List<GrantedAuthority> authorities = usuario.getRoles().stream()
-                .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre())) // Se asume que en la BBDD ya tienen "ROLE_"
-                .collect(Collectors.toList());
+      
 
-        return new org.springframework.security.core.userdetails.User(
-                usuario.getEmail(),
-                usuario.getPass(),
-                authorities
-        );
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(usuario.getEmail())
+                .password(usuario.getPass()) // Asegúrate de que está encriptado
+                .authorities(usuario.getAuthorities())
+                .build();
     }
+  
+   
+
 }
 
 

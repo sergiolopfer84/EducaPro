@@ -40,10 +40,18 @@
 
     <h2>Cambiar Contraseña</h2>
     <form id="changePasswordForm" method="post">
-        <label>Nueva Contraseña:</label>
-        <input type="password" id="newPassword">
-        <label>Confirmar Contraseña:</label>
-        <input type="password" id="confirmPassword">
+		
+		<label>Nueva Contraseña:</label>
+		<input type="password" id="newPassword">
+		<button type="button" class="toggle-password" data-target="newPassword">
+		    <i class="fa fa-eye"></i>
+		</button>
+
+		<label>Confirmar Contraseña:</label>
+		<input type="password" id="confirmPassword">
+		<button type="button" class="toggle-password" data-target="confirmPassword">
+		    <i class="fa fa-eye"></i>
+		</button>
         <button type="submit" class="btn">Actualizar Contraseña</button>
         <p id="passwordMessage"></p>
     </form>

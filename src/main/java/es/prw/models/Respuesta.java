@@ -1,13 +1,21 @@
 package es.prw.models;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Respuesta")
-public class Respuesta {
-    @Id
+public class Respuesta implements Serializable{
+	
+	 private static final long serialVersionUID = 1L;
+    public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_respuesta")
     private Integer idRespuesta;

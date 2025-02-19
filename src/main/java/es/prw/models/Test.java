@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Test")
@@ -22,7 +23,7 @@ public class Test {
 
     @ManyToOne
     @JoinColumn(name = "id_materia", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Materia materia;
 
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -48,14 +49,6 @@ public class Test {
         this.idTest = idTest;
     }
 
-    public boolean isActivo() {
-        return activa;
-    }
-
-    public void setActivo(boolean activa) {
-        this.activa = activa;
-    }
-
     public String getNombreTest() {
         return nombreTest;
     }
@@ -78,5 +71,13 @@ public class Test {
 
     public void setPreguntas(List<Pregunta> preguntas) {
         this.preguntas = preguntas;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
     }
 }
