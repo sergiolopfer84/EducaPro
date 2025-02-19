@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	            sendMessageBtn.click(); // Llamamos al clic del botón "Enviar" para que vaya al backend
 	        });
 	    });
+		
+		
 	
     const currentPath = window.location.pathname;
     console.log("Ruta actual:", currentPath);
@@ -652,27 +654,7 @@ $(document).ready(function() {
 		        modal.style.cursor = "grab";
 		    });
 		});
-		function reproducirVoz() {
-		    let texto = document.getElementById("textoInput").value;
-		    if (!texto) {
-		        alert("Por favor, escribe un texto primero.");
-		        return;
-		    }
-
-		    let audioPlayer = document.getElementById("audioPlayer");
-		    let url = `/api/openai/texto-a-voz?texto=${encodeURIComponent(texto)}`;
-
-		    fetch(url)
-		        .then(response => response.blob())
-		        .then(blob => {
-		            let audioUrl = URL.createObjectURL(blob);
-		            audioPlayer.src = audioUrl;
-		            audioPlayer.style.display = "block";
-		            audioPlayer.play();
-		        })
-		        .catch(error => console.error("Error al obtener el audio:", error));
-		}
-
+		
 
 
 	} // Fin if /home
