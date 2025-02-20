@@ -289,7 +289,7 @@ $(document).ready(function() {
 		// Cargar materias
 		$.get('/materias/activas', function(data) {
 			let options = '<option value="">Elige una materia</option>';
-		
+		console.log(data)
 			data.forEach(materia => {
 				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
 			});
@@ -328,14 +328,15 @@ $(document).ready(function() {
 			$('#questions-container').html('');
 			$('#nota-obtenida').html('').hide();
 			$('#ultima-nota').html('').hide();
-
+			console.log("idTest",idTest)
 			// 1. Cargar preguntas (y en el backend se guardan en sesión)
 			$.get(`/preguntas/test/${idTest}`, function(data) {
+				console.log("data kub 334",data)
 				let questionsHTML = '';
 				data.forEach(p => {
 					questionsHTML += `
                         <div class="question">
-                            <h3>${p.pregunta}</h3>
+                            <h3>${p.textoPregunta}</h3>
                             <div class="options">
                                 ${p.respuestas.map(r => `
                                     <div class="respuesta">
