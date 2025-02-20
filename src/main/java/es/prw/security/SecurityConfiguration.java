@@ -1,94 +1,86 @@
+
+
 package es.prw.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import es.prw.services.LoginAttemptService;
 
-import es.prw.daos.UserDao;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
-
-@CrossOrigin(origins = "http://localhost:8080")
 @Configuration
 public class SecurityConfiguration {
-    private final UserDao userDao;
+    
+    private final LoginAttemptService loginAttemptService;
 
-    public SecurityConfiguration(@Lazy UserDao userDao) {
-        this.userDao = userDao;
+    public SecurityConfiguration(@Lazy LoginAttemptService loginAttemptService) {
+        this.loginAttemptService = loginAttemptService;
     }
 
-    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(csrf -> 
-            csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        )
+        http
+				
+				  .csrf(csrf -> csrf
+				  .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				  .ignoringRequestMatchers("/api/asistente") )
+				 
         .authorizeHttpRequests(auth -> auth
-                // Rutas públicas
-                .requestMatchers("/", "/register", "/styles/**", "/img/**", "/js/**").permitAll()
-                // Cualquier otra requiere autenticación
+                .requestMatchers("/","/home","/auth/register", "/auth/login", "/styles/**", "/img/**", "/js/**").permitAll()
+                .requestMatchers("/api/asistente", "/chat.html").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/usuarios/api/current-user").authenticated()
                 .anyRequest().authenticated()
         )
         .formLogin(form -> form
-                // Indica dónde está tu “formulario” (tu página custom con el modal)
-                .loginPage("/")
-                
-                // Indica la URL a la que se hace POST para loguear (Spring Security la procesa)
-                .loginProcessingUrl("/login") 
-                
-                // El name del input para el usuario en tu formulario
+                .loginPage("/") // Evitamos redirección infinita
+                .loginProcessingUrl("/auth/login")
                 .usernameParameter("email")
-
-                // El name del input para la contraseña en tu formulario
                 .passwordParameter("password")
-                
-                // Configuramos un successHandler que devuelve 200
                 .successHandler((request, response, authentication) -> {
-                    // Podemos responder OK y dejar que el front (Ajax) redirija a /home
-                    response.setStatus(HttpServletResponse.SC_OK);
+                    String email = request.getParameter("email");
+                    loginAttemptService.loginSucceeded(email);
+                    response.sendRedirect("/home"); // Redirección tras login exitoso
                 })
-                
-                // Configuramos un failureHandler que devuelve 401
                 .failureHandler((request, response, exception) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    String email = request.getParameter("email");
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    if (loginAttemptService.isBlocked(email)) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        new ObjectMapper().writeValue(response.getWriter(),
+                                Map.of("error", "Demasiados intentos fallidos. Espere 1 minuto."));
+                    } else {
+                        loginAttemptService.loginFailed(email);
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        new ObjectMapper().writeValue(response.getWriter(),
+                                Map.of("error", "Credenciales incorrectas."));
+                    }
                 })
-                
                 .permitAll()
         )
         .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/login?logout")
-            .invalidateHttpSession(true)
-            .clearAuthentication(true)
-            .permitAll()
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                .logoutUrl("/auth/logout")
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .permitAll()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
         );
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> {
-            var appUser = userDao.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-            return User.withUsername(appUser.getEmail())
-                       .password(appUser.getPass())
-                       .build();
-        };
     }
 
     @Bean
@@ -97,12 +89,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = 
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder
-                .userDetailsService(userDetailsService())
-                .passwordEncoder(passwordEncoder());
-        return authenticationManagerBuilder.build();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 }

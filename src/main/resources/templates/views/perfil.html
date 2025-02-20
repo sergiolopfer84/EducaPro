@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Librería para gráficas -->
+	<!--<link rel="stylesheet" th:href="@{styles/styles.css}">-->
+
+    <link rel="stylesheet" th:href="@{/styles/profileStyles.css}">
+	
+	
+	
+</head>
+<body>
+
+	<header>
+	     	<div th:replace="~{fragments/header :: header}"></div>
+	  </header>
+	
+<!-- Modal para gráficos ampliados -->
+<div id="modalGrafico" class="modal">
+    <div class="modal-content">
+        <span id="modalClose" class="close">&times;</span>
+        <h2 id="modalTitulo"></h2>
+        <div id="modalGraficoContainer" class="modal-grafico-container">
+            <canvas id="modalGraficoCanvas"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="container perfil-container">
+    <h2>Información Personal</h2>
+    <p><strong>Nombre:</strong> <span id="perfil-nombre"></span></p>
+    <p><strong>Email:</strong> <span id="perfil-email"></span></p>
+    <p><strong>Rol:</strong> <span id="perfil-rol"></span></p>
+
+    <h2>Cambiar Contraseña</h2>
+    <form id="changePasswordForm" method="post">
+		
+		<label>Nueva Contraseña:</label>
+		<input type="password" id="newPassword">
+		<button type="button" class="toggle-password" data-target="newPassword">
+		    <i class="fa fa-eye"></i>
+		</button>
+
+		<label>Confirmar Contraseña:</label>
+		<input type="password" id="confirmPassword">
+		<button type="button" class="toggle-password" data-target="confirmPassword">
+		    <i class="fa fa-eye"></i>
+		</button>
+        <button type="submit" class="btn">Actualizar Contraseña</button>
+        <p id="passwordMessage"></p>
+    </form>
+
+    <h2>Progreso en Materias</h2>
+    <div id="materia-progresos"></div>
+
+    <h2>Historial de Notas</h2>
+    <div id="graficos-container"></div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/js/script.js}" defer></script>
+<script th:src="@{/js/perfil.js}" ></script>
+
+<script>
+	    window.csrf = {
+	        token: '[[${csrfToken.token}]]',
+	        headerName: '[[${csrfToken.headerName}]]'
+	    };
+	    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+	</script>
+
+</body>
+</html>

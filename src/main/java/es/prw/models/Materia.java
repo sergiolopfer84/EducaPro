@@ -1,35 +1,65 @@
 package es.prw.models;
 
+import jakarta.persistence.*;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Table(name = "Materia")
 public class Materia {
-	private Integer idMateria;
-	private String materia;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_materia")
+    private Integer idMateria;
 
-	public Materia() {
-		super();
+    @Column(name = "nombre_materia", nullable = false, unique = true)
+    private String nombreMateria;
 
-	}
+    @Column(name = "activa", nullable = false)
+    private boolean activa = false;
 
-	public Materia(Integer idMateria, String materia) {
-		super();
-		this.idMateria = idMateria;
-		this.materia = materia;
-	}
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Test> tests;
 
-	public Integer getIdMateria() {
-		return idMateria;
-	}
+    public Materia() {}
 
-	public void setIdMateria(Integer idMateria) {
-		this.idMateria = idMateria;
-	}
+    public Materia(Integer idMateria, String nombreMateria, boolean activa) {
+        this.idMateria = idMateria;
+        this.nombreMateria = nombreMateria;
+        this.activa = activa;
+    }
 
-	public String getMateria() {
-		return materia;
-	}
+    public Integer getIdMateria() {
+        return idMateria;
+    }
 
-	public void setMateria(String materia) {
-		this.materia = materia;
-	}
+    public void setIdMateria(Integer idMateria) {
+        this.idMateria = idMateria;
+    }
 
+    public String getNombreMateria() {
+        return nombreMateria;
+    }
+
+    public void setNombreMateria(String nombreMateria) {
+        this.nombreMateria = nombreMateria;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public List<Test> getTests() {
+        return tests;
+    }
+
+    public void setTests(List<Test> tests) {
+        this.tests = tests;
+    }
 }

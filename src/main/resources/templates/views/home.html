@@ -1,70 +1,132 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Academia Online</title>
-	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
-	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Online</title>
+    
+    <!-- Tus estilos -->
 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{/styles/styles.css}" />
+    <!-- Modal oculto de inicio -->
+    <style>
+      .modal {
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        z-index: 1000;
+        left: 0; 
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        width: 70%;
+        max-width: 500px;
+        border-radius: 10px;
+        position: relative;
+      }
+      .close-btn {
+        position: absolute;
+        top: 10px; 
+        right: 20px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+    </style>
 </head>
 
 <body>
-	<header>
-		<div class="top-bar">
-			<!-- Aquí puedes añadir cualquier elemento -->
-			<p>EducaPro</p>
-			<h4 id="welcome-text">Bienvenido Usuario</h4> <!-- le pongo un id para manipularlo -->
-			<div id="usuario-data" data-usuario="${usuario}"></div>
+    <header>
+       	<div th:replace="~{fragments/header :: header}"></div>
+    </header>
 
-			<div class="auth-buttons">
-			       <a href="/index" id="Inicio" class="btn">
-			           <i class="fas fa-home"></i> <!-- Ícono de casa -->
-			       </a>
-			       <button id="logoutBtn" class="btn">
-			           Cerrar sesión
-			       </button>
-			   </div>
-		</div>
-	</header>
-	<div class="container">
-		<!-- Menú lateral -->
-		<aside class="sidebar">
-			<h2>Menú</h2>
-			<div class="menu-item">
-				<h3>Selecciona una materia</h3>
-				<select id="materias"></select>
-			</div>
-			<div class="menu-item">
-				<h3>Selecciona un test</h3>
-				<select id="tests"></select>
-			</div>
-			<button id="loadTest" class="btn">Cargar preguntas</button>
-		</aside>
+    <div class="container">
+        <!-- Menú lateral -->
+        <aside class="sidebar">
+            <h4 id="welcome-text">Bienvenido Usuario</h4>
+            <div id="usuario-data" data-usuario="${usuario}"></div>
+            <h2>Realiza tus test aquí</h2>
 
-		<!-- Contenido principal -->
-		<main class="main-content">
-			<div id="ultima-nota"></div> <!-- Aquí se muestra la última nota obtenida -->
-			<div id="nota-obtenida"></div>
-			   
-			<div id="questions-container" class="questions-container">
-				<!-- Las preguntas aparecerán aquí -->
-			</div>
-		</main>
+            <!-- Selección de Materias -->
+            <select id="materias" class="hidden-select"></select>
+            <div class="menu-item">
+                <h3>Selecciona una materia</h3>
+                <select id="materias" class="hidden-select"></select>
+                <div id="materiasDropdown" class="custom-dropdown">
+                    <div class="dropdown-selected">Elige una materia</div>
+                    <div class="dropdown-items"></div>
+                </div>
+            </div>
+
+            <!-- Selección de Tests -->
+            <div class="menu-item">
+                <h3>Selecciona un test</h3>
+                <select id="tests" class="hidden-select"></select>
+                <div id="testsDropdown" class="custom-dropdown">
+                    <div class="dropdown-selected">Elige un test</div>
+                    <div class="dropdown-items"></div>
+                </div>
+
+                <!-- Botón de Asistente de Estudio -->
+       
+                <button id="openAssistantBtn" class="btn-assistant">
+                    <i class="fas fa-robot"></i> Asistente de Estudio
+                </button>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content-home">
+            <div id="ultima-nota"></div>
+            <div id="nota-obtenida"></div>
+            <button id="resetTest" style="display: none;">Intentar de nuevo</button>
+
+            <div id="questions-container" class="questions-container">
+                <p class="capaTest">Elige una materia y un test en el menú lateral para empezar</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- jQuery y tu script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script th:src="@{/js/script.js}" defer></script>
+
+    <!-- Inyecta token CSRF -->
+    <script>
+        window.csrf = {
+            token: '[[${csrfToken.token}]]',
+            headerName: '[[${csrfToken.headerName}]]'
+        };
+        console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
+    </script>
+
+    <!-- Modal del Asistente de Estudio -->
+	<!-- Modal del Asistente de Estudio -->
+	<div id="assistantModal" class="modal">
+	    <div class="modal-content2">
+	        <span class="close-btn">&times;</span>
+	        <h2>Asistente Educapro</h2>
+	        
+	        <!-- Contenedor del chat -->
+	        <div id="chat-box"></div>
+
+	        <!-- Botones de "pregunta rápida" -->
+	        <div class="quick-questions" style="margin-bottom: 10px;">
+	            <button class="quick-question-btn" data-question="Progreso actual">Progreso actual</button>
+	            <button class="quick-question-btn" data-question="¿Estoy preparado para aprobar?">¿Estoy preparado para aprobar?</button>
+	        </div>
+	        
+	        <!-- Input y botón para enviar -->
+	        <input type="text" id="user-input" placeholder="Escribe tu pregunta...">
+	        <button id="sendMessageBtn">Enviar</button>
+	    </div>
 	</div>
-
-	<!-- Asegúrate de cargar jQuery antes de tu script.js -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="js/script.js"></script>
-	<script>
-		    window.csrf = {
-		        token: '[[${csrfToken.token}]]',
-		        headerName: '[[${csrfToken.headerName}]]'
-		    };
-		    console.log("csrf.token:", window.csrf.token, "csrf.headerName:", window.csrf.headerName);
-		</script>
 </body>
-
 </html>
