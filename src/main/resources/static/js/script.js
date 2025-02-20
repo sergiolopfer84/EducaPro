@@ -4,18 +4,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	    const userInput = document.getElementById('user-input');
 	    const sendMessageBtn = document.getElementById('sendMessageBtn');
 
-	    // Al hacer clic en cada botón, enviamos la pregunta directamente
 	    quickQuestionButtons.forEach(button => {
 	        button.addEventListener('click', () => {
-	            // Tomamos la pregunta del atributo data-question
 	            const question = button.getAttribute('data-question');
 	            
-	            // Si prefieres rellenar el input y que el usuario le dé a "Enviar" manualmente:
-	            // userInput.value = question;
-
-	            // O si prefieres enviar directamente:
 	            userInput.value = question;
-	            sendMessageBtn.click(); // Llamamos al clic del botón "Enviar" para que vaya al backend
+	            sendMessageBtn.click(); 
 	        });
 	    });
 	
@@ -75,10 +69,8 @@ $(document).ready(function() {
 		const $selected = $dropdown.find('.dropdown-selected');
 		const $itemsContainer = $dropdown.find('.dropdown-items');
 
-		// Limpiar items previos
 		$itemsContainer.empty();
 
-		// Crear un .dropdown-item por cada <option>
 		$select.find('option').each(function() {
 			const val = $(this).attr('value');
 			const text = $(this).text();
@@ -96,7 +88,6 @@ $(document).ready(function() {
 			$itemsContainer.append($item);
 		});
 
-		// Mostrar la opción seleccionada si la hubiera
 		const currentValue = $select.val();
 		if (currentValue) {
 			const currentText = $select.find('option[value="' + currentValue + '"]').text();
@@ -105,7 +96,6 @@ $(document).ready(function() {
 			}
 		}
 
-		// Evento para abrir/cerrar el dropdown
 		$selected.off('click').on('click', function(e) {
 			e.stopPropagation();
 			$dropdown.toggleClass('open');
@@ -116,9 +106,8 @@ $(document).ready(function() {
 		$('.custom-dropdown.open').removeClass('open');
 	});
 
-	// Botón de perfil
 	$('#perfilBtn').click(function() {
-		window.location.href = '/perfil';  // o la ruta que uses
+		window.location.href = '/perfil';  
 	});
 
 	// LOGIN
@@ -142,8 +131,6 @@ $(document).ready(function() {
 				}
 			},
 			success: function() {
-				// Si la sesión se crea, se guardará el usuario en el server
-				// Asegúrate de que luego las peticiones GET usen la misma cookie
 				window.location.href = '/home';
 			},
 			error: function(xhr) {
@@ -171,7 +158,6 @@ $(document).ready(function() {
 				}
 			},
 			success: function() {
-				// Se invalidará la sesión en el server (si tu config lo hace)
 				window.location.href = '/';
 			},
 			error: function() {
@@ -180,7 +166,6 @@ $(document).ready(function() {
 		});
 	});
 
-	// Forzar modal login/register limpio
 	$('#authModal').on('show.bs.modal', function() {
 		$('#loginUsername').val('');
 		$('#loginPassword').val('');
@@ -242,7 +227,6 @@ $(document).ready(function() {
 		});
 	});
 
-	// Mostrar/ocultar formularios en el modal
 	$('#showRegister').click(function() {
 		$('#loginForm').hide();
 		$('#registerForm').show();
@@ -271,7 +255,6 @@ $(document).ready(function() {
 
 
 
-	// Configuración global CSRF
 	if (window.csrf && window.csrf.token && window.csrf.headerName) {
 		$.ajaxSetup({
 			beforeSend: function(xhr) {
@@ -282,9 +265,6 @@ $(document).ready(function() {
 
 	if (currentPath === '/home') {
 
-		/*document.getElementById("adminBtn").addEventListener("click", function () {
-			window.location.href = "/admin"; // Asegúrate de que esta sea la URL correcta del panel de administración
-		});*/
 
 		// Cargar materias
 		$.get('/materias/activas', function(data) {
@@ -297,7 +277,6 @@ $(document).ready(function() {
 			transformSelectToDropdown('materias', 'materiasDropdown');
 		});
 
-		// Al cambiar materia -> cargar tests
 		$('#materias').on('change', function() {
 			const idMateria = $(this).val();
 			if (!idMateria) {
@@ -316,7 +295,6 @@ $(document).ready(function() {
 			});
 		});
 
-		// Al cambiar test -> cargar preguntas + última nota
 		$('#tests').on('change', function() {
 			const idTest = $(this).val();
 			if (!idTest) {
@@ -329,7 +307,6 @@ $(document).ready(function() {
 			$('#nota-obtenida').html('').hide();
 			$('#ultima-nota').html('').hide();
 			console.log("idTest",idTest)
-			// 1. Cargar preguntas (y en el backend se guardan en sesión)
 			$.get(`/preguntas/test/${idTest}`, function(data) {
 				console.log("data kub 334",data)
 				let questionsHTML = '';
@@ -355,7 +332,6 @@ $(document).ready(function() {
 				$('#questions-container').html(questionsHTML);
 			});
 
-			// 2. Cargar última puntuación
 			$.ajax({
 				url: '/puntuaciones/ultimaPuntuacion',
 				type: 'GET',
@@ -379,7 +355,6 @@ $(document).ready(function() {
 			});
 		});
 
-		// FINALIZAR TEST
 		$(document).on('click', '#finalizar', function() {
 			let respuestasSeleccionadas = [];
 			let idTest = $('#tests').val();
@@ -393,7 +368,6 @@ $(document).ready(function() {
 				return;
 			}
 
-			// Enviamos al backend para calcular la nota y guardar en BD
 			$.ajax({
 				url: '/puntuaciones/calcularNota',
 				type: 'POST',
@@ -408,7 +382,6 @@ $(document).ready(function() {
 					window.scrollTo({ top: 0, behavior: 'smooth' });
 					let notaObtenida = response.nota;
 
-					// Obtener la penúltima nota (o "sin registros previos")
 					$.ajax({
 						url: '/puntuaciones/ultimaPuntuacion',
 						type: 'GET',
@@ -425,13 +398,11 @@ $(document).ready(function() {
 						}
 					});
 
-					// Resaltar correctas/incorrectas
 					$.ajax({
-						url: '/respuestas/sesion', // Ajusta al path real si es "/respuestas/obtenerRespuestasSesion"
+						url: '/respuestas/sesion', 
 						type: 'GET',
 						data: { idTest: idTest },
 						success: function(data) {
-							// data es la lista de Respuesta con su nota=1 o 0
 							let respuestasCorrectas = data
 								.filter(r => r.nota === 1)
 								.map(r => r.idRespuesta);
@@ -485,7 +456,6 @@ $(document).ready(function() {
 		const userInput = document.getElementById("user-input");
 		const sendMessageBtn = document.getElementById("sendMessageBtn");
 
-		// Función para enviar mensaje
 		function sendMessage() {
 		    let mensaje = userInput.value.trim();
 		    if (mensaje === "") return;
@@ -493,7 +463,6 @@ $(document).ready(function() {
 		    chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
 		    userInput.value = "";
 
-		    // Petición al backend
 		    fetch('/api/asistente', {
 		        method: 'POST',
 		        headers: {
@@ -509,37 +478,32 @@ $(document).ready(function() {
 		        });
 		}
 
-		// Evento para abrir el asistente
 		openAssistantBtn.addEventListener("click", function() {
 		    modal.style.display = "flex";
 		});
 
-		// Evento para cerrar el asistente
 		closeBtn.addEventListener("click", function() {
 		    modal.style.display = "none";
 		});
 
-		// Evento para enviar mensaje con el botón de enviar
 		sendMessageBtn.addEventListener("click", sendMessage);
 
-		// Evento para enviar mensaje al presionar Enter
 		userInput.addEventListener("keydown", function(event) {
 		    if (event.key === "Enter" && !event.shiftKey) {
-		        event.preventDefault(); // Evita el salto de línea en el input
-		        sendMessage(); // Llama a la función de enviar mensaje
+		        event.preventDefault(); 
+		        sendMessage(); 
 		    }
 		});
 
-		// Evento para cerrar el asistente al hacer clic fuera del modal
 		window.addEventListener("click", function(event) {
 		    if (event.target === modal) {
 		        modal.style.display = "none";
 		    }
 		});
 
-	} // Fin if /home
+	} 
 
-}); // Fin document.ready
+}); 
 
 /***************************************************
  * Bloquear respuestas al finalizar

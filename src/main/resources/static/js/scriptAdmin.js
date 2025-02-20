@@ -902,104 +902,266 @@ window.guardarDatos = function() {
 
 
 /************************MOSTRAR ESTADOS ACTIVO / INACTIVO*********************************************/
-
 window.mostrarListaEstados = function() {
+    let estadoContainer = document.getElementById("estadoContainer");
+    let filtroMateriaContainer = document.getElementById("materiaSelectContainer");
+    let selectMateria = document.getElementById("filterMateria");
+    let listaEstados = document.getElementById("listaEstados");
 
-	listaEstados.innerHTML = "";
+    if (!estadoContainer || !filtroMateriaContainer || !selectMateria || !listaEstados) {
+        console.error("❌ No se encontraron los elementos necesarios en el DOM.");
+        return;
+    }
 
-	let storageKey, idField, nameField, apiUrl;
+    estadoContainer.style.display = "block";
+    listaEstados.innerHTML = "";
 
-	switch (selectedSection) {
-		case "materiasSection":
-			storageKey = "materias";
-			idField = "idMateria";
-			nameField = "nombreMateria";
-			apiUrl = "/materias/";
-			break;
-		case "testsSection":
-			storageKey = "tests";
-			idField = "idTest";
-			nameField = "nombreTest";
-			apiUrl = "/tests/";
-			break;
-		default:
-			alert("⚠ No puedes modificar el estado de este tipo de elemento.");
-			return;
-	}
+    if (selectedSection === "testsSection") {
+        // Si estamos en Tests, mostramos el filtro de Materias
+        filtroMateriaContainer.style.display = "block";
+        cargarMaterias();
+    } else {
+        // Si estamos en Materias, ocultamos el filtro y mostramos las materias directamente
+        filtroMateriaContainer.style.display = "none";
+        cargarListaEstados(); 
+    }
+};
 
-	let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+function cargarMaterias() {
+    const selectMateria = document.getElementById("filterMateria");
 
-	if (data.length === 0) {
-		listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
-		return;
-	}
+    if (!selectMateria) {
+        console.error("❌ No se encontró el select de materias.");
+        return;
+    }
 
-	let estadosIniciales = {};
+    selectMateria.innerHTML = `<option value="">Todas las Materias</option>`; // Opción por defecto
 
-	data.forEach(item => {
-		estadosIniciales[item[idField]] = item.activa;
-		const estado = item.activa ? "checked" : "";
-		listaEstados.innerHTML += `
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <span>${item[nameField]}</span>
-                <div class="form-check form-switch">
-                    <input class="form-check-input estado-toggle" type="checkbox" data-id="${item[idField]}" ${estado}>
-                </div>
+    const materias = JSON.parse(sessionStorage.getItem("materias")) || [];
+
+    if (materias.length === 0) {
+        selectMateria.innerHTML = "<option value=''>No hay materias disponibles</option>";
+        return;
+    }
+
+    materias.forEach(m => {
+        const option = document.createElement("option");
+        option.value = m.idMateria;
+        option.textContent = m.nombreMateria;
+        selectMateria.appendChild(option);
+    });
+
+    // Evento para actualizar la lista de tests al cambiar la materia seleccionada
+    selectMateria.addEventListener("change", function () {
+        let idMateriaSeleccionada = this.value;
+        cargarListaEstados(idMateriaSeleccionada);
+    });
+}
+
+function cargarListaEstados(idMateria = "") {
+    let listaEstados = document.getElementById("listaEstados");
+    listaEstados.innerHTML = "";
+
+    let storageKey, idField, nameField;
+
+    if (selectedSection === "testsSection") {
+        storageKey = "tests";
+        idField = "idTest";
+        nameField = "nombreTest";
+    } else {
+        storageKey = "materias";
+        idField = "idMateria";
+        nameField = "nombreMateria";
+    }
+
+    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+
+    // Si estamos en "Tests" y hay una materia seleccionada, filtramos los tests por esa materia
+    if (selectedSection === "testsSection" && idMateria) {
+        data = data.filter(test => test.idMateria == idMateria);
+    }
+
+    if (data.length === 0) {
+        listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
+        return;
+    }
+
+    let estadosIniciales = {};
+
+    data.forEach(item => {
+        estadosIniciales[item[idField]] = item.activa;
+        const estado = item.activa ? "checked" : "";
+
+        let div = document.createElement("div");
+        div.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+        div.innerHTML = `
+            <span>${item[nameField]}</span>
+            <div class="form-check form-switch">
+                <input class="form-check-input estado-toggle" type="checkbox" data-id="${item[idField]}" ${estado}>
             </div>
         `;
-	});
 
-	document.getElementById("estadoContainer").style.display = "block";
+        listaEstados.appendChild(div);
+    });
 
-	document.querySelectorAll(".estado-toggle").forEach(toggle => {
-		toggle.addEventListener("change", () => {
-			const id = toggle.getAttribute("data-id");
-			if (toggle.checked !== estadosIniciales[id]) {
-				document.getElementById("guardarCambiosEstado").style.display = "block";
-			} else {
-				if (![...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")])) {
-					document.getElementById("guardarCambiosEstado").style.display = "none";
-				}
-			}
-		});
-	});
+    document.getElementById("estadoContainer").style.display = "block";
 
-	window.estadosIniciales = estadosIniciales;
+    document.querySelectorAll(".estado-toggle").forEach(toggle => {
+        toggle.addEventListener("change", function() {
+            const id = this.getAttribute("data-id");
+            const nuevoEstado = this.checked;
+
+            if (nuevoEstado !== estadosIniciales[id]) {
+                document.getElementById("guardarCambiosEstado").style.display = "block";
+            } else {
+                let algunCambio = [...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")]);
+                document.getElementById("guardarCambiosEstado").style.display = algunCambio ? "block" : "none";
+            }
+        });
+    });
+
+    window.estadosIniciales = estadosIniciales;
+}
+
+window.guardarCambiosEstados = function() {
+    let cambios = [];
+
+    document.querySelectorAll(".estado-toggle").forEach(toggle => {
+        const id = toggle.getAttribute("data-id");
+        const estadoNuevo = toggle.checked;
+
+        if (estadoNuevo !== window.estadosIniciales[id]) {
+            cambios.push({ id, activa: estadoNuevo });
+        }
+    });
+
+    if (cambios.length === 0) {
+        alert("⚠ No hay cambios para guardar.");
+        return;
+    }
+
+    let promesas = cambios.map(cambio => {
+        let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
+        apiUrl += cambio.id + "/toggle-activa";
+
+        return sendRequest(apiUrl, "PUT", { activa: cambio.activa }).then(() => {
+            console.log(`✅ Estado cambiado para ${cambio.id}: ${cambio.activa}`);
+        });
+    });
+
+    Promise.all(promesas).then(() => {
+        alert("✅ Cambios guardados correctamente.");
+        actualizarSessionStorage(selectedSection);
+        document.getElementById("guardarCambiosEstado").style.display = "none";
+    }).catch(error => {
+        console.error("❌ Error al actualizar estados:", error);
+        alert("❌ Ocurrió un error al guardar los cambios.");
+    });
 };
+
+
+
+//
+//
+//
+//window.mostrarListaEstados = function() {
+//
+//	listaEstados.innerHTML = "";
+//
+//	let storageKey, idField, nameField, apiUrl;
+//
+//	switch (selectedSection) {
+//		case "materiasSection":
+//			storageKey = "materias";
+//			idField = "idMateria";
+//			nameField = "nombreMateria";
+//			apiUrl = "/materias/";
+//			break;
+//		case "testsSection":
+//			storageKey = "tests";
+//			idField = "idTest";
+//			nameField = "nombreTest";
+//			apiUrl = "/tests/";
+//			break;
+//		default:
+//			alert("⚠ No puedes modificar el estado de este tipo de elemento.");
+//			return;
+//	}
+//
+//	let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+//
+//	if (data.length === 0) {
+//		listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
+//		return;
+//	}
+//
+//	let estadosIniciales = {};
+//
+//	data.forEach(item => {
+//		estadosIniciales[item[idField]] = item.activa;
+//		const estado = item.activa ? "checked" : "";
+//		listaEstados.innerHTML += `
+//            <div class="list-group-item d-flex justify-content-between align-items-center">
+//                <span>${item[nameField]}</span>
+//                <div class="form-check form-switch">
+//                    <input class="form-check-input estado-toggle" type="checkbox" data-id="${item[idField]}" ${estado}>
+//                </div>
+//            </div>
+//        `;
+//	});
+//
+//	document.getElementById("estadoContainer").style.display = "block";
+//
+//	document.querySelectorAll(".estado-toggle").forEach(toggle => {
+//		toggle.addEventListener("change", () => {
+//			const id = toggle.getAttribute("data-id");
+//			if (toggle.checked !== estadosIniciales[id]) {
+//				document.getElementById("guardarCambiosEstado").style.display = "block";
+//			} else {
+//				if (![...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")])) {
+//					document.getElementById("guardarCambiosEstado").style.display = "none";
+//				}
+//			}
+//		});
+//	});
+//
+//	window.estadosIniciales = estadosIniciales;
+//};
 
 
 /*************************GUARDA TODOS LOS CAMBIOS DE ESTADO ********************************************/
-window.guardarCambiosEstados = function() {
-	const toggles = document.querySelectorAll(".estado-toggle");
-	let cambios = [];
-
-	toggles.forEach(toggle => {
-		const id = toggle.getAttribute("data-id");
-		const estadoNuevo = toggle.checked;
-
-		if (estadoNuevo !== window.estadosIniciales[id]) {
-			cambios.push({ id, activa: estadoNuevo });
-		}
-	});
-
-	if (cambios.length === 0) {
-		alert("⚠ No hay cambios para guardar.");
-		return;
-	}
-
-	cambios.forEach(cambio => {
-		let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
-		apiUrl += cambio.id + "/toggle-activa";
-
-		sendRequest(apiUrl, "PUT").then(() => {
-			console.log(`✅ Estado cambiado para ${cambio.id}: ${cambio.activa}`);
-		});
-	});
-
-	alert("✅ Cambios guardados correctamente.");
-	actualizarSessionStorage(selectedSection);
-	document.getElementById("guardarCambiosEstado").style.display = "none";
-};
+//
+//window.guardarCambiosEstados = function() {
+//	const toggles = document.querySelectorAll(".estado-toggle");
+//	let cambios = [];
+//
+//	toggles.forEach(toggle => {
+//		const id = toggle.getAttribute("data-id");
+//		const estadoNuevo = toggle.checked;
+//
+//		if (estadoNuevo !== window.estadosIniciales[id]) {
+//			cambios.push({ id, activa: estadoNuevo });
+//		}
+//	});
+//
+//	if (cambios.length === 0) {
+//		alert("⚠ No hay cambios para guardar.");
+//		return;
+//	}
+//
+//	cambios.forEach(cambio => {
+//		let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
+//		apiUrl += cambio.id + "/toggle-activa";
+//
+//		sendRequest(apiUrl, "PUT").then(() => {
+//			console.log(`✅ Estado cambiado para ${cambio.id}: ${cambio.activa}`);
+//		});
+//	});
+//
+//	alert("✅ Cambios guardados correctamente.");
+//	actualizarSessionStorage(selectedSection);
+//	document.getElementById("guardarCambiosEstado").style.display = "none";
+//};
 
 
 
