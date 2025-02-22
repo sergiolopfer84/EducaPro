@@ -64,10 +64,16 @@
 				</div>
 				<div id="estadoContainer" class="admin-section" style="display: none;">
 					<h3>Activar/Inactivar Materias/Tests</h3>
+					<div>
 					<label for="filterMateria">Filtrar por Materia:</label>
 					<select id="filterMateria" class="form-control">
 					    <option value="">Todas las Materias</option>
 					</select>
+											
+					</div>
+					<div id="mensajeCambioEstado" class="text-success">
+						Estados actualizados correctamente.
+					</div>
 
 					<div id="listaEstados" class="list-group"></div>
 					<button id="guardarCambiosEstado" class="btn btn-primary mt-3" onclick="guardarCambiosEstados()"

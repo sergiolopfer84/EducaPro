@@ -31,7 +31,7 @@ public class ProgresoService {
 
         return materias.stream().map(materia -> {
             int totalTests = testRepository.countByMateria(materia);
-            int testsAprobados = puntuacionRepository.countAprobadosByMateria(materia.getIdMateria());
+            int testsAprobados = puntuacionRepository.countAprobadosByUsuarioYMateria(idUsuario, materia.getIdMateria());
             return new MateriaProgresoDTO(materia.getNombreMateria(), totalTests, testsAprobados);
         }).collect(Collectors.toList());
     }
@@ -75,9 +75,6 @@ public class ProgresoService {
 
         // Consultar las notas desde la base de datos
         List<Object[]> resultados = puntuacionRepository.obtenerHistorialNotasPorUsuarioYMateria(idUsuario, idMateria);
-
-        // 🔍 Debug: Ver qué devuelve la BD
-        System.out.println("Resultados BD: " + resultados);
 
         for (Object[] fila : resultados) {
             String testNombre = (String) fila[0];

@@ -29,9 +29,9 @@ public class MateriaController {
         return ResponseEntity.ok(materiaService.obtenerMateriasActivas());
     }
 
-    // ✅ Obtener progreso de materias
-    @GetMapping("/progreso")
-    public ResponseEntity<List<MateriaProgresoDTO>> obtenerProgresoMaterias() {
-        return ResponseEntity.ok(materiaService.obtenerProgresoMaterias());
-    }
+//    // ✅ Obtener progreso de materias
+//    @GetMapping("/progreso")
+//    public ResponseEntity<List<MateriaProgresoDTO>> obtenerProgresoMaterias() {
+//        return ResponseEntity.ok(materiaService.obtenerProgresoMaterias());
+//    }
 }

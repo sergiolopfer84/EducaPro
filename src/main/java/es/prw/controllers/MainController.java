@@ -72,21 +72,21 @@ public class MainController {
         System.out.println(roles);
         return "views/admin";
     }
-    // Agrega esto en cualquier controlador accesible
+//    // Agrega esto en cualquier controlador accesible
+//
+//    @GetMapping("/debug/roles")
+//    public ResponseEntity<String> getUserRoles() {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String roles = auth.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .toList()
+//                .toString();
+//        return ResponseEntity.ok("Roles del usuario autenticado: " + roles);
+//    }
 
-    @GetMapping("/debug/roles")
-    public ResponseEntity<String> getUserRoles() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String roles = auth.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList()
-                .toString();
-        return ResponseEntity.ok("Roles del usuario autenticado: " + roles);
-    }
-
-    @PostMapping("/admin/debug")
-    public String debugPost() {
-        return "OK from admin debug";
-    }
+//    @PostMapping("/admin/debug")
+//    public String debugPost() {
+//        return "OK from admin debug";
+//    }
 
 }

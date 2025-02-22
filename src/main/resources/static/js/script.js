@@ -269,7 +269,7 @@ $(document).ready(function() {
 		// Cargar materias
 		$.get('/materias/activas', function(data) {
 			let options = '<option value="">Elige una materia</option>';
-		console.log(data)
+	
 			data.forEach(materia => {
 				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
 			});
@@ -449,57 +449,196 @@ $(document).ready(function() {
 
 		
 		// ASISTENTE
-		const openAssistantBtn = document.getElementById("openAssistantBtn");
-		const modal = document.getElementById("assistantModal");
-		const closeBtn = document.querySelector(".close-btn");
-		const chatBox = document.getElementById("chat-box");
-		const userInput = document.getElementById("user-input");
-		const sendMessageBtn = document.getElementById("sendMessageBtn");
+				const openAssistantBtn = document.getElementById("openAssistantBtn");
+				const modal = document.getElementById("assistantModal");
+				const closeBtn = document.querySelector(".close-btn");
+				const chatBox = document.getElementById("chat-box");
+				const userInput = document.getElementById("user-input");
+				const sendMessageBtn = document.getElementById("sendMessageBtn");
 
-		function sendMessage() {
-		    let mensaje = userInput.value.trim();
-		    if (mensaje === "") return;
+				// Función para enviar mensaje
+				function sendMessage() {
+				    let mensaje = userInput.value.trim();
+				    if (mensaje === "") return;
 
-		    chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
-		    userInput.value = "";
+				    chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+				    userInput.value = "";
 
-		    fetch('/api/asistente', {
-		        method: 'POST',
-		        headers: {
-		            'Content-Type': 'application/json',
-		            [window.csrf.headerName]: window.csrf.token
-		        },
-		        body: JSON.stringify(mensaje)
-		    })
-		        .then(response => response.text())
-		        .then(data => {
-		            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
-		            chatBox.scrollTop = chatBox.scrollHeight;
-		        });
-		}
+				    // Petición al backend
+				    fetch('/api/asistente', {
+				        method: 'POST',
+				        headers: {
+				            'Content-Type': 'application/json',
+				            [window.csrf.headerName]: window.csrf.token
+				        },
+				        body: JSON.stringify(mensaje)
+				    })
+				        .then(response => response.text())
+				        .then(data => {
+				            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+				            chatBox.scrollTop = chatBox.scrollHeight;
+				        });
+				}
 
-		openAssistantBtn.addEventListener("click", function() {
-		    modal.style.display = "flex";
-		});
+				// Evento para abrir el asistente
+				openAssistantBtn.addEventListener("click", function() {
+				    modal.style.display = "flex";
+				});
 
-		closeBtn.addEventListener("click", function() {
-		    modal.style.display = "none";
-		});
+				// Evento para cerrar el asistente
+				closeBtn.addEventListener("click", function() {
+				    modal.style.display = "none";
+				});
 
-		sendMessageBtn.addEventListener("click", sendMessage);
+				// Evento para enviar mensaje con el botón de enviar
+				sendMessageBtn.addEventListener("click", sendMessage);
 
-		userInput.addEventListener("keydown", function(event) {
-		    if (event.key === "Enter" && !event.shiftKey) {
-		        event.preventDefault(); 
-		        sendMessage(); 
-		    }
-		});
+				// Evento para enviar mensaje al presionar Enter
+				userInput.addEventListener("keydown", function(event) {
+				    if (event.key === "Enter" && !event.shiftKey) {
+				        event.preventDefault(); // Evita el salto de línea en el input
+				        sendMessage(); // Llama a la función de enviar mensaje
+				    }
+				});
 
-		window.addEventListener("click", function(event) {
-		    if (event.target === modal) {
-		        modal.style.display = "none";
-		    }
-		});
+				// Evento para cerrar el asistente al hacer clic fuera del modal
+				window.addEventListener("click", function(event) {
+				    if (event.target === modal) {
+				        modal.style.display = "none";
+				    }
+				});
+				// Función para mostrar animación de carga
+				function mostrarCargando() {
+				    const chatBox = document.getElementById("chat-box");
+				    const loadingDiv = document.createElement("div");
+				    loadingDiv.id = "loading-indicator";
+				    loadingDiv.innerHTML = `<p><strong>IA:</strong> <span class="loading-dots"></span></p>`;
+				    chatBox.appendChild(loadingDiv);
+				    chatBox.scrollTop = chatBox.scrollHeight;
+				}
+
+				// Función para eliminar la animación de carga
+				function ocultarCargando() {
+				    const loadingDiv = document.getElementById("loading-indicator");
+				    if (loadingDiv) {
+				        loadingDiv.remove();
+				    }
+				}
+
+				// Función para enviar mensaje con animación de carga
+				function sendMessage() {
+				    let mensaje = userInput.value.trim();
+				    if (mensaje === "") return;
+
+				    // Agregar el mensaje del usuario con una clase personalizada
+				    chatBox.innerHTML += `<p class="mensaje-usuario"><strong>Tú:</strong> ${mensaje}</p>`;
+				    userInput.value = "";
+
+				    // Muestra el indicador de carga
+				    mostrarCargando();
+
+				    // Petición al backend
+				    fetch('/api/asistente', {
+				        method: 'POST',
+				        headers: {
+				            'Content-Type': 'application/json',
+				            [window.csrf.headerName]: window.csrf.token
+				        },
+				        body: JSON.stringify(mensaje)
+				    })
+				    .then(response => response.text())
+				    .then(data => {
+				        ocultarCargando(); // Oculta el indicador de carga
+				        chatBox.innerHTML += `<p class="mensaje-ia"><strong>IA:</strong> ${data}</p>`;
+				        chatBox.scrollTop = chatBox.scrollHeight;
+				    })
+				    .catch(error => {
+				        ocultarCargando();
+				        chatBox.innerHTML += `<p class="mensaje-ia error"><strong>IA:</strong> Hubo un error al procesar la respuesta.</p>`;
+				        console.error(error);
+				    });
+				}
+
+
+				// Evento para enviar mensaje con botón
+				sendMessageBtn.addEventListener("click", sendMessage);
+
+				// Evento para enviar mensaje con Enter
+				userInput.addEventListener("keydown", function(event) {
+				    if (event.key === "Enter" && !event.shiftKey) {
+				        event.preventDefault();
+				        sendMessage();
+				    }
+				});
+				document.addEventListener("DOMContentLoaded", function() {
+				    const modal = document.getElementById("resizableModal");
+				    const resizeHandle = document.querySelector(".resize-handle");
+
+				    let isResizing = false;
+
+				    resizeHandle.addEventListener("mousedown", function(e) {
+				        isResizing = true;
+				        document.addEventListener("mousemove", resizeModal);
+				        document.addEventListener("mouseup", () => {
+				            isResizing = false;
+				            document.removeEventListener("mousemove", resizeModal);
+				        });
+				    });
+
+				    function resizeModal(e) {
+				        if (!isResizing) return;
+				        let newWidth = e.clientX - modal.offsetLeft;
+				        let newHeight = e.clientY - modal.offsetTop;
+
+				        // Asegurar que el tamaño no sea demasiado pequeño
+				        if (newWidth > 300) modal.style.width = newWidth + "px";
+				        if (newHeight > 300) modal.style.height = newHeight + "px";
+				    }
+				});
+				document.addEventListener("DOMContentLoaded", function() {
+				    const modal = document.querySelector(".modal-content2");
+				    const chatBox = document.getElementById("chat-box");
+
+				    new ResizeObserver(() => {
+				        const modalPadding = 40; // Ajuste para evitar que toque los bordes
+				        chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
+				    }).observe(modal);
+				});
+				document.addEventListener("DOMContentLoaded", function() {
+				    const modal = document.querySelector(".modal-content2");
+				    const chatBox = document.getElementById("chat-box");
+				    const header = document.querySelector(".modal-header");
+
+				    let isDragging = false;
+				    let offsetX = 0, offsetY = 0;
+
+				    // ✅ Hacemos la ventana redimensionable
+				    new ResizeObserver(() => {
+				        const modalPadding = 40;
+				        chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
+				    }).observe(modal);
+
+				    // ✅ Evento para iniciar el arrastre
+				    header.addEventListener("mousedown", (e) => {
+				        isDragging = true;
+				        offsetX = e.clientX - modal.offsetLeft;
+				        offsetY = e.clientY - modal.offsetTop;
+				        modal.style.cursor = "grabbing";
+				    });
+
+				    // ✅ Evento para mover la ventana
+				    document.addEventListener("mousemove", (e) => {
+				        if (!isDragging) return;
+				        modal.style.left = e.clientX - offsetX + "px";
+				        modal.style.top = e.clientY - offsetY + "px";
+				    });
+
+				    // ✅ Evento para soltar la ventana
+				    document.addEventListener("mouseup", () => {
+				        isDragging = false;
+				        modal.style.cursor = "grab";
+				    });
+				});
 
 	} 
 

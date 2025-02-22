@@ -14,9 +14,9 @@ import es.prw.models.Usuario;
 @Repository
 public interface PuntuacionRepository extends JpaRepository<Puntuacion, Integer> {
 
-    @Transactional(readOnly = true)
-    @Query("SELECT COUNT(p) FROM Puntuacion p WHERE p.test.materia.idMateria = :idMateria AND p.notaObtenida >= 5")
-    int countAprobadosByMateria(Integer idMateria);
+	@Query("SELECT COUNT(p) FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario AND p.test.materia.idMateria = :idMateria AND p.notaObtenida >= 5.0")
+	int countAprobadosByUsuarioYMateria(@Param("idUsuario") Integer idUsuario, @Param("idMateria") Integer idMateria);
+
 
     @Transactional(readOnly = true)
     @Query("SELECT p.notaObtenida FROM Puntuacion p WHERE p.test = :test")

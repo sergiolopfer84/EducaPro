@@ -26,25 +26,25 @@ public class RespuestaController {
         return ResponseEntity.ok(respuestaService.getRespuestas());
     }
 
-    // ✅ Obtener respuestas por pregunta
-    @GetMapping("/pregunta/{idPregunta}")
-    public ResponseEntity<List<Respuesta>> obtenerRespuestasPorPregunta(@PathVariable int idPregunta) {
-        List<Respuesta> respuestas = respuestaService.getRespuestasByPregunta(idPregunta);
-        return respuestas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(respuestas);
-    }
+//    // ✅ Obtener respuestas por pregunta
+//    @GetMapping("/pregunta/{idPregunta}")
+//    public ResponseEntity<List<Respuesta>> obtenerRespuestasPorPregunta(@PathVariable int idPregunta) {
+//        List<Respuesta> respuestas = respuestaService.getRespuestasByPregunta(idPregunta);
+//        return respuestas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(respuestas);
+//    }
 
-    // ✅ Obtener respuestas por múltiples IDs
-    @PostMapping("/ids")
-    public ResponseEntity<List<Respuesta>> obtenerRespuestasPorIds(@RequestBody List<Integer> idsRespuestas) {
-        List<Respuesta> respuestas = respuestaService.getRespuestasByIds(idsRespuestas);
-        return respuestas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(respuestas);
-    }
+//    // ✅ Obtener respuestas por múltiples IDs
+//    @PostMapping("/ids")
+//    public ResponseEntity<List<Respuesta>> obtenerRespuestasPorIds(@RequestBody List<Integer> idsRespuestas) {
+//        List<Respuesta> respuestas = respuestaService.getRespuestasByIds(idsRespuestas);
+//        return respuestas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(respuestas);
+//    }
 
-    // ✅ Evaluar respuestas de un test
-    @PostMapping("/evaluar")
-    public ResponseEntity<Double> evaluarRespuestas(@RequestBody EvaluacionDTO evaluacionDTO) {
-        return ResponseEntity.ok(respuestaService.evaluarRespuestas(evaluacionDTO));
-    }
+//    // ✅ Evaluar respuestas de un test
+//    @PostMapping("/evaluar")
+//    public ResponseEntity<Double> evaluarRespuestas(@RequestBody EvaluacionDTO evaluacionDTO) {
+//        return ResponseEntity.ok(respuestaService.evaluarRespuestas(evaluacionDTO));
+//    }
 
     // ✅ Obtener respuestas de sesión de un test
     @GetMapping("/sesion")

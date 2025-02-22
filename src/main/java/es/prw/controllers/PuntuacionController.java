@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import es.prw.dtos.EvaluacionDTO;
+import es.prw.dtos.MateriaProgresoDTO;
 import es.prw.models.Puntuacion;
 import es.prw.models.Respuesta;
 import es.prw.models.Usuario;
@@ -32,39 +33,45 @@ public class PuntuacionController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // ✅ Guardar puntuación de un test
-    @PostMapping("/guardar")
-    public ResponseEntity<Map<String, String>> guardarPuntuacion(@RequestParam Integer idUsuario, @RequestParam int idTest, @RequestParam double nota) {
-        return puntuacionService.savePuntuacion(idUsuario, idTest, nota)
-                .map(p -> ResponseEntity.ok(Map.of("message", "Puntuación guardada correctamente.")))
-                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "No se pudo guardar la puntuación.")));
+//    // ✅ Guardar puntuación de un test
+//    @PostMapping("/guardar")
+//    public ResponseEntity<Map<String, String>> guardarPuntuacion(@RequestParam Integer idUsuario, @RequestParam int idTest, @RequestParam double nota) {
+//        return puntuacionService.savePuntuacion(idUsuario, idTest, nota)
+//                .map(p -> ResponseEntity.ok(Map.of("message", "Puntuación guardada correctamente.")))
+//                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "No se pudo guardar la puntuación.")));
+//    }
+
+    @GetMapping("/progreso")
+    public ResponseEntity<List<MateriaProgresoDTO>> obtenerProgresoMateriasUsuarioAutenticado(Authentication authentication) {
+        // Obtener usuario autenticado
+        Usuario usuario = obtenerUsuarioDesdeAuth(authentication);
+        
+System.out.println("usuario en progreso: "+ usuario.getIdUsuario());
+        // Obtener su progreso en materias
+        List<MateriaProgresoDTO> progresoMaterias = progresoService.obtenerProgresoMaterias(usuario.getIdUsuario());
+
+        return progresoMaterias.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(progresoMaterias);
     }
 
-    // ✅ Obtener todas las puntuaciones de un usuario
-    @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<List<Puntuacion>> obtenerPuntuacionesUsuario(@PathVariable Integer idUsuario) {
-        List<Puntuacion> puntuaciones = puntuacionService.getPuntuacionesByUsuario(idUsuario);
-        return puntuaciones.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(puntuaciones);
-    }
+//
+//    // ✅ Obtener puntuaciones de un usuario en una materia
+//    @GetMapping("/materia/{idUsuario}/{idMateria}")
+//    public ResponseEntity<List<Puntuacion>> obtenerPuntuacionesMateria(@PathVariable Integer idUsuario, @PathVariable int idMateria) {
+//        List<Puntuacion> puntuaciones = puntuacionService.getPuntuacionesPorMateria(idUsuario, idMateria);
+//        return puntuaciones.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(puntuaciones);
+//    }
 
-    // ✅ Obtener puntuaciones de un usuario en una materia
-    @GetMapping("/materia/{idUsuario}/{idMateria}")
-    public ResponseEntity<List<Puntuacion>> obtenerPuntuacionesMateria(@PathVariable Integer idUsuario, @PathVariable int idMateria) {
-        List<Puntuacion> puntuaciones = puntuacionService.getPuntuacionesPorMateria(idUsuario, idMateria);
-        return puntuaciones.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(puntuaciones);
-    }
-
-    // ✅ Obtener últimas puntuaciones de un test (para un usuario)
-    @GetMapping("/test/{idTest}")
-    public ResponseEntity<List<Double>> obtenerUltimasPuntuacionesTest(HttpSession session, @PathVariable int idTest) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        List<Double> notas = puntuacionService.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest);
-        return notas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(notas);
-    }
+//    // ✅ Obtener últimas puntuaciones de un test (para un usuario)
+//    @GetMapping("/test/{idTest}")
+//    public ResponseEntity<List<Double>> obtenerUltimasPuntuacionesTest(HttpSession session, @PathVariable int idTest) {
+//        Usuario usuario = (Usuario) session.getAttribute("usuario");
+//        if (usuario == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//
+//        List<Double> notas = puntuacionService.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest);
+//        return notas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(notas);
+//    }
 
     // ✅ Obtener última y penúltima puntuación de un test
     @GetMapping("/ultimaPuntuacion")

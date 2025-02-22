@@ -97,17 +97,17 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/checkSession")
-    public ResponseEntity<Map<String, String>> checkSession() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body(Map.of("error", "No hay usuario en sesión"));
-        }
-
-        String email = authentication.getName();
-        return usuarioRepository.findByEmail(email)
-                .map(usuario -> ResponseEntity.ok(Map.of("message", "Usuario en sesión: " + usuario.getNombre())))
-                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado")));
-    }
+//    @GetMapping("/checkSession")
+//    public ResponseEntity<Map<String, String>> checkSession() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            return ResponseEntity.status(401).body(Map.of("error", "No hay usuario en sesión"));
+//        }
+//
+//        String email = authentication.getName();
+//        return usuarioRepository.findByEmail(email)
+//                .map(usuario -> ResponseEntity.ok(Map.of("message", "Usuario en sesión: " + usuario.getNombre())))
+//                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado")));
+//    }
 }

@@ -40,17 +40,17 @@ public class MateriaService {
     }
 
 
-    // Obtener progreso de materias con DTO
-    @Transactional(readOnly = true)
-    public List<MateriaProgresoDTO> obtenerProgresoMaterias() {
-        return materiaRepository.findAll().stream()
-                .map(materia -> new MateriaProgresoDTO(
-                        materia.getNombreMateria(),
-                        testRepository.countByMateria(materia),
-                        puntuacionRepository.countAprobadosByMateria(materia.getIdMateria())
-                ))
-                .toList();
-    }
+//    // Obtener progreso de materias con DTO
+//    @Transactional(readOnly = true)
+//    public List<MateriaProgresoDTO> obtenerProgresoMaterias() {
+//        return materiaRepository.findAll().stream()
+//                .map(materia -> new MateriaProgresoDTO(
+//                        materia.getNombreMateria(),
+//                        testRepository.countByMateria(materia),
+//                        puntuacionRepository.countAprobadosByMateria(materia.getIdMateria())
+//                ))
+//                .toList();
+//    }
 
     @Transactional
     public Materia guardarMateria(Materia materia) {
@@ -71,13 +71,13 @@ public class MateriaService {
         materiaRepository.deleteById(id);
     }
 
-    @Transactional
-    public Materia cambiarEstadoMateria(int id, boolean estado) {
-        return materiaRepository.findById(id).map(materia -> {
-            materia.setActiva(estado); // 🔹 Ahora sí cambia el estado antes de guardar
-            return materiaRepository.save(materia);
-        }).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
-    }
+//    @Transactional
+//    public Materia cambiarEstadoMateria(int id, boolean estado) {
+//        return materiaRepository.findById(id).map(materia -> {
+//            materia.setActiva(estado); // 🔹 Ahora sí cambia el estado antes de guardar
+//            return materiaRepository.save(materia);
+//        }).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
+//    }
 
     @Transactional(readOnly = true)
     public List<Materia> obtenerMateriasActivas() {

@@ -24,17 +24,17 @@ public class TestController {
         return ResponseEntity.ok(testService.getTests());
     }
 
-    // ✅ Obtener solo los tests activos
-    @GetMapping("/activos")
-    public ResponseEntity<List<Test>> obtenertestsActivos() {
-        return ResponseEntity.ok(testService.obtenerTestActivos());
-    }
+//    // ✅ Obtener solo los tests activos
+//    @GetMapping("/activos")
+//    public ResponseEntity<List<Test>> obtenertestsActivos() {
+//        return ResponseEntity.ok(testService.obtenerTestActivos());
+//    }
 
-    // ✅ Obtener tests de una materia específica
-    @GetMapping("/materia/{idMateria}")
-    public ResponseEntity<List<Test>> obtenerTestsPorMateria(@PathVariable int idMateria) {
-        return ResponseEntity.ok(testService.getTestsByMateria(idMateria));
-    }
+//    // ✅ Obtener tests de una materia específica
+//    @GetMapping("/materia/{idMateria}")
+//    public ResponseEntity<List<Test>> obtenerTestsPorMateria(@PathVariable int idMateria) {
+//        return ResponseEntity.ok(testService.getTestsByMateria(idMateria));
+//    }
 
     // ✅ Obtener solo los tests activos de una materia específica
     @GetMapping("/materia/{idMateria}/activos")
@@ -42,9 +42,9 @@ public class TestController {
         return ResponseEntity.ok(testService.obtenerTestsActivosPorMateria(idMateria));
     }
 
-    // ✅ Obtener historial de notas
-    @GetMapping("/historial")
-    public ResponseEntity<List<NotaHistorialDTO>> obtenerHistorialNotas() {
-        return ResponseEntity.ok(testService.obtenerHistorialNotas());
-    }
+//    // ✅ Obtener historial de notas
+//    @GetMapping("/historial")
+//    public ResponseEntity<List<NotaHistorialDTO>> obtenerHistorialNotas() {
+//        return ResponseEntity.ok(testService.obtenerHistorialNotas());
+//    }
 }

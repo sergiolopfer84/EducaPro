@@ -6,6 +6,7 @@ $(document).ready(function() {
 	           },
 	       });
 	   }
+	 let usuario =""
     // ======================= Cargar Perfil de Usuario =======================
 	function cargarPerfil() {
 	  $.ajax({
@@ -15,8 +16,8 @@ $(document).ready(function() {
 	      // 'data' tiene la forma { usuario: { ... } }
 	      // y dentro de 'data.usuario' vienen los campos y roles
 
-	      const usuario = data.usuario;
-	      console.log(usuario);
+	     usuario = data.usuario;
+	      console.log(usuario.idUsuario);
 
 	      // Nombre y email
 	      $('#perfil-nombre').text(usuario.nombre);
@@ -35,6 +36,7 @@ $(document).ready(function() {
 
 	      // Texto de bienvenida
 	      $('#welcome-text').text(`Perfil de ${usuario.nombre}`);
+		 
 	    },
 	    error: function() {
 	      alert('Error al cargar perfil');
@@ -86,16 +88,17 @@ $(document).ready(function() {
     });
 
     // ======================= Cargar Progreso de Materias =======================
-    function cargarProgresoMaterias() {
+    function cargarProgresoMaterias(idUsuario) {
+		
+		
         $.ajax({
-            url: '/materias/progreso',
+            url: '/puntuaciones/progreso',
             type: 'GET',
 			xhrFields: {
 			       withCredentials: true
 			   },
             success: function(data) {
                 let html = '';
-
                 data.forEach(materia => {
                     let nombre = materia.materia || 'Desconocido';
                     let totalTests = materia.totalTests || 0;
@@ -214,18 +217,6 @@ $(document).ready(function() {
             }
         });
     }
-//	$('.toggle-password').click(function() {
-//	    let input = $("#" + $(this).data("target"));
-//	    let icon = $(this).find("i");
-//
-//	    if (input.attr("type") === "password") {
-//	        input.attr("type", "text");
-//	        icon.removeClass("fa-eye").addClass("fa-eye-slash");
-//	    } else {
-//	        input.attr("type", "password");
-//	        icon.removeClass("fa-eye-slash").addClass("fa-eye");
-//	    }
-//	});
 
 
     function abrirModalGrafico(chartData, chartOptions, testNombre) {
@@ -249,9 +240,9 @@ $(document).ready(function() {
             $('.modal-content').fadeOut();
         }
     });
-
+console.log("idueser", usuario.idUsuario)
     // Ejecutar funciones al cargar la página
     cargarPerfil();
-    cargarProgresoMaterias();
+	cargarProgresoMaterias(parseInt(usuario.idUsuario))
     cargarGraficoNotas();
 });

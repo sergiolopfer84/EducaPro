@@ -87,12 +87,12 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<Usuario> obtenerUsuarioPorEmail(@PathVariable String email) {
-        return usuarioRepository.findByEmail(email.toLowerCase())
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
+//    @GetMapping("/{email}")
+//    public ResponseEntity<Usuario> obtenerUsuarioPorEmail(@PathVariable String email) {
+//        return usuarioRepository.findByEmail(email.toLowerCase())
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+//    }
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpSession session) {

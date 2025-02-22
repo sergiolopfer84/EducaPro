@@ -65,21 +65,21 @@ public class PuntuacionService {
         return puntuaciones.size() > 2 ? puntuaciones.subList(0, 2) : puntuaciones;
     }
 
-    // Obtener todas las puntuaciones de un usuario
-    @Transactional(readOnly = true)
-    public List<Puntuacion> getPuntuacionesByUsuario(Integer idUsuario) {
-        return puntuacionRepository.findPuntuacionesByUsuario(idUsuario);
-    }
-    
-    @Transactional(readOnly = true)
-    public MateriaProgresoDTO obtenerProgresoMateriaEspecifica(Integer idUsuario, Integer idMateria) {
-        Materia materia = testRepository.findMateriaById(idMateria)
-                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + idMateria));
-
-        int totalTests = testRepository.countByMateria(materia);
-        int testsAprobados = puntuacionRepository.countAprobadosByMateria(idMateria);
-
-        return new MateriaProgresoDTO(materia.getNombreMateria(), totalTests, testsAprobados);
-    }
+//    // Obtener todas las puntuaciones de un usuario
+//    @Transactional(readOnly = true)
+//    public List<Puntuacion> getPuntuacionesByUsuario(Integer idUsuario) {
+//        return puntuacionRepository.findPuntuacionesByUsuario(idUsuario);
+//    }
+//    
+//    @Transactional(readOnly = true)
+//    public MateriaProgresoDTO obtenerProgresoMateriaEspecifica(Integer idUsuario, Integer idMateria) {
+//        Materia materia = testRepository.findMateriaById(idMateria)
+//                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + idMateria));
+//
+//        int totalTests = testRepository.countByMateria(materia);
+//        int testsAprobados = puntuacionRepository.countAprobadosByMateria(idMateria);
+//
+//        return new MateriaProgresoDTO(materia.getNombreMateria(), totalTests, testsAprobados);
+//    }
 
 }
