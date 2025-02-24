@@ -76,9 +76,7 @@ $(document).ready(function() {
 				xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
 			},
 			success: function(response) {
-			    console.log("Respuesta del servidor:", response);
 			    $('#passwordMessage').text(response.message).css('color', 'green');
-			    // Redirigir al login después de unos segundos
 			    setTimeout(function(){
 			        window.location.href = '/login';
 			    }, 2000);
