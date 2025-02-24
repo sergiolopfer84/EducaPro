@@ -98,6 +98,7 @@ $(document).ready(function() {
 			       withCredentials: true
 			   },
             success: function(data) {
+				console.log(data)
                 let html = '';
                 data.forEach(materia => {
                     let nombre = materia.materia || 'Desconocido';
