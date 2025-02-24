@@ -21,8 +21,10 @@ const btnCancelarEliminar = document.getElementById("btnCancelarEliminar")
 
 ///ESTADOS
 const listaEstados = document.getElementById("listaEstados");
+const estadoContainer = document.getElementById("estadoContainer")
 const guardarCambiosEstado = document.getElementById("guardarCambiosEstado")
-
+const mensajeCambioEstado = document.getElementById("mensajeCambioEstado")
+const errorCambioEstado = document.getElementById("errorCambioEstado")
 //MATERIAS
 const materiaSelectContainer = document.getElementById("materiaSelectContainer");
 
@@ -812,7 +814,6 @@ window.guardarDatos = function() {
 
 	sendRequest(apiUrl, id ? "PUT" : "POST", payload)
 		.then(() => {
-			console.log("Estaammos gguardadno ")
 			mostrarMensajeModal("success", id ? "✅ Elemento actualizado correctamente." : "✅ Elemento creado correctamente.", true);
 			setTimeout(() => cargarDatosDesdeBackend(), 2500); // 🔄 Actualizar los datos después de cerrar el modal
 		})
@@ -888,7 +889,8 @@ function cargarMateriasEstados() {
 }
 
 function cargarListaEstados(idMateria = "") {
-	let listaEstados = document.getElementById("listaEstados");
+	errorCambioEstado.style.display = "none"
+	mensajeCambioEstado.style.display = "none"
 	listaEstados.innerHTML = "";
 
 	let storageKey, idField, nameField;
@@ -979,13 +981,19 @@ window.guardarCambiosEstados = function() {
 	});
 
 	Promise.all(promesas).then(() => {
-		alert("✅ Cambios guardados correctamente.");
+		mensajeCambioEstado.style.display = "block"
+		mensajeCambioEstado.innerText= "✅ Cambios de estado guardados correctamente."
 		cargarDatosDesdeBackend()
-		guardarCambiosEstado.style.display = "none";
+		
 	}).catch(error => {
+		errorCambioEstado.style.display = "block"
+				errorCambioEstado.innerText= "✅ Error al cambiar los estados. "
 		console.error("❌ Error al actualizar estados:", error);
-		alert("❌ Ocurrió un error al guardar los cambios.");
 	});
+	setTimeout(() => {
+		estadoContainer.style.display = "none";
+	}, 2500); 
+	
 };
 
 function getSectionConfig(sectionId) {
@@ -1143,8 +1151,6 @@ window.confirmarEliminar = function(modalEliminar) {
 };
 
 function mostrarMensajeModal(tipo, mensaje, cerrar = false) {
-
-
 	// Capturar los elementos dentro del modal
 	let modalBody = modalFormulario ? modalFormulario.querySelector(".modal-body") : null;
 	let modalFooter = modalFormulario ? modalFormulario.querySelector(".modal-footer") : null;
