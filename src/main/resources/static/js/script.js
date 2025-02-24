@@ -1,65 +1,65 @@
 document.addEventListener("DOMContentLoaded", function() {
-	 // Seleccionamos todos los botones de "pregunta rápida"
-	    const quickQuestionButtons = document.querySelectorAll('.quick-question-btn');
-	    const userInput = document.getElementById('user-input');
-	    const sendMessageBtn = document.getElementById('sendMessageBtn');
+	// Seleccionamos todos los botones de "pregunta rápida"
+	const quickQuestionButtons = document.querySelectorAll('.quick-question-btn');
+	const userInput = document.getElementById('user-input');
+	const sendMessageBtn = document.getElementById('sendMessageBtn');
 
-	    quickQuestionButtons.forEach(button => {
-	        button.addEventListener('click', () => {
-	            const question = button.getAttribute('data-question');
-	            
-	            userInput.value = question;
-	            sendMessageBtn.click(); 
-	        });
-	    });
-	
-    const currentPath = window.location.pathname;
-    console.log("Ruta actual:", currentPath);
-	$('.toggle-password').click(function() {
-		    let input = $("#" + $(this).data("target"));
-		    let icon = $(this).find("i");
+	quickQuestionButtons.forEach(button => {
+		button.addEventListener('click', () => {
+			const question = button.getAttribute('data-question');
 
-		    if (input.attr("type") === "password") {
-		        input.attr("type", "text");
-		        icon.removeClass("fa-eye").addClass("fa-eye-slash");
-		    } else {
-		        input.attr("type", "password");
-		        icon.removeClass("fa-eye-slash").addClass("fa-eye");
-		    }
+			userInput.value = question;
+			sendMessageBtn.click();
 		});
+	});
 
-    const inicioBtn = document.querySelector("#Inicio");
-    const irATestsBtn = document.querySelector("#IrATests");
-    const perfilBtn = document.querySelector("#perfilBtn");
-    const adminBtn = document.querySelector("#adminBtn");
+	const currentPath = window.location.pathname;
+	console.log("Ruta actual:", currentPath);
+	$('.toggle-password').click(function() {
+		let input = $("#" + $(this).data("target"));
+		let icon = $(this).find("i");
 
-    if (currentPath === "/index" && inicioBtn) {
+		if (input.attr("type") === "password") {
+			input.attr("type", "text");
+			icon.removeClass("fa-eye").addClass("fa-eye-slash");
+		} else {
+			input.attr("type", "password");
+			icon.removeClass("fa-eye-slash").addClass("fa-eye");
+		}
+	});
+
+	const inicioBtn = document.querySelector("#Inicio");
+	const irATestsBtn = document.querySelector("#IrATests");
+	const perfilBtn = document.querySelector("#perfilBtn");
+	const adminBtn = document.querySelector("#adminBtn");
+
+	if (currentPath === "/index" && inicioBtn) {
 		inicioBtn.style.display = "none";
-    }
+	}
 
-    if (currentPath === "/home" && irATestsBtn) {
-        irATestsBtn.style.display = "none";
-    }
+	if (currentPath === "/home" && irATestsBtn) {
+		irATestsBtn.style.display = "none";
+	}
 
-    if (currentPath === "/perfil" && perfilBtn) {
-        perfilBtn.style.display = "none";
-    }
+	if (currentPath === "/perfil" && perfilBtn) {
+		perfilBtn.style.display = "none";
+	}
 
-    if (currentPath === "/admin" && adminBtn) {
-        adminBtn.style.display = "none";
-    }
+	if (currentPath === "/admin" && adminBtn) {
+		adminBtn.style.display = "none";
+	}
 });
 
 $(document).ready(function() {
 	if (window.csrf && window.csrf.token && window.csrf.headerName) {
-		       $.ajaxSetup({
-		           beforeSend: function(xhr) {
-		               xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-		           },
-		       });
-		   }
+		$.ajaxSetup({
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+			},
+		});
+	}
 	const currentPath = window.location.pathname;
-	
+
 	/***************************************************
 	 * 1. Dropdown personalizado para selects
 	 ***************************************************/
@@ -107,7 +107,7 @@ $(document).ready(function() {
 	});
 
 	$('#perfilBtn').click(function() {
-		window.location.href = '/perfil';  
+		window.location.href = '/perfil';
 	});
 
 	// LOGIN
@@ -269,7 +269,7 @@ $(document).ready(function() {
 		// Cargar materias
 		$.get('/materias/activas', function(data) {
 			let options = '<option value="">Elige una materia</option>';
-	
+
 			data.forEach(materia => {
 				options += `<option value="${materia.idMateria}">${materia.nombreMateria || materia.materia}</option>`;
 			});
@@ -306,9 +306,9 @@ $(document).ready(function() {
 			$('#questions-container').html('');
 			$('#nota-obtenida').html('').hide();
 			$('#ultima-nota').html('').hide();
-			console.log("idTest",idTest)
+			console.log("idTest", idTest)
 			$.get(`/preguntas/test/${idTest}`, function(data) {
-				console.log("data kub 334",data)
+				console.log("data kub 334", data)
 				let questionsHTML = '';
 				data.forEach(p => {
 					questionsHTML += `
@@ -399,7 +399,7 @@ $(document).ready(function() {
 					});
 
 					$.ajax({
-						url: '/respuestas/sesion', 
+						url: '/respuestas/sesion',
 						type: 'GET',
 						data: { idTest: idTest },
 						success: function(data) {
@@ -447,202 +447,202 @@ $(document).ready(function() {
 			$('#finalizar').prop('disabled', false);
 		});
 
-		
+
 		// ASISTENTE
-				const openAssistantBtn = document.getElementById("openAssistantBtn");
-				const modal = document.getElementById("assistantModal");
-				const closeBtn = document.querySelector(".close-btn");
-				const chatBox = document.getElementById("chat-box");
-				const userInput = document.getElementById("user-input");
-				const sendMessageBtn = document.getElementById("sendMessageBtn");
+		const openAssistantBtn = document.getElementById("openAssistantBtn");
+		const modal = document.getElementById("assistantModal");
+		const closeBtn = document.querySelector(".close-btn");
+		const chatBox = document.getElementById("chat-box");
+		const userInput = document.getElementById("user-input");
+		const sendMessageBtn = document.getElementById("sendMessageBtn");
 
-				// Función para enviar mensaje
-				function sendMessage() {
-				    let mensaje = userInput.value.trim();
-				    if (mensaje === "") return;
+		// Función para enviar mensaje
+		function sendMessage() {
+			let mensaje = userInput.value.trim();
+			if (mensaje === "") return;
 
-				    chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
-				    userInput.value = "";
+			chatBox.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+			userInput.value = "";
 
-				    // Petición al backend
-				    fetch('/api/asistente', {
-				        method: 'POST',
-				        headers: {
-				            'Content-Type': 'application/json',
-				            [window.csrf.headerName]: window.csrf.token
-				        },
-				        body: JSON.stringify(mensaje)
-				    })
-				        .then(response => response.text())
-				        .then(data => {
-				            chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
-				            chatBox.scrollTop = chatBox.scrollHeight;
-				        });
-				}
-
-				// Evento para abrir el asistente
-				openAssistantBtn.addEventListener("click", function() {
-				    modal.style.display = "flex";
+			// Petición al backend
+			fetch('/api/asistente', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					[window.csrf.headerName]: window.csrf.token
+				},
+				body: JSON.stringify(mensaje)
+			})
+				.then(response => response.text())
+				.then(data => {
+					chatBox.innerHTML += `<p><strong>IA:</strong> ${data}</p>`;
+					chatBox.scrollTop = chatBox.scrollHeight;
 				});
+		}
 
-				// Evento para cerrar el asistente
-				closeBtn.addEventListener("click", function() {
-				    modal.style.display = "none";
+		// Evento para abrir el asistente
+		openAssistantBtn.addEventListener("click", function() {
+			modal.style.display = "flex";
+		});
+
+		// Evento para cerrar el asistente
+		closeBtn.addEventListener("click", function() {
+			modal.style.display = "none";
+		});
+
+		// Evento para enviar mensaje con el botón de enviar
+		sendMessageBtn.addEventListener("click", sendMessage);
+
+		// Evento para enviar mensaje al presionar Enter
+		userInput.addEventListener("keydown", function(event) {
+			if (event.key === "Enter" && !event.shiftKey) {
+				event.preventDefault(); // Evita el salto de línea en el input
+				sendMessage(); // Llama a la función de enviar mensaje
+			}
+		});
+
+		// Evento para cerrar el asistente al hacer clic fuera del modal
+		window.addEventListener("click", function(event) {
+			if (event.target === modal) {
+				modal.style.display = "none";
+			}
+		});
+		// Función para mostrar animación de carga
+		function mostrarCargando() {
+			const chatBox = document.getElementById("chat-box");
+			const loadingDiv = document.createElement("div");
+			loadingDiv.id = "loading-indicator";
+			loadingDiv.innerHTML = `<p><strong>IA:</strong> <span class="loading-dots"></span></p>`;
+			chatBox.appendChild(loadingDiv);
+			chatBox.scrollTop = chatBox.scrollHeight;
+		}
+
+		// Función para eliminar la animación de carga
+		function ocultarCargando() {
+			const loadingDiv = document.getElementById("loading-indicator");
+			if (loadingDiv) {
+				loadingDiv.remove();
+			}
+		}
+
+		// Función para enviar mensaje con animación de carga
+		function sendMessage() {
+			let mensaje = userInput.value.trim();
+			if (mensaje === "") return;
+
+			// Agregar el mensaje del usuario con una clase personalizada
+			chatBox.innerHTML += `<p class="mensaje-usuario"><strong>Tú:</strong> ${mensaje}</p>`;
+			userInput.value = "";
+
+			// Muestra el indicador de carga
+			mostrarCargando();
+
+			// Petición al backend
+			fetch('/api/asistente', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					[window.csrf.headerName]: window.csrf.token
+				},
+				body: JSON.stringify(mensaje)
+			})
+				.then(response => response.text())
+				.then(data => {
+					ocultarCargando(); // Oculta el indicador de carga
+					chatBox.innerHTML += `<p class="mensaje-ia"><strong>IA:</strong> ${data}</p>`;
+					chatBox.scrollTop = chatBox.scrollHeight;
+				})
+				.catch(error => {
+					ocultarCargando();
+					chatBox.innerHTML += `<p class="mensaje-ia error"><strong>IA:</strong> Hubo un error al procesar la respuesta.</p>`;
+					console.error(error);
 				});
+		}
 
-				// Evento para enviar mensaje con el botón de enviar
-				sendMessageBtn.addEventListener("click", sendMessage);
 
-				// Evento para enviar mensaje al presionar Enter
-				userInput.addEventListener("keydown", function(event) {
-				    if (event.key === "Enter" && !event.shiftKey) {
-				        event.preventDefault(); // Evita el salto de línea en el input
-				        sendMessage(); // Llama a la función de enviar mensaje
-				    }
+		// Evento para enviar mensaje con botón
+		sendMessageBtn.addEventListener("click", sendMessage);
+
+		// Evento para enviar mensaje con Enter
+		userInput.addEventListener("keydown", function(event) {
+			if (event.key === "Enter" && !event.shiftKey) {
+				event.preventDefault();
+				sendMessage();
+			}
+		});
+		document.addEventListener("DOMContentLoaded", function() {
+			const modal = document.getElementById("resizableModal");
+			const resizeHandle = document.querySelector(".resize-handle");
+
+			let isResizing = false;
+
+			resizeHandle.addEventListener("mousedown", function(e) {
+				isResizing = true;
+				document.addEventListener("mousemove", resizeModal);
+				document.addEventListener("mouseup", () => {
+					isResizing = false;
+					document.removeEventListener("mousemove", resizeModal);
 				});
+			});
 
-				// Evento para cerrar el asistente al hacer clic fuera del modal
-				window.addEventListener("click", function(event) {
-				    if (event.target === modal) {
-				        modal.style.display = "none";
-				    }
-				});
-				// Función para mostrar animación de carga
-				function mostrarCargando() {
-				    const chatBox = document.getElementById("chat-box");
-				    const loadingDiv = document.createElement("div");
-				    loadingDiv.id = "loading-indicator";
-				    loadingDiv.innerHTML = `<p><strong>IA:</strong> <span class="loading-dots"></span></p>`;
-				    chatBox.appendChild(loadingDiv);
-				    chatBox.scrollTop = chatBox.scrollHeight;
-				}
+			function resizeModal(e) {
+				if (!isResizing) return;
+				let newWidth = e.clientX - modal.offsetLeft;
+				let newHeight = e.clientY - modal.offsetTop;
 
-				// Función para eliminar la animación de carga
-				function ocultarCargando() {
-				    const loadingDiv = document.getElementById("loading-indicator");
-				    if (loadingDiv) {
-				        loadingDiv.remove();
-				    }
-				}
+				// Asegurar que el tamaño no sea demasiado pequeño
+				if (newWidth > 300) modal.style.width = newWidth + "px";
+				if (newHeight > 300) modal.style.height = newHeight + "px";
+			}
+		});
+		document.addEventListener("DOMContentLoaded", function() {
+			const modal = document.querySelector(".modal-content2");
+			const chatBox = document.getElementById("chat-box");
 
-				// Función para enviar mensaje con animación de carga
-				function sendMessage() {
-				    let mensaje = userInput.value.trim();
-				    if (mensaje === "") return;
+			new ResizeObserver(() => {
+				const modalPadding = 40; // Ajuste para evitar que toque los bordes
+				chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
+			}).observe(modal);
+		});
+		document.addEventListener("DOMContentLoaded", function() {
+			const modal = document.querySelector(".modal-content2");
+			const chatBox = document.getElementById("chat-box");
+			const header = document.querySelector(".modal-header");
 
-				    // Agregar el mensaje del usuario con una clase personalizada
-				    chatBox.innerHTML += `<p class="mensaje-usuario"><strong>Tú:</strong> ${mensaje}</p>`;
-				    userInput.value = "";
+			let isDragging = false;
+			let offsetX = 0, offsetY = 0;
 
-				    // Muestra el indicador de carga
-				    mostrarCargando();
+			// ✅ Hacemos la ventana redimensionable
+			new ResizeObserver(() => {
+				const modalPadding = 40;
+				chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
+			}).observe(modal);
 
-				    // Petición al backend
-				    fetch('/api/asistente', {
-				        method: 'POST',
-				        headers: {
-				            'Content-Type': 'application/json',
-				            [window.csrf.headerName]: window.csrf.token
-				        },
-				        body: JSON.stringify(mensaje)
-				    })
-				    .then(response => response.text())
-				    .then(data => {
-				        ocultarCargando(); // Oculta el indicador de carga
-				        chatBox.innerHTML += `<p class="mensaje-ia"><strong>IA:</strong> ${data}</p>`;
-				        chatBox.scrollTop = chatBox.scrollHeight;
-				    })
-				    .catch(error => {
-				        ocultarCargando();
-				        chatBox.innerHTML += `<p class="mensaje-ia error"><strong>IA:</strong> Hubo un error al procesar la respuesta.</p>`;
-				        console.error(error);
-				    });
-				}
+			// ✅ Evento para iniciar el arrastre
+			header.addEventListener("mousedown", (e) => {
+				isDragging = true;
+				offsetX = e.clientX - modal.offsetLeft;
+				offsetY = e.clientY - modal.offsetTop;
+				modal.style.cursor = "grabbing";
+			});
 
+			// ✅ Evento para mover la ventana
+			document.addEventListener("mousemove", (e) => {
+				if (!isDragging) return;
+				modal.style.left = e.clientX - offsetX + "px";
+				modal.style.top = e.clientY - offsetY + "px";
+			});
 
-				// Evento para enviar mensaje con botón
-				sendMessageBtn.addEventListener("click", sendMessage);
+			// ✅ Evento para soltar la ventana
+			document.addEventListener("mouseup", () => {
+				isDragging = false;
+				modal.style.cursor = "grab";
+			});
+		});
 
-				// Evento para enviar mensaje con Enter
-				userInput.addEventListener("keydown", function(event) {
-				    if (event.key === "Enter" && !event.shiftKey) {
-				        event.preventDefault();
-				        sendMessage();
-				    }
-				});
-				document.addEventListener("DOMContentLoaded", function() {
-				    const modal = document.getElementById("resizableModal");
-				    const resizeHandle = document.querySelector(".resize-handle");
+	}
 
-				    let isResizing = false;
-
-				    resizeHandle.addEventListener("mousedown", function(e) {
-				        isResizing = true;
-				        document.addEventListener("mousemove", resizeModal);
-				        document.addEventListener("mouseup", () => {
-				            isResizing = false;
-				            document.removeEventListener("mousemove", resizeModal);
-				        });
-				    });
-
-				    function resizeModal(e) {
-				        if (!isResizing) return;
-				        let newWidth = e.clientX - modal.offsetLeft;
-				        let newHeight = e.clientY - modal.offsetTop;
-
-				        // Asegurar que el tamaño no sea demasiado pequeño
-				        if (newWidth > 300) modal.style.width = newWidth + "px";
-				        if (newHeight > 300) modal.style.height = newHeight + "px";
-				    }
-				});
-				document.addEventListener("DOMContentLoaded", function() {
-				    const modal = document.querySelector(".modal-content2");
-				    const chatBox = document.getElementById("chat-box");
-
-				    new ResizeObserver(() => {
-				        const modalPadding = 40; // Ajuste para evitar que toque los bordes
-				        chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
-				    }).observe(modal);
-				});
-				document.addEventListener("DOMContentLoaded", function() {
-				    const modal = document.querySelector(".modal-content2");
-				    const chatBox = document.getElementById("chat-box");
-				    const header = document.querySelector(".modal-header");
-
-				    let isDragging = false;
-				    let offsetX = 0, offsetY = 0;
-
-				    // ✅ Hacemos la ventana redimensionable
-				    new ResizeObserver(() => {
-				        const modalPadding = 40;
-				        chatBox.style.height = (modal.clientHeight - modalPadding) + "px";
-				    }).observe(modal);
-
-				    // ✅ Evento para iniciar el arrastre
-				    header.addEventListener("mousedown", (e) => {
-				        isDragging = true;
-				        offsetX = e.clientX - modal.offsetLeft;
-				        offsetY = e.clientY - modal.offsetTop;
-				        modal.style.cursor = "grabbing";
-				    });
-
-				    // ✅ Evento para mover la ventana
-				    document.addEventListener("mousemove", (e) => {
-				        if (!isDragging) return;
-				        modal.style.left = e.clientX - offsetX + "px";
-				        modal.style.top = e.clientY - offsetY + "px";
-				    });
-
-				    // ✅ Evento para soltar la ventana
-				    document.addEventListener("mouseup", () => {
-				        isDragging = false;
-				        modal.style.cursor = "grab";
-				    });
-				});
-
-	} 
-
-}); 
+});
 
 /***************************************************
  * Bloquear respuestas al finalizar

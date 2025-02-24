@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-	
+
 
 	let selectedSection = "";
 	let selectedElementId = null;
@@ -48,49 +48,49 @@ document.addEventListener("DOMContentLoaded", function() {
 			if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
 			return response.status === 204 ? null : await response.json();
 		} catch (error) {
-		//console.error(`Error: ${error.message}`)
-			
+			//console.error(`Error: ${error.message}`)
+
 		}
 	}
-	
+
 	window.showSection = function(sectionId) {
-			document.querySelectorAll(".admin-section").forEach(section => section.style.display = "none");
-			const targetSection = document.getElementById(sectionId);
-			if (targetSection) {
-				targetSection.style.display = "block";
-				document.getElementById("accionesContainer").style.display = "block";
-				selectedSection = sectionId;
-			}
-		};
+		document.querySelectorAll(".admin-section").forEach(section => section.style.display = "none");
+		const targetSection = document.getElementById(sectionId);
+		if (targetSection) {
+			targetSection.style.display = "block";
+			document.getElementById("accionesContainer").style.display = "block";
+			selectedSection = sectionId;
+		}
+	};
 
 
 
 	function llenarSelect(selectId, storageKey, idField, textField, filterField = null, filterValue = null) {
-	    const selectElement = document.getElementById(selectId);
-	    if (!selectElement) {
-	        return;
-	    }
-	    selectElement.innerHTML = `<option value="">Seleccione...</option>`;
-	    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
-	    if (filterField && filterValue !== null) {
-	        data = data.filter(item => {
-	            let fieldValue = filterField.split(".").reduce((obj, key) => obj && obj[key] !== undefined ? obj[key] : undefined, item);
-	            return fieldValue == filterValue;
-	        });
-	    }
-	    data.forEach(item => {
-	        const option = document.createElement("option");
-	        option.value = item[idField];
-	        option.textContent = item[textField];
-	        selectElement.appendChild(option);
-	    });
+		const selectElement = document.getElementById(selectId);
+		if (!selectElement) {
+			return;
+		}
+		selectElement.innerHTML = `<option value="">Seleccione...</option>`;
+		let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+		if (filterField && filterValue !== null) {
+			data = data.filter(item => {
+				let fieldValue = filterField.split(".").reduce((obj, key) => obj && obj[key] !== undefined ? obj[key] : undefined, item);
+				return fieldValue == filterValue;
+			});
+		}
+		data.forEach(item => {
+			const option = document.createElement("option");
+			option.value = item[idField];
+			option.textContent = item[textField];
+			selectElement.appendChild(option);
+		});
 
-	    const containerId = `${selectId}Container`;
-	    const containerElement = document.getElementById(containerId);
-	    if (containerElement) {
-	        containerElement.style.display = "block";
-	        
-	    }
+		const containerId = `${selectId}Container`;
+		const containerElement = document.getElementById(containerId);
+		if (containerElement) {
+			containerElement.style.display = "block";
+
+		}
 	}
 
 	window.showSection = function(sectionId) {
@@ -104,17 +104,17 @@ document.addEventListener("DOMContentLoaded", function() {
 	};
 
 	document.getElementById("materiaSelect").addEventListener("change", function() {
-		
+
 		llenarSelect("testSelect", "tests", "idTest", "nombreTest", "materia.idMateria", this.value);
 	});
 
 	document.getElementById("testSelect").addEventListener("change", function() {
-		
+
 		llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta", "idTest", this.value);
 	});
 
 	document.getElementById("preguntaSelect").addEventListener("change", function() {
-		
+
 		llenarSelect("respuestaSelect", "respuestas", "idRespuesta", "textoRespuesta", "idPregunta", this.value);
 	});
 
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				nameField = "nombreTest";
 				storageKey = "tests";
 				llenarSelect("materiaSelect", "materias", "idMateria", "nombreMateria");
-				document.getElementById("materiaSelectContainer").style.display = "block"; 
+				document.getElementById("materiaSelectContainer").style.display = "block";
 
 				break;
 			case "preguntasSection":
@@ -161,34 +161,34 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 
 		let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
-		
+
 
 		if (actionType === "edit") {
-		       selectElemento.addEventListener("change", function() {
-		           let selectedItem = data.find(item => item[idField] == this.value);
-		           if (selectedItem) {
-		               inputId.value = selectedItem[idField];
-		               inputNombre.value = selectedItem[nameField];
-		               if (selectedSection === "testsSection") {
-		                  llenarSelect("testSelect", "tests", "idTest", "nombreTest", "idMateria", selectedItem.idMateria);
-		               }
-					   if (selectedItem.activa !== undefined || selectedItem.activo !== undefined) {
-					   	                   activoCheckbox.checked = selectedItem.activa || selectedItem.activo;
-					   	                   activoCheckboxContainer.style.display = "block";
-					   	               } else {
-					   	                   activoCheckboxContainer.style.display = "none";
-					   	               }
-		               if (selectedSection === "preguntasSection") {
-		                   
-		                   llenarSelect("testSelect", "tests", "idTest", "nombreTest", "idMateria", selectedItem.test.idMateria);
-		                   llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta", "idTest", selectedItem.test.idTest);
-		               }
-		           }
-		       });
-		   } else {
-		       document.getElementById("selectElementoContainer").style.display = "none";
-		       document.getElementById("activoContainer").style.display = "none";
-		   }
+			selectElemento.addEventListener("change", function() {
+				let selectedItem = data.find(item => item[idField] == this.value);
+				if (selectedItem) {
+					inputId.value = selectedItem[idField];
+					inputNombre.value = selectedItem[nameField];
+					if (selectedSection === "testsSection") {
+						llenarSelect("testSelect", "tests", "idTest", "nombreTest", "idMateria", selectedItem.idMateria);
+					}
+					if (selectedItem.activa !== undefined || selectedItem.activo !== undefined) {
+						activoCheckbox.checked = selectedItem.activa || selectedItem.activo;
+						activoCheckboxContainer.style.display = "block";
+					} else {
+						activoCheckboxContainer.style.display = "none";
+					}
+					if (selectedSection === "preguntasSection") {
+
+						llenarSelect("testSelect", "tests", "idTest", "nombreTest", "idMateria", selectedItem.test.idMateria);
+						llenarSelect("preguntaSelect", "preguntas", "idPregunta", "textoPregunta", "idTest", selectedItem.test.idTest);
+					}
+				}
+			});
+		} else {
+			document.getElementById("selectElementoContainer").style.display = "none";
+			document.getElementById("activoContainer").style.display = "none";
+		}
 		document.getElementById("dynamicForm").onsubmit = function(event) {
 			event.preventDefault();
 			guardarElemento();
@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			};
 		}
 
-		
+
 
 		if (id) apiUrl += `/${id}`;
 
@@ -243,134 +243,134 @@ document.addEventListener("DOMContentLoaded", function() {
 	};
 
 	window.eliminarElemento = function() {
-	    
 
-	    const selectEliminar = document.getElementById("selectEliminar");
-	    const selectEliminarContainer = document.getElementById("selectEliminarContainer");
-	    selectEliminar.innerHTML = ""; 
-	    let storageKey, idField, nameField;
-	    switch (selectedSection) {
-	        case "materiasSection":
-	            storageKey = "materias";
-	            idField = "idMateria";
-	            nameField = "nombreMateria";
-	            break;
-	        case "testsSection":
-	            storageKey = "tests";
-	            idField = "idTest";
-	            nameField = "nombreTest";
-	            break;
-	        case "preguntasSection":
-	            storageKey = "preguntas";
-	            idField = "idPregunta";
-	            nameField = "textoPregunta";
-	            break;
-	        case "respuestasSection":
-	            storageKey = "respuestas";
-	            idField = "idRespuesta";
-	            nameField = "textoRespuesta";
-	            break;
-	        default:
-	            console.error("❌ Sección no reconocida:", selectedSection);
-	            return;
-	    }
-	    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
 
-	    if (data.length === 0) {
-	        alert("⚠ No hay elementos disponibles para eliminar.");
-	        return;
-	    }
+		const selectEliminar = document.getElementById("selectEliminar");
+		const selectEliminarContainer = document.getElementById("selectEliminarContainer");
+		selectEliminar.innerHTML = "";
+		let storageKey, idField, nameField;
+		switch (selectedSection) {
+			case "materiasSection":
+				storageKey = "materias";
+				idField = "idMateria";
+				nameField = "nombreMateria";
+				break;
+			case "testsSection":
+				storageKey = "tests";
+				idField = "idTest";
+				nameField = "nombreTest";
+				break;
+			case "preguntasSection":
+				storageKey = "preguntas";
+				idField = "idPregunta";
+				nameField = "textoPregunta";
+				break;
+			case "respuestasSection":
+				storageKey = "respuestas";
+				idField = "idRespuesta";
+				nameField = "textoRespuesta";
+				break;
+			default:
+				console.error("❌ Sección no reconocida:", selectedSection);
+				return;
+		}
+		let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
 
-	    llenarSelect("selectEliminar", storageKey, idField, nameField);
-	    selectEliminarContainer.style.display = "block";
+		if (data.length === 0) {
+			alert("⚠ No hay elementos disponibles para eliminar.");
+			return;
+		}
 
-	    const modalEliminar = new bootstrap.Modal(document.getElementById("modalEliminar"), {
-	        backdrop: "static", 
-	        keyboard: false 
-	    });
+		llenarSelect("selectEliminar", storageKey, idField, nameField);
+		selectEliminarContainer.style.display = "block";
 
-	    modalEliminar.show();
-	    document.getElementById("btnConfirmarEliminar").onclick = function () {
-	        confirmarEliminar(modalEliminar);
-	    };
+		const modalEliminar = new bootstrap.Modal(document.getElementById("modalEliminar"), {
+			backdrop: "static",
+			keyboard: false
+		});
+
+		modalEliminar.show();
+		document.getElementById("btnConfirmarEliminar").onclick = function() {
+			confirmarEliminar(modalEliminar);
+		};
 	};
 
-	window.confirmarEliminar = function (modalEliminar) {
-	    const selectEliminar = document.getElementById("selectEliminar");
-	    const idSeleccionado = selectEliminar.value;
-	    const mensajeEliminar = document.getElementById("mensajeEliminar");
+	window.confirmarEliminar = function(modalEliminar) {
+		const selectEliminar = document.getElementById("selectEliminar");
+		const idSeleccionado = selectEliminar.value;
+		const mensajeEliminar = document.getElementById("mensajeEliminar");
 		const advertenciaEliminar = document.getElementById("advertenciaEliminar");
 		const btnCancelarEliminar = document.getElementById("btnCancelarEliminar");
 		const btnConfirmarEliminar = document.getElementById("btnConfirmarEliminar");
-	    if (!idSeleccionado) {
-	        console.log("⚠ Debes seleccionar un elemento para eliminar.");
-	        return;
-	    }
+		if (!idSeleccionado) {
+			console.log("⚠ Debes seleccionar un elemento para eliminar.");
+			return;
+		}
 
-	    
-	    const apiUrl = `/admin/${selectedSection.replace("Section", "")}/${idSeleccionado}`;
 
-	    sendRequest(apiUrl, "DELETE").then((response) => {
-	        if (response !== undefined) {
-	            
+		const apiUrl = `/admin/${selectedSection.replace("Section", "")}/${idSeleccionado}`;
 
-	            actualizarSessionStorage(selectedSection);
+		sendRequest(apiUrl, "DELETE").then((response) => {
+			if (response !== undefined) {
+
+
+				actualizarSessionStorage(selectedSection);
 				advertenciaEliminar.style.display = "none";
 				btnCancelarEliminar.style.display = "none";
 				btnConfirmarEliminar.style.display = "none";
-	            mensajeEliminar.textContent = "✅ Elemento eliminado correctamente.";
-	            mensajeEliminar.style.display = "block"; 
+				mensajeEliminar.textContent = "✅ Elemento eliminado correctamente.";
+				mensajeEliminar.style.display = "block";
 
-	            setTimeout(() => {
-	                modalEliminar.hide();
-	                
-	            }, 1500);
-	        } else {
-	            
-	        }
-	    }).catch(error => {
-	        
-	    });
+				setTimeout(() => {
+					modalEliminar.hide();
+
+				}, 1500);
+			} else {
+
+			}
+		}).catch(error => {
+
+		});
 	};
 
 
 
-	window.mostrarListaEstados = function () {
-	    const listaEstados = document.getElementById("listaEstados");
-	    listaEstados.innerHTML = "";
-	    let storageKey, idField, nameField, apiUrl;
-	    switch (selectedSection) {
-	        case "materiasSection":
-	            storageKey = "materias";
-	            idField = "idMateria";
-	            nameField = "nombreMateria";
-	            apiUrl = "/materias/";
-	            break;
-	        case "testsSection":
-	            storageKey = "tests";
-	            idField = "idTest";
-	            nameField = "nombreTest";
-	            apiUrl = "/tests/";
-	            break;
-	        default:
-	            alert("⚠ No puedes modificar el estado de este tipo de elemento.");
-	            return;
-	    }
+	window.mostrarListaEstados = function() {
+		const listaEstados = document.getElementById("listaEstados");
+		listaEstados.innerHTML = "";
+		let storageKey, idField, nameField, apiUrl;
+		switch (selectedSection) {
+			case "materiasSection":
+				storageKey = "materias";
+				idField = "idMateria";
+				nameField = "nombreMateria";
+				apiUrl = "/materias/";
+				break;
+			case "testsSection":
+				storageKey = "tests";
+				idField = "idTest";
+				nameField = "nombreTest";
+				apiUrl = "/tests/";
+				break;
+			default:
+				alert("⚠ No puedes modificar el estado de este tipo de elemento.");
+				return;
+		}
 
-	    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
-	    
+		let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
 
-	    if (data.length === 0) {
-	        listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
-	        return;
-	    }
 
-	    let estadosIniciales = {};
+		if (data.length === 0) {
+			listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
+			return;
+		}
 
-	    data.forEach(item => {
-	        estadosIniciales[item[idField]] = item.activa; 
-	        const estado = item.activa ? "checked" : "";
-	        listaEstados.innerHTML += `
+		let estadosIniciales = {};
+
+		data.forEach(item => {
+			estadosIniciales[item[idField]] = item.activa;
+			const estado = item.activa ? "checked" : "";
+			listaEstados.innerHTML += `
 	            <div class="list-group-item d-flex justify-content-between align-items-center">
 	                <span>${item[nameField]}</span>
 	                <div class="form-check form-switch">
@@ -378,57 +378,57 @@ document.addEventListener("DOMContentLoaded", function() {
 	                </div>
 	            </div>
 	        `;
-	    });
+		});
 
-	    document.getElementById("estadoContainer").style.display = "block";
+		document.getElementById("estadoContainer").style.display = "block";
 
-	    document.querySelectorAll(".estado-toggle").forEach(toggle => {
-	        toggle.addEventListener("change", () => {
-	            const id = toggle.getAttribute("data-id");
-	            if (toggle.checked !== estadosIniciales[id]) {
-	                document.getElementById("guardarCambiosEstado").style.display = "block";
-	            } else {
-	                if (![...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")])) {
-	                    document.getElementById("guardarCambiosEstado").style.display = "none";
-	                }
-	            }
-	        });
-	    });
+		document.querySelectorAll(".estado-toggle").forEach(toggle => {
+			toggle.addEventListener("change", () => {
+				const id = toggle.getAttribute("data-id");
+				if (toggle.checked !== estadosIniciales[id]) {
+					document.getElementById("guardarCambiosEstado").style.display = "block";
+				} else {
+					if (![...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")])) {
+						document.getElementById("guardarCambiosEstado").style.display = "none";
+					}
+				}
+			});
+		});
 
-	    window.estadosIniciales = estadosIniciales;
+		window.estadosIniciales = estadosIniciales;
 	};
 
-	window.guardarCambiosEstados = function () {
-	    const toggles = document.querySelectorAll(".estado-toggle");
-	    let cambios = [];
+	window.guardarCambiosEstados = function() {
+		const toggles = document.querySelectorAll(".estado-toggle");
+		let cambios = [];
 
-	    toggles.forEach(toggle => {
-	        const id = toggle.getAttribute("data-id");
-	        const estadoNuevo = toggle.checked;
+		toggles.forEach(toggle => {
+			const id = toggle.getAttribute("data-id");
+			const estadoNuevo = toggle.checked;
 
-	        if (estadoNuevo !== window.estadosIniciales[id]) {
-	            cambios.push({ id, activa: estadoNuevo });
-	        }
-	    });
+			if (estadoNuevo !== window.estadosIniciales[id]) {
+				cambios.push({ id, activa: estadoNuevo });
+			}
+		});
 
-	    if (cambios.length === 0) {
-	        alert("⚠ No hay cambios para guardar.");
-	        return;
-	    }
+		if (cambios.length === 0) {
+			alert("⚠ No hay cambios para guardar.");
+			return;
+		}
 
-	    cambios.forEach(cambio => {
-			
-	        let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
-	        apiUrl += cambio.id + "/toggle-activa";
+		cambios.forEach(cambio => {
 
-	        sendRequest(apiUrl, "PUT").then(() => {
-	            
-	        });
-	    });
+			let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
+			apiUrl += cambio.id + "/toggle-activa";
 
-	   
-	    actualizarSessionStorage(selectedSection);
-	    document.getElementById("guardarCambiosEstado").style.display = "none";
+			sendRequest(apiUrl, "PUT").then(() => {
+
+			});
+		});
+
+
+		actualizarSessionStorage(selectedSection);
+		document.getElementById("guardarCambiosEstado").style.display = "none";
 	};
 
 

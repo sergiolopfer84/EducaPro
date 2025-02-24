@@ -17,39 +17,37 @@ public interface PuntuacionRepository extends JpaRepository<Puntuacion, Integer>
 	@Query("SELECT COUNT(p) FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario AND p.test.materia.idMateria = :idMateria AND p.notaObtenida >= 5.0")
 	int countAprobadosByUsuarioYMateria(@Param("idUsuario") Integer idUsuario, @Param("idMateria") Integer idMateria);
 
+	@Transactional(readOnly = true)
+	@Query("SELECT p.notaObtenida FROM Puntuacion p WHERE p.test = :test")
+	List<Double> findNotasByTest(Test test);
 
-    @Transactional(readOnly = true)
-    @Query("SELECT p.notaObtenida FROM Puntuacion p WHERE p.test = :test")
-    List<Double> findNotasByTest(Test test);
+	@Transactional(readOnly = true)
+	List<Puntuacion> findByUsuario(Usuario usuario);
 
-    @Transactional(readOnly = true)
-    List<Puntuacion> findByUsuario(Usuario usuario);
+	@Transactional(readOnly = true)
+	List<Puntuacion> findByUsuarioAndTest(Usuario usuario, Test test);
 
-    @Transactional(readOnly = true)
-    List<Puntuacion> findByUsuarioAndTest(Usuario usuario, Test test);
+	@Transactional(readOnly = true)
+	@Query("SELECT p FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario ORDER BY p.fecha DESC")
+	List<Puntuacion> findPuntuacionesByUsuario(Integer idUsuario);
 
-    @Transactional(readOnly = true)
-    @Query("SELECT p FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario ORDER BY p.fecha DESC")
-    List<Puntuacion> findPuntuacionesByUsuario(Integer idUsuario);
+	@Transactional(readOnly = true)
+	@Query("SELECT p.test.materia.nombreMateria, p.test.nombreTest, p.notaObtenida "
+			+ "FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario "
+			+ "ORDER BY p.test.materia.nombreMateria, p.test.nombreTest, p.fecha ASC")
+	List<Object[]> obtenerHistorialNotasPorUsuario(Integer idUsuario);
 
-    @Transactional(readOnly = true)
-    @Query("SELECT p.test.materia.nombreMateria, p.test.nombreTest, p.notaObtenida "
-         + "FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario "
-         + "ORDER BY p.test.materia.nombreMateria, p.test.nombreTest, p.fecha ASC")
-    List<Object[]> obtenerHistorialNotasPorUsuario(Integer idUsuario);
+	@Transactional(readOnly = true)
+	@Query("SELECT p.notaObtenida FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario AND p.test.idTest = :idTest ORDER BY p.fecha DESC")
+	List<Double> findUltimasPuntuacionesByUsuarioAndTest(Integer idUsuario, Integer idTest, Pageable pageable);
 
-    @Transactional(readOnly = true)
-    @Query("SELECT p.notaObtenida FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario AND p.test.idTest = :idTest ORDER BY p.fecha DESC")
-    List<Double> findUltimasPuntuacionesByUsuarioAndTest(Integer idUsuario, Integer idTest, Pageable pageable);
-    
-    @Query("""
-    	    SELECT p.test.nombreTest, p.notaObtenida 
-    	    FROM Puntuacion p
-    	    WHERE p.usuario.idUsuario = :idUsuario AND p.test.materia.idMateria = :idMateria
-    	    ORDER BY p.fecha DESC
-    	""")
-    	List<Object[]> obtenerHistorialNotasPorUsuarioYMateria(@Param("idUsuario") int idUsuario, @Param("idMateria") int idMateria);
-
-
+	@Query("""
+			    SELECT p.test.nombreTest, p.notaObtenida
+			    FROM Puntuacion p
+			    WHERE p.usuario.idUsuario = :idUsuario AND p.test.materia.idMateria = :idMateria
+			    ORDER BY p.fecha DESC
+			""")
+	List<Object[]> obtenerHistorialNotasPorUsuarioYMateria(@Param("idUsuario") int idUsuario,
+			@Param("idMateria") int idMateria);
 
 }

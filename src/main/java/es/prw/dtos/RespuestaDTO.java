@@ -19,7 +19,6 @@ public class RespuestaDTO {
         this.textoPregunta = respuesta.getPregunta().getTextoPregunta();
     }
     public RespuestaDTO() {
-        // Constructor vacío para deserialización
     }
     public String getTextoExplicacion() {
 		return textoExplicacion;

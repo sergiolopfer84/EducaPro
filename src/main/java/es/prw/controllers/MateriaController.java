@@ -11,27 +11,22 @@ import java.util.List;
 @RequestMapping("/materias")
 public class MateriaController {
 
-    private final MateriaService materiaService;
+	private final MateriaService materiaService;
 
-    public MateriaController(MateriaService materiaService) {
-        this.materiaService = materiaService;
-    }
+	public MateriaController(MateriaService materiaService) {
+		this.materiaService = materiaService;
+	}
 
-    // ✅ Obtener todas las materias
-    @GetMapping
-    public ResponseEntity<List<Materia>> obtenerMaterias() {
-        return ResponseEntity.ok(materiaService.getMaterias());
-    }
+	// ✅ Obtener todas las materias
+	@GetMapping
+	public ResponseEntity<List<Materia>> obtenerMaterias() {
+		return ResponseEntity.ok(materiaService.getMaterias());
+	}
 
-    // ✅ Obtener solo las materias activas
-    @GetMapping("/activas")
-    public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
-        return ResponseEntity.ok(materiaService.obtenerMateriasActivas());
-    }
+	// ✅ Obtener solo las materias activas
+	@GetMapping("/activas")
+	public ResponseEntity<List<Materia>> obtenerMateriasActivas() {
+		return ResponseEntity.ok(materiaService.obtenerMateriasActivas());
+	}
 
-//    // ✅ Obtener progreso de materias
-//    @GetMapping("/progreso")
-//    public ResponseEntity<List<MateriaProgresoDTO>> obtenerProgresoMaterias() {
-//        return ResponseEntity.ok(materiaService.obtenerProgresoMaterias());
-//    }
 }
