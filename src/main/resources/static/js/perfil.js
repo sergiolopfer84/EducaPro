@@ -1,250 +1,281 @@
 $(document).ready(function() {
-	if (window.csrf && window.csrf.token && window.csrf.headerName) {
-		$.ajaxSetup({
-			beforeSend: function(xhr) {
-				xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-			},
-		});
-	}
-	let usuario = ""
-	// ======================= Cargar Perfil de Usuario =======================
-	function cargarPerfil() {
-		$.ajax({
-			url: '/usuarios/perfil',
-			type: 'GET',
-			success: function(data) {
-				// 'data' tiene la forma { usuario: { ... } }
-				// y dentro de 'data.usuario' vienen los campos y roles
+    console.log("Script cargado correctamente.");
 
-				usuario = data.usuario;
-				console.log(usuario.idUsuario);
+    // ======================= CSRF Token Configuración =======================
+    if (window.csrf && window.csrf.token && window.csrf.headerName) {
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+            }
+        });
+    }
 
-				// Nombre y email
-				$('#perfil-nombre').text(usuario.nombre);
-				$('#perfil-email').text(usuario.email);
+    let usuario = "";
 
-				// Mostrar TODOS los roles
-				if (usuario.roles && usuario.roles.length > 0) {
-					// 'roles' es un array de objetos, ej. [{id:1, nombre:"USER"}, {id:2, nombre:"ADMIN"}]
-					const rolesConcatenados = usuario.roles
-						.map(rol => rol.nombre) // extraemos "USER", "ADMIN"
-						.join(', ');           // unimos en una sola cadena con comas
-					$('#perfil-rol').text(rolesConcatenados);
-				} else {
-					$('#perfil-rol').text('Sin rol');
-				}
+    // ======================= Cargar Perfil de Usuario =======================
+    function cargarPerfil() {
+        $.ajax({
+            url: '/usuarios/perfil',
+            type: 'GET',
+            success: function(data) {
+                usuario = data.usuario;
+                console.log(usuario.idUsuario);
 
-				// Texto de bienvenida
-				$('#welcome-text').text(`Perfil de ${usuario.nombre}`);
+                // Nombre y email
+                $('#perfil-nombre').text(usuario.nombre);
+                $('#perfil-email').text(usuario.email);
 
-			},
-			error: function() {
-				alert('Error al cargar perfil');
-			}
-		});
-	}
+                // Mostrar roles
+                if (usuario.roles && usuario.roles.length > 0) {
+                    const rolesConcatenados = usuario.roles.map(rol => rol.nombre).join(', ');
+                    $('#perfil-rol').text(rolesConcatenados);
+                } else {
+                    $('#perfil-rol').text('Sin rol');
+                }
 
-	// ======================= Cambio de Contraseña =======================
-	$('#changePasswordForm').submit(function(e) {
-		e.preventDefault();
-		let newPassword = $('#newPassword').val().trim();
-		console.log("la  nueva contraseña ", newPassword)
-		let confirmPassword = $('#confirmPassword').val().trim();
-		console.log("confirmar conttraseña ", confirmPassword)
-		if (newPassword.length < 6) {
-			$('#passwordMessage').text('La contraseña debe tener al menos 6 caracteres.').css('color', 'red');
-			return;
-		}
-		if (newPassword !== confirmPassword) {
-			$('#passwordMessage').text('Las contraseñas no coinciden.').css('color', 'red');
-			return;
-		}
+                // Texto de bienvenida
+                $('#welcome-text').text(`Perfil de ${usuario.nombre}`);
+            },
+            error: function() {
+                alert('Error al cargar perfil');
+            }
+        });
+    }
 
-		console.log("Enviando nueva contraseña...");
+    // ======================= Cambio de Contraseña =======================
+    
+    // Asegurar que el formulario de cambiar contraseña esté oculto al inicio
+    $('#changePasswordForm').hide();
 
-		if (!window.csrf || !window.csrf.token || !window.csrf.headerName) {
-			console.error("CSRF token no definido");
-			return;
-		}
+    // Alternar visibilidad del formulario al hacer clic en el botón
+    $('#toggleFormButton').click(function(event) {
+        event.preventDefault(); // Evitar comportamientos no deseados
+        $('#changePasswordForm').stop(true, true).slideToggle(); 
+    });
 
-		$.ajax({
-			url: '/usuarios/cambiar-password',
-			type: 'PATCH',
-			contentType: 'application/json',
-			data: JSON.stringify({ nuevaPassword: newPassword }),
-			beforeSend: function(xhr) {
-				xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
-			},
+    // Evitar que los clics dentro del formulario lo cierren automáticamente
+    $('#changePasswordForm').click(function(event) {
+        event.stopPropagation();
+    });
+
+    // Manejar la lógica de envío del formulario de cambio de contraseña
+    $(document).on('submit', '#changePasswordForm', function(e) {
+        e.preventDefault();
+        
+        let newPassword = $('#newPassword').val().trim();
+        let confirmPassword = $('#confirmPassword').val().trim();
+
+        console.log("Nueva contraseña:", newPassword);
+        console.log("Confirmar contraseña:", confirmPassword);
+
+        if (newPassword.length < 6) {
+            $('#passwordMessage').text('La contraseña debe tener al menos 6 caracteres.').css('color', 'red');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            $('#passwordMessage').text('Las contraseñas no coinciden.').css('color', 'red');
+            return;
+        }
+
+        console.log("Enviando nueva contraseña...");
+
+        if (!window.csrf || !window.csrf.token || !window.csrf.headerName) {
+            console.error("CSRF token no definido");
+            return;
+        }
+
+        // Enviar la petición AJAX
+        $.ajax({
+            url: '/usuarios/cambiar-password',
+            type: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify({ nuevaPassword: newPassword }),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(window.csrf.headerName, window.csrf.token);
+            },
 			success: function(response) {
-			    $('#passwordMessage').text(response.message).css('color', 'green');
-			    setTimeout(function(){
-			        window.location.href = '/login';
-			    }, 2000);
-			},
+			                console.log("Respuesta del servidor:", response);
+			                $('#passwordMessage').text(response.message).css('color', 'green');
+			                // Redirigir al login después de unos segundos
+			                setTimeout(function(){
+			                    window.location.href = '/login';
+			                }, 2000);
+			            },
+            error: function(xhr) {
+                console.log("Error en la petición AJAX:", xhr);
+                $('#passwordMessage').text('Error al cambiar la contraseña.').css('color', 'red');
+            }
+        });
+    });
 
-			error: function(xhr) {
-				console.log("Error en la petición AJAX:", xhr);
-				$('#passwordMessage').text('Error al cambiar la contraseña.').css('color', 'red');
-			}
-		});
-	});
+    // Alternar visibilidad de la contraseña
+    $(document).on("click", ".toggle-password", function(event) {
+        event.stopPropagation();
+        let targetId = $(this).attr("data-target");
+        let input = $("#" + targetId);
+        let icon = $(this).find("i");
 
-	// ======================= Cargar Progreso de Materias =======================
-	function cargarProgresoMaterias(idUsuario) {
+        if (input.attr("type") === "password") {
+            input.attr("type", "text");
+            icon.removeClass("fa-eye").addClass("fa-eye-slash");
+        } else {
+            input.attr("type", "password");
+            icon.removeClass("fa-eye-slash").addClass("fa-eye");
+        }
+    });
 
+    // ======================= Cargar Progreso de Materias =======================
+    function cargarProgresoMaterias(idUsuario) {
+        $.ajax({
+            url: '/puntuaciones/progreso',
+            type: 'GET',
+            xhrFields: { withCredentials: true },
+            success: function(data) {
+                let html = '';
+                data.forEach(materia => {
+                    let nombre = materia.materia || 'Desconocido';
+                    let totalTests = materia.totalTests || 0;
+                    let aprobados = materia.testsAprobados || 0;
 
-		$.ajax({
-			url: '/puntuaciones/progreso',
-			type: 'GET',
-			xhrFields: {
-				withCredentials: true
-			},
-			success: function(data) {
-				console.log(data)
-				let html = '';
-				data.forEach(materia => {
-					let nombre = materia.materia || 'Desconocido';
-					let totalTests = materia.totalTests || 0;
-					let aprobados = materia.testsAprobados || 0;
+                    let porcentaje = totalTests > 0 ? (aprobados / totalTests) * 100 : 0;
 
-					let porcentaje = totalTests > 0 ? (aprobados / totalTests) * 100 : 0;
-
-					html += `
-                           <div class="materia-item">
-                               <p><strong>${nombre}</strong> - ${porcentaje.toFixed(2)}%</p>
-                               <div class="progress-bar">
-                                   <div class="progress" style="width: ${porcentaje}%; background: ${porcentaje >= 50 ? 'green' : 'red'};"></div>
-                               </div>
-                           </div>
-                       `;
-				});
-				$('#materia-progresos').html(html);
-			},
-			error: function() {
-				$('#materia-progresos').html('<p style="color: red;">Error al cargar el progreso.</p>');
-			}
-		});
-	};
+                    html += `
+                        <div class="materia-item">
+                            <p><strong>${nombre}</strong> - ${porcentaje.toFixed(2)}%</p>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: ${porcentaje}%; background: ${porcentaje >= 50 ? 'green' : 'red'};"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#materia-progresos').html(html);
+            },
+            error: function() {
+                $('#materia-progresos').html('<p style="color: red;">Error al cargar el progreso.</p>');
+            }
+        });
+    }
 
 	// ======================= Cargar Gráfico de Notas =======================
-	function cargarGraficoNotas() {
-		$.ajax({
-			url: '/puntuaciones/progresoTests',
-			type: 'GET',
+	   function cargarGraficoNotas() {
+	       $.ajax({
+	           url: '/puntuaciones/progresoTests',
+	           type: 'GET',
 			xhrFields: {
-				withCredentials: true
-			},
-			success: function(data) {
-				$('#graficos-container').html('');
+			       withCredentials: true
+			   },
+	           success: function (data) {
+	               $('#graficos-container').html('');
 
-				Object.keys(data).forEach((materiaNombre) => {
-					$('#graficos-container').append(`<div class="materia-wrapper"><h2>${materiaNombre}</h2></div>`);
+	               Object.keys(data).forEach((materiaNombre) => {
+	                   $('#graficos-container').append(`<div class="materia-wrapper"><h2>${materiaNombre}</h2></div>`);
 
-					let materiaContainer = $('<div class="materia-container"></div>');
+	                   let materiaContainer = $('<div class="materia-container"></div>');
 
-					Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
-						let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
-						materiaContainer.append(`
-                            <div class="grafico-wrapper">
-                                <h3>${testNombre}</h3>
-                                <canvas id="${canvasId}" class="clickable-chart" width="400" height="200"></canvas>
-                            </div>
-                        `);
-					});
+	                   Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
+	                       let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
+	                       materiaContainer.append(`
+	                           <div class="grafico-wrapper">
+	                               <h3>${testNombre}</h3>
+	                               <canvas id="${canvasId}" class="clickable-chart" width="400" height="200"></canvas>
+	                           </div>
+	                       `);
+	                   });
 
-					$('#graficos-container').append(materiaContainer);
+	                   $('#graficos-container').append(materiaContainer);
 
-					Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
-						let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
-						let ctx = document.getElementById(canvasId).getContext('2d');
+	                   Object.keys(data[materiaNombre]).forEach((testNombre, index) => {
+	                       let canvasId = `graficoNotas-${materiaNombre.replace(/\s+/g, '-')}-${index}`;
+	                       let ctx = document.getElementById(canvasId).getContext('2d');
 
-						let chartData = {
-							labels: data[materiaNombre][testNombre].map((_, i) => `Nota ${i + 1}`),
-							datasets: [{
-								label: `Notas de ${testNombre}`,
-								data: data[materiaNombre][testNombre],
-								backgroundColor: "rgba(59, 130, 246, 0.7)",
-								borderColor: "rgba(59, 130, 246, 1)",
-								borderWidth: 1,
-								borderRadius: 5,
-							}]
-						};
+	                       let chartData = {
+	                           labels: data[materiaNombre][testNombre].map((_, i) => `Nota ${i + 1}`),
+	                           datasets: [{
+	                               label: `Notas de ${testNombre}`,
+	                               data: data[materiaNombre][testNombre],
+	                               backgroundColor: "rgba(59, 130, 246, 0.7)",
+	                               borderColor: "rgba(59, 130, 246, 1)",
+	                               borderWidth: 1,
+	                               borderRadius: 5,
+	                           }]
+	                       };
 
-						let chartOptions = {
-							responsive: true,
-							animation: {
-								duration: 1500,
-								easing: "easeInOutQuart"
-							},
-							plugins: {
-								legend: {
-									labels: {
-										color: "black",
-										font: { size: 14, weight: "bold" }
-									}
-								},
-								tooltip: {
-									backgroundColor: "rgba(0, 0, 0, 0.7)",
-									titleFont: { size: 16, weight: "bold" },
-									bodyFont: { size: 14 }
-								}
-							},
-							scales: {
-								x: {
-									grid: { display: false },
-									ticks: { color: "black", font: { size: 12 } }
-								},
-								y: {
-									beginAtZero: true,
-									max: 10,
-									grid: { color: "rgba(0,0,0,0.1)" },
-									ticks: { color: "black", font: { size: 12 } }
-								}
-							}
-						};
+	                       let chartOptions = {
+	                           responsive: true,
+	                           animation: {
+	                               duration: 1500,
+	                               easing: "easeInOutQuart"
+	                           },
+	                           plugins: {
+	                               legend: {
+	                                   labels: {
+	                                       color: "black",
+	                                       font: { size: 14, weight: "bold" }
+	                                   }
+	                               },
+	                               tooltip: {
+	                                   backgroundColor: "rgba(0, 0, 0, 0.7)",
+	                                   titleFont: { size: 16, weight: "bold" },
+	                                   bodyFont: { size: 14 }
+	                               }
+	                           },
+	                           scales: {
+	                               x: {
+	                                   grid: { display: false },
+	                                   ticks: { color: "black", font: { size: 12 } }
+	                               },
+	                               y: {
+	                                   beginAtZero: true,
+	                                   max: 10,
+	                                   grid: { color: "rgba(0,0,0,0.1)" },
+	                                   ticks: { color: "black", font: { size: 12 } }
+	                               }
+	                           }
+	                       };
 
-						let chartInstance = new Chart(ctx, {
-							type: 'bar',
-							data: chartData,
-							options: chartOptions
-						});
+	                       let chartInstance = new Chart(ctx, {
+	                           type: 'bar',
+	                           data: chartData,
+	                           options: chartOptions
+	                       });
 
-						$(`#${canvasId}`).click(function() {
-							abrirModalGrafico(chartData, chartOptions, testNombre);
-						});
-					});
-				});
-			},
-			error: function() {
-				console.log('Error al cargar el gráfico de notas.');
-			}
-		});
-	}
+	                       $(`#${canvasId}`).click(function () {
+	                           abrirModalGrafico(chartData, chartOptions, testNombre);
+	                       });
+	                   });
+	               });
+	           },
+	           error: function () {
+	               console.log('Error al cargar el gráfico de notas.');
+	           }
+	       });
+	   }
 
 
-	function abrirModalGrafico(chartData, chartOptions, testNombre) {
-		$('#modalTitulo').text(`Notas de ${testNombre}`);
-		$('#modalGraficoContainer').html('<canvas id="modalGraficoCanvas"></canvas>');
+	   function abrirModalGrafico(chartData, chartOptions, testNombre) {
+	       $('#modalTitulo').text(`Notas de ${testNombre}`);
+	       $('#modalGraficoContainer').html('<canvas id="modalGraficoCanvas"></canvas>');
 
-		let ctx = document.getElementById("modalGraficoCanvas").getContext("2d");
-		new Chart(ctx, {
-			type: 'bar',
-			data: chartData,
-			options: chartOptions
-		});
+	       let ctx = document.getElementById("modalGraficoCanvas").getContext("2d");
+	       new Chart(ctx, {
+	           type: 'bar',
+	           data: chartData,
+	           options: chartOptions
+	       });
 
-		$('#modalGrafico').addClass('show').fadeIn();
-		$('.modal-content').fadeIn();
-	}
+	       $('#modalGrafico').addClass('show').fadeIn();
+	       $('.modal-content').fadeIn();
+	   }
 
-	$(document).on('click', '#modalClose, #modalGrafico', function(event) {
-		if (event.target.id === 'modalClose' || event.target.id === 'modalGrafico') {
-			$('#modalGrafico').removeClass('show').fadeOut();
-			$('.modal-content').fadeOut();
-		}
-	});
-	// Ejecutar funciones al cargar la página
-	cargarPerfil();
-	cargarProgresoMaterias(parseInt(usuario.idUsuario))
-	cargarGraficoNotas();
+	   $(document).on('click', '#modalClose, #modalGrafico', function(event) {
+	       if (event.target.id === 'modalClose' || event.target.id === 'modalGrafico') {
+	           $('#modalGrafico').removeClass('show').fadeOut();
+	           $('.modal-content').fadeOut();
+	       }
+	   });
+
+    // ======================= Ejecutar funciones al cargar la página =======================
+    cargarPerfil();
+    cargarProgresoMaterias(parseInt(usuario.idUsuario));
+    cargarGraficoNotas();
 });
