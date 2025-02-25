@@ -27,6 +27,7 @@ public interface PuntuacionRepository extends JpaRepository<Puntuacion, Integer>
 	@Transactional(readOnly = true)
 	List<Puntuacion> findByUsuarioAndTest(Usuario usuario, Test test);
 
+	//se usa en progreso service (gráfico materias)
 	@Transactional(readOnly = true)
 	@Query("SELECT p FROM Puntuacion p WHERE p.usuario.idUsuario = :idUsuario ORDER BY p.fecha DESC")
 	List<Puntuacion> findPuntuacionesByUsuario(Integer idUsuario);

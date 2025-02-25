@@ -36,7 +36,7 @@ public class ProgresoService {
 				.collect(Collectors.toMap(Puntuacion::getTest, Function.identity(), (p1, p2) -> p1));
 
 		// Obtenemos todas las materias (suponiendo que existen en cada test)
-		List<Materia> materias = testRepository.findAll().stream().map(Test::getMateria).distinct()
+		List<Materia> materias = testRepository.findAll().stream().map(Test::getMateria).distinct().filter(Materia::isActiva)
 				.collect(Collectors.toList());
 
 		// Para cada materia, contamos el total de tests y cuántos tienen la última nota
