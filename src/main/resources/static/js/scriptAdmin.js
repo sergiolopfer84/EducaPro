@@ -1,17 +1,44 @@
 let selectedSection = "";
 const modalLabel = document.getElementById("modalLabel");
+
+///NUEVO ELEMENTO
 const inputNuevoElemento = document.getElementById("labelNuevoElemento");
-//const respuestasLista = document.getElementById("respuestasLista")
+const nombreElementoContainer = document.getElementById("nombreElementoContainer")
+const nombreElemento = document.getElementById("nombreElemento");
+const elementId = document.getElementById("elementId");
+
+//MODAL
+const modalMensaje = document.getElementById("modalMensaje");
+const modalMensajeTexto = document.getElementById("modalMensajeTexto");
+const modalFormulario = document.getElementById("modalFormulario");
+///ELIMINAR
 const selectEliminar = document.getElementById("selectEliminar");
 const selectEliminarContainer = document.getElementById("selectEliminarContainer");
+const mensajeEliminar = document.getElementById("mensajeEliminar")
+const btnConfirmarEliminar = document.getElementById("btnConfirmarEliminar")
+const advertenciaEliminar = document.getElementById("advertenciaEliminar")
+const btnCancelarEliminar = document.getElementById("btnCancelarEliminar")
+
+///ESTADOS
 const listaEstados = document.getElementById("listaEstados");
+const estadoContainer = document.getElementById("estadoContainer")
+const guardarCambiosEstado = document.getElementById("guardarCambiosEstado")
+const mensajeCambioEstado = document.getElementById("mensajeCambioEstado")
+const errorCambioEstado = document.getElementById("errorCambioEstado")
+//MATERIAS
 const materiaSelectContainer = document.getElementById("materiaSelectContainer");
+
+//TEST
 const testSelectContainer = document.getElementById("testSelectContainer");
+
+//PREGUNTAS
 const preguntaSelectContainer = document.getElementById("preguntaSelectContainer");
+
+//RESPUESTAS
 const respuestaSelectContainer = document.getElementById("respuestaSelectContainer");
 const respuestasContainer = document.getElementById("respuestasContainer")
-const textoRespuesta = document.getElementById("textoRespuesta")
-const textoExplicacion = document.getElementById("textoExplicacion")
+const inputTextoRespuesta = document.getElementById("textoRespuesta")
+const inputTextoExplicacion = document.getElementById("textoExplicacion")
 const notaLabel = document.getElementById("notaLabel")
 const nota = document.getElementById("nota")
 const explicacionLabel = document.getElementById("explicacionLabel")
@@ -54,14 +81,11 @@ document.addEventListener("DOMContentLoaded", function() {
 	const modalEliminarEl = document.getElementById("modalEliminar");
 	modalEliminarEl.addEventListener("hidden.bs.modal", function() {
 		document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-		document.getElementById("selectEliminarContainer").innerHTML = "";
-		document.getElementById("mensajeEliminar").textContent = "";
-		document.getElementById("mensajeEliminar").style.display = "none";
-		console.log("Backdrop eliminado tras ocultar el modal.");
+		selectEliminarContainer.innerHTML = "";
+		mensajeEliminar.textContent = "";
+		mensajeEliminar.style.display = "none";
+
 	});
-
-
-
 });
 
 
@@ -79,7 +103,7 @@ function cargarDatosDesdeBackend() {
 			.then(response => response.json())
 			.then(data => {
 				sessionStorage.setItem(key, JSON.stringify(data));
-				console.log("linea 57 data =", data)
+
 			})
 			.catch(error => console.error(`Error cargando ${key}:`, error));
 	});
@@ -119,7 +143,7 @@ async function sendRequest(url, method = "GET", body = null) {
 function actualizarSessionStorage(section) {
 	const storageKey = section.replace("Section", "");
 	sendRequest(`/${storageKey}`, "GET").then(data => {
-		console.log(`📥linea 98  Datos actualizados de ${storageKey}:`, data);
+
 		sessionStorage.setItem(storageKey, JSON.stringify(data));
 	});
 }
@@ -145,7 +169,7 @@ function showSection(sectionId) {
 function manejarAccion(accion) {
 	const section = document.querySelector(".admin-section[style='display: block;']");
 	if (!section) return;
-	console.log(accion)
+
 	const sectionId = section.id;
 	if (accion.includes("openFormModal")) {
 		abrirFormulario(sectionId, accion.includes("edit") ? "editar" : "nuevo");
@@ -164,7 +188,6 @@ function limpiarFormulario() {
 	materiaSelectContainer.innerHTML = "";
 	testSelectContainer.innerHTML = "";
 	preguntaSelectContainer.innerHTML = "";
-	//respuestasLista.innerHTML = "";
 	modalLabel.textContent = ""
 	inputNuevoElemento.textContent = ""
 }
@@ -177,37 +200,35 @@ function configurarModal(sectionId, accion, cargarSelectsEnCascada) {
 		case "materiasSection":
 			modalLabel.textContent = (accion === "editar") ? "MODIFICAR MATERIA" : (accion === "eliminar") ? "ELIMINAR MATERIA" : "NUEVA MATERIA";
 			inputNuevoElemento.textContent = (accion === "editar") ? "Nuevo nombre de la materia:" : (accion === "crear") ? "Nombre de la materia:" : "";
-			document.getElementById("nombreElementoContainer").style.display = (accion === "editar" || accion === "crear") ? "block" : "none";
+			nombreElementoContainer.style.display = (accion === "editar" || accion === "crear") ? "block" : "none";
 			materiaSelectContainer.style.display = (accion === "editar" || accion === "crear") ? "none" : "block";
 			break;
 		case "testsSection":
 			modalLabel.textContent = (accion === "editar") ? "MODIFICAR TEST" : (accion === "eliminar") ? "ELIMINAR TEST" : "NUEVO TEST";
 			inputNuevoElemento.textContent = (accion === "editar") ? "Nuevo nombre del test:" : (accion === "crear") ? "Nombre del test:" : "";
-			document.getElementById("nombreElementoContainer").style.display = (accion === "editar" || accion === "crear") ? "block" : "none";
+			nombreElementoContainer.style.display = (accion === "editar" || accion === "crear") ? "block" : "none";
+			testSelectContainer.style.display = (accion === "crear") ? "none" : "block";
 			break;
 		case "preguntasSection":
 			modalLabel.textContent = (accion === "editar") ? "MODIFICAR PREGUNTA" : (accion === "eliminar") ? "ELIMINAR PREGUNTA" : "NUEVA PREGUNTA";
 			inputNuevoElemento.textContent = (accion === "editar") ? "Nuevo texto de la pregunta:" : (accion === "crear") ? "Contenido de la pregunta:" : "";
-			document.getElementById("nombreElementoContainer").style.display = (accion === "editar" || accion === "crear") ? "block" : "none";
-			preguntaSelectContainer.style.display = "block"
+			nombreElementoContainer.style.display = (accion === "eliminar") ? "none" : "block";
+			preguntaSelectContainer.style.display = (accion === "crear") ? "none" : "block";
 			break;
 		case "respuestasSection":
 			modalLabel.textContent = (accion === "editar") ? "MODIFICAR RESPUESTA" : (accion === "eliminar") ? "ELIMINAR RESPUESTA" : "NUEVA RESPUESTA";
-			document.getElementById("nombreElementoContainer").style.display = "none";
+			nombreElementoContainer.style.display = "none";
 			respuestaSelectContainer.style.display = (accion === "editar" || accion === "crear") ? "block" : "none";
-			respuestasContainer.style.display = "block"
+			respuestasContainer.style.display = (accion === "eliminar") ? "none" : "block";
 			respuestaLabel.style.display = "block"
 			explicacionLabel.style.display = "block"
 			notaLabel.style.display = "block"
-			textoRespuesta.style.display = "block"
-			textoExplicacion.style.display = "block"
+			inputTextoRespuesta.style.display = "block"
+			inputTextoExplicacion.style.display = "block"
 			nota.style.display = "block"
-			respuestaLabel.innerText = (accion === "editar" || accion === "crear") ? "Modifica la respuesta" : "Nueva respuesta";
-			explicacionLabel.innerText = (accion === "editar" || accion === "crear") ? "Modifica la explicación" : "Nueva explicación";
-			notaLabel.innerText = (accion === "editar" || accion === "crear") ? "Modifica la nota" : "Nueva nota";
-			//respuestasLista.style.display = "block";
-
-
+			respuestaLabel.textContent = (accion === "editar") ? "Modifica la respuesta" : "Nueva respuesta";
+			explicacionLabel.textContent = (accion === "editar") ? "Modifica la explicación" : "Nueva explicación";
+			notaLabel.textContent = (accion === "editar") ? "Modifica la nota" : "Nueva nota";
 			break;
 		default:
 			console.error("Sección no reconocida:", sectionId);
@@ -215,8 +236,8 @@ function configurarModal(sectionId, accion, cargarSelectsEnCascada) {
 	/********************************MUESTRA LOS SELECT EN CASCADA *************************************/
 	cargarSelectsEnCascada(accion);
 	if (accion === "crear") {
-		document.getElementById("elementId").value = "";
-		document.getElementById("nombreElemento").value = "";
+		elementId.value = "";
+		nombreElemento.value = "";
 	}
 	new bootstrap.Modal(document.getElementById("modalFormulario")).show();
 }
@@ -243,174 +264,169 @@ function abrirFormulario(sectionId, tipo) {
 
 
 /***********************PRECARGA UN SELECT CON LAS MATERIAS **********************************************/
-
 function cargarSelectsMaterias(accion) {
-    let containerId = "materiaSelectContainer";
-    let selectId = "materiaSelect";
-    let inputContainer = document.getElementById("nombreElementoContainer"); // Contenedor del input
-    let inputNombre = document.getElementById("nombreElemento"); // Input de texto
-    let inputId = document.getElementById("elementId"); // Campo oculto con el ID
+	const containerId = (accion === "eliminar") ? "selectEliminarContainer" : "materiaSelectContainer";
+	const selectId = (accion === "eliminar") ? "selectEliminar" : "materiaSelect";
 
-    // Configurar vista según la acción
-    if (accion === "eliminar") {
-        containerId = "selectEliminarContainer";
-        selectId = "selectEliminar";
-        inputContainer.style.display = "none"; // Ocultamos el input en eliminar
-        inputId.value = ""; // No se usa ID en eliminar
-    } else if (accion === "editar") {
-        inputContainer.style.display = "block"; // Mostrar input en editar
-    } else {
-        containerId = "materiaSelectContainer";
-        inputContainer.style.display = "block"; // Mostrar input en crear
-        inputId.value = ""; // Asegurar que no haya ID en crear
-    }
+	// Si no es "editar", vaciamos el elementId
+	if (accion !== "editar") {
+		elementId.value = "";
+	}
 
-    // Llamamos a la función que carga las materias en el select correspondiente
-    cargarMateriasEnSelect(containerId, selectId, function () {
-        document.getElementById(containerId).style.display = (accion === "crear") ? "none" : "block";
+	// Cargamos el select
+	cargarMateriasEnSelect(containerId, selectId, function() {
+		const containerEl = document.getElementById(containerId);
+		const selectEl = document.getElementById(selectId);
 
-        // Solo en editar, asignamos el ID y nombre al input cuando el usuario selecciona una materia
-        if (accion === "editar") {
-            document.getElementById(selectId).addEventListener("change", function () {
-                let idMateriaSeleccionada = this.value;
-                let materiaSeleccionada = this.options[this.selectedIndex].text;
-                
-                if (idMateriaSeleccionada) {
-                    inputId.value = idMateriaSeleccionada;
-                    inputNombre.value = materiaSeleccionada;
-                } else {
-                    inputId.value = "";
-                    inputNombre.value = "";
-                }
-            });
-        }
-    });
+		containerEl.style.display = (accion === "crear") ? "none" : "block";
+
+		if (accion === "editar") {
+			// Deshabilitamos el botón de guardar al inicio
+			const btnGuardar = document.querySelector("#dynamicForm button[type='submit']");
+			if (btnGuardar) {
+				btnGuardar.disabled = true;
+			}
+
+			selectEl.addEventListener("change", function() {
+				const idMateriaSeleccionada = this.value;
+				const materiaSeleccionada = this.options[this.selectedIndex].text;
+
+				if (idMateriaSeleccionada) {
+					elementId.value = idMateriaSeleccionada;
+					nombreElemento.value = materiaSeleccionada;
+					// Al haber seleccionado algo válido, habilitas "Guardar"
+					if (btnGuardar) btnGuardar.disabled = false;
+				} else {
+					elementId.value = "";
+					nombreElemento.value = "";
+					// Si quita la selección, bloqueas el guardado otra vez
+					if (btnGuardar) btnGuardar.disabled = true;
+				}
+			});
+		}
+	});
 }
+
 
 function cargarMateriasEnSelect(containerId, selectId, callback) {
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
-        return;
-    }
+	const container = document.getElementById(containerId);
+	if (!container) {
+		console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
+		return;
+	}
 
-    // Limpiar el contenido previo antes de insertar el nuevo select
-    container.innerHTML = `<label>Selecciona Materia:</label>
+	container.innerHTML = `<label>Selecciona Materia:</label>
                            <select id="${selectId}" class="form-control"></select>`;
-    const selectElement = document.getElementById(selectId);
-
-    const materias = JSON.parse(sessionStorage.getItem("materias")) || [];
-    if (materias.length === 0) {
-        container.innerHTML = "<p class='text-danger'>No hay materias disponibles.</p>";
-        return;
-    }
-
-    // Insertar opciones en el select
-    selectElement.innerHTML = `<option value="">Seleccione una materia</option>`;
-    materias.forEach(m => {
-        const option = document.createElement("option");
-        option.value = m.idMateria;
-        option.textContent = m.nombreMateria;
-        selectElement.appendChild(option);
-    });
-
-    console.log(`📌 Datos cargados en ${selectId}:`, materias);
-    container.style.display = "block";
-
-    if (callback) callback();
+	const selectElement = document.getElementById(selectId);
+	const materias = JSON.parse(sessionStorage.getItem("materias")) || [];
+	if (materias.length === 0) {
+		container.innerHTML = "<p class='text-danger'>No hay materias disponibles.</p>";
+		return;
+	}
+	selectElement.innerHTML = `<option value="">Seleccione una materia</option>`;
+	materias.forEach(m => {
+		const option = document.createElement("option");
+		option.value = m.idMateria;
+		option.textContent = m.nombreMateria;
+		selectElement.appendChild(option);
+	});
+	container.style.display = "block";
+	if (callback) callback();
 }
-
-
 
 
 /***********************PRECARGA UN SELECT CON LOS TEST FILTRADOS POR MATERIA **********************************************/
 function cargarSelectsTests(accion) {
-    let containerId = "testSelectContainer";
-    let selectId = "testSelect";
-    let inputContainer = document.getElementById("nombreElementoContainer"); // Contenedor del input
-    let inputNombre = document.getElementById("nombreElemento"); // Input de texto
-    let inputId = document.getElementById("elementId"); // Campo oculto con el ID
-    let materiaContainer = "materiaSelectContainer"; // Contenedor por defecto para materias
-    let materiaSelectId = "materiaSelect"; // ID del select de materias
+	const containerId = (accion === "eliminar") ? "selectEliminarContainer" : "testSelectContainer";
+	const selectId = (accion === "eliminar") ? "selectEliminar" : "testSelect";
+	let materiaContainer = (accion === "eliminar") ? "selectEliminarContainer" : "materiaSelectContainer";
+	let materiaSelectId = (accion === "eliminar") ? "selectEliminar" : "materiaSelect";
 
-    // 📌 Configurar la vista según la acción
-    if (accion === "eliminar") {
-        containerId = "selectEliminarContainer";
-        selectId = "selectEliminar";
-        materiaContainer = "selectEliminarContainer"; // En eliminar, el select de materias va en `selectEliminarContainer`
-        materiaSelectId = "selectEliminar";
-        inputContainer.style.display = "none"; // Ocultamos el input en eliminar
-        inputId.value = ""; // No se usa ID en eliminar
-        testSelectContainer.style.display = "none"; // Ocultar el select de tests hasta seleccionar una materia
-    } else if (accion === "editar") {
-        inputContainer.style.display = "block"; // Mostrar input en editar
-    } else { // Caso "crear"
-        inputContainer.style.display = "block"; // Mostrar input en crear
-        inputId.value = ""; // Asegurar que no haya ID en crear
-        testSelectContainer.style.display = "none"; // Ocultar el select de tests en crear
-    }
+	if (accion !== "editar") {
+		elementId.value = "";
+	}
+	const btnGuardar = document.querySelector("#dynamicForm button[type='submit']");
+	if (btnGuardar) {
+		btnGuardar.disabled = true;
+	}
 
-    // ✅ **Cargar el select de materias en el contenedor correcto**
-    cargarMateriasEnSelect(materiaContainer, materiaSelectId, function () {
-        document.getElementById(materiaSelectId).addEventListener("change", function () {
-            let idMateria = this.value;
-            if (idMateria) {
-                if (accion === "editar" || accion === "eliminar") {
-                    testSelectContainer.style.display = "block"; // Mostrar el select de tests
-                    cargarTestsEnSelectFiltrado(containerId, selectId, idMateria, function () {
-                        document.getElementById(selectId).addEventListener("change", function () {
-                            let idTestSeleccionado = this.value;
-                            let testSeleccionado = this.options[this.selectedIndex].text;
+	cargarMateriasEnSelect(materiaContainer, materiaSelectId, function() {
+		document.getElementById(materiaSelectId).addEventListener("change", function() {
+			let idMateria = this.value;
 
-                            if (idTestSeleccionado) {
-                                inputId.value = idTestSeleccionado; // Guardar el ID del test
-                                inputNombre.value = testSeleccionado; // Mostrar nombre en el input
-                            } else {
-                                inputId.value = "";
-                                inputNombre.value = "";
-                            }
-                        });
-                    });
-                }
-            }
-        });
-    });
+			if (idMateria) {
+				if (accion === "crear" && btnGuardar) {
+					btnGuardar.disabled = false;
+				}
+				if (accion === "editar" || accion === "eliminar") {
+					cargarTestsEnSelectFiltrado(containerId, selectId, idMateria, function() {
+						const selectTest = document.getElementById(selectId);
+
+						selectTest.addEventListener("change", function() {
+							let idTestSeleccionado = this.value;
+							let testSeleccionado = this.options[this.selectedIndex]?.text || "";
+
+							if (idTestSeleccionado) {
+								elementId.value = idTestSeleccionado;
+								nombreElemento.value = testSeleccionado;
+
+								if (accion === "editar" && btnGuardar) {
+									btnGuardar.disabled = false;
+								}
+							} else {
+								elementId.value = "";
+								nombreElemento.value = "";
+
+								if (accion === "editar" && btnGuardar) {
+									btnGuardar.disabled = true;
+								}
+							}
+						});
+					});
+				}
+			} else {
+				elementId.value = "";
+				nombreElemento.value = "";
+				if (btnGuardar) {
+					btnGuardar.disabled = true;
+				}
+			}
+		});
+	});
 }
 
+
 function cargarTestsEnSelectFiltrado(containerId, selectId, idMateria, callback) {
-    const container = document.getElementById(containerId);
+	const container = document.getElementById(containerId);
 
-    if (!container) {
-        console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
-        return;
-    }
-
-    // 📌 Limpiar el contenido previo antes de insertar el nuevo select
-    container.innerHTML = `<label>Selecciona Test:</label>
+	if (!container) {
+		console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
+		return;
+	}
+	// 📌 Limpiar el contenido previo antes de insertar el nuevo select
+	container.innerHTML = `<label>Selecciona Test:</label>
                            <select id="${selectId}" class="form-control"></select>`;
-    const selectElement = document.getElementById(selectId);
+	const selectElement = document.getElementById(selectId);
 
-    const tests = JSON.parse(sessionStorage.getItem("tests")) || [];
-    const testsFiltrados = tests.filter(t => t.idMateria === parseInt(idMateria, 10));
+	const tests = JSON.parse(sessionStorage.getItem("tests")) || [];
+	const testsFiltrados = tests.filter(t => t.idMateria === parseInt(idMateria, 10));
 
-    if (testsFiltrados.length === 0) {
-        container.innerHTML = "<p class='text-danger'>No hay tests disponibles para esta materia.</p>";
-        return;
-    }
+	if (testsFiltrados.length === 0) {
+		container.innerHTML = "<p class='text-danger'>No hay tests disponibles para esta materia.</p>";
+		return;
+	}
+	// 📌 Insertar opciones en el select
+	selectElement.innerHTML = `<option value="">Seleccione un test</option>`;
+	testsFiltrados.forEach(t => {
+		const option = document.createElement("option");
+		option.value = t.idTest;
+		option.textContent = t.nombreTest;
+		selectElement.appendChild(option);
+	});
 
-    // 📌 Insertar opciones en el select
-    selectElement.innerHTML = `<option value="">Seleccione un test</option>`;
-    testsFiltrados.forEach(t => {
-        const option = document.createElement("option");
-        option.value = t.idTest;
-        option.textContent = t.nombreTest;
-        selectElement.appendChild(option);
-    });
+	container.style.display = "block";
 
-    console.log(`📌 Datos cargados en ${selectId}:`, testsFiltrados);
-    container.style.display = "block";
-
-    if (callback) callback();
+	if (callback) callback();
 }
 
 
@@ -418,848 +434,654 @@ function cargarTestsEnSelectFiltrado(containerId, selectId, idMateria, callback)
 
 /***********************PRECARGA UN SELECT CON LAS PREGUNTAS FILTRADAS POR TEST **********************************************/
 function cargarSelectsPreguntas(accion) {
-    let containerId = "preguntaSelectContainer";
-    let selectId = "preguntaSelect";
-    let inputContainer = document.getElementById("nombreElementoContainer"); // Contenedor del input
-    let inputNombre = document.getElementById("nombreElemento"); // Input de texto
-    let inputId = document.getElementById("elementId"); // Campo oculto con el ID
-    let materiaContainer = "materiaSelectContainer"; // Contenedor del select de materias
-    let materiaSelectId = "materiaSelect"; // ID del select de materias
-    let testContainer = "testSelectContainer"; // Contenedor del select de tests
-    let testSelectId = "testSelect"; // ID del select de tests
+	const containerId = (accion === "eliminar") ? "selectEliminarContainer" : "preguntaSelectContainer";
+	const selectId = (accion === "eliminar") ? "selectEliminar" : "preguntaSelect";
+	const materiaContainer = (accion === "eliminar") ? "selectEliminarContainer" : "materiaSelectContainer";
+	const materiaSelectId = (accion === "eliminar") ? "selectEliminar" : "materiaSelect";
+	const testContainer = (accion === "eliminar") ? "selectEliminarContainer" : "testSelectContainer";
+	const testSelectId = (accion === "eliminar") ? "selectEliminar" : "testSelect";
+	if (accion !== "editar") {
+		elementId.value = "";
+	}
 
-    // 📌 Configuración visual según la acción
-    if (accion === "eliminar") {
-        containerId = "selectEliminarContainer";
-        selectId = "selectEliminar";
-        materiaContainer = "selectEliminarContainer"; // En eliminar, el select de materias va en `selectEliminarContainer`
-        materiaSelectId = "selectEliminar";
-        testContainer = "selectEliminarContainer"; // ✅ Ahora el test también se coloca en el contenedor de eliminar
-        testSelectId = "selectEliminarTest"; // ✅ Asegurar un ID distinto para evitar conflictos
-        inputContainer.style.display = "none"; // Ocultar el input en eliminar
-        inputId.value = ""; // No se usa ID en eliminar
-        preguntaSelectContainer.style.display = "none"; // Ocultar select de preguntas hasta seleccionar un test
-    } else if (accion === "editar") {
-        inputContainer.style.display = "block"; // Mostrar input en editar
-        preguntaSelectContainer.style.display = "none"; // Ocultar preguntas hasta seleccionar test
-    } else { // Caso "crear"
-        inputContainer.style.display = "block"; // Mostrar input en crear
-        inputId.value = ""; // Asegurar que no haya ID en crear
-        preguntaSelectContainer.style.display = "none"; // ❌ OCULTAR SELECT DE PREGUNTAS EN CREAR
-    }
+	const btnGuardar = document.querySelector("#dynamicForm button[type='submit']");
 
-    // ✅ **Cargar el select de materias en el contenedor correcto**
-    cargarMateriasEnSelect(materiaContainer, materiaSelectId, function () {
-        document.getElementById(materiaSelectId).addEventListener("change", function () {
-            let idMateria = this.value;
-            if (idMateria) {
-               document.getElementById(testContainer).style.display = "block"; // Mostrar el select de tests
-                cargarTestsEnSelectFiltrado(testContainer, testSelectId, idMateria, function () {
-                    document.getElementById(testSelectId).addEventListener("change", function () {
-                        let idTest = this.value;
-                        
-                        if (idTest) {
-                            if (accion === "editar" || accion === "eliminar") {
-                                preguntaSelectContainer.style.display = "block"; // ✅ Solo en editar/eliminar se muestra preguntas
-                                cargarPreguntasEnSelectFiltrado(containerId, selectId, idTest, function () {
-                                    if (accion === "editar") {
-                                        document.getElementById(selectId).addEventListener("change", function () {
-                                            let idPreguntaSeleccionada = this.value;
-                                            let preguntaSeleccionada = this.options[this.selectedIndex].text;
+	if (btnGuardar) {
+		btnGuardar.disabled = true;
+	}
 
-                                            if (idPreguntaSeleccionada) {
-                                                inputId.value = idPreguntaSeleccionada; // Guardar el ID de la pregunta
-                                                inputNombre.value = preguntaSeleccionada; // Mostrar el nombre en el input
-                                            } else {
-                                                inputId.value = "";
-                                                inputNombre.value = "";
-                                            }
-                                        });
-                                    }
-                                });
-                            } else {
-                                preguntaSelectContainer.style.display = "none"; // ❌ Asegurar que preguntas se oculta en crear
-                            }
-                        }
-                    });
-                });
-            }
-        });
-    });
+	cargarMateriasEnSelect(materiaContainer, materiaSelectId, function() {
+		const selectMateria = document.getElementById(materiaSelectId);
+
+		selectMateria.addEventListener("change", function() {
+			let idMateria = this.value;
+
+			if (idMateria) {
+				document.getElementById(testContainer).style.display = "block";
+
+				cargarTestsEnSelectFiltrado(testContainer, testSelectId, idMateria, function() {
+					const selectTest = document.getElementById(testSelectId);
+
+					selectTest.addEventListener("change", function() {
+						let idTest = this.value;
+
+						if (idTest) {
+							if (accion === "crear" && btnGuardar) {
+								btnGuardar.disabled = false;
+							}
+							if (accion === "editar" || accion === "eliminar") {
+								cargarPreguntasEnSelectFiltrado(containerId, selectId, idTest, function() {
+									const selectPregunta = document.getElementById(selectId);
+									if (accion === "editar") {
+										selectPregunta.addEventListener("change", function() {
+											const idPreguntaSeleccionada = this.value;
+											const preguntaSeleccionada = this.options[this.selectedIndex]?.text || "";
+
+											if (idPreguntaSeleccionada) {
+												elementId.value = idPreguntaSeleccionada;
+												nombreElemento.value = preguntaSeleccionada;
+
+												if (btnGuardar) {
+													btnGuardar.disabled = false;
+												}
+
+											} else {
+												elementId.value = "";
+												nombreElemento.value = "";
+
+												if (btnGuardar) {
+													btnGuardar.disabled = true;
+												}
+											}
+										});
+									}
+								});
+							}
+						} else {
+							elementId.value = "";
+							nombreElemento.value = "";
+
+							if (accion === "editar" && btnGuardar) {
+								btnGuardar.disabled = true;
+							}
+						}
+					});
+				});
+			} else {
+				elementId.value = "";
+				nombreElemento.value = "";
+				document.getElementById(testContainer).style.display = "none";
+
+				if (accion === "editar" && btnGuardar) {
+					btnGuardar.disabled = true;
+				}
+			}
+		});
+	});
 }
 
 
 
 function cargarPreguntasEnSelectFiltrado(containerId, selectId, idTest, callback) {
-    const container = document.getElementById(containerId);
+	const container = document.getElementById(containerId);
 
-    if (!container) {
-        console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
-        return;
-    }
-
-    // 📌 Limpiar el contenido previo antes de insertar el nuevo select
-    container.innerHTML = `<label>Selecciona Pregunta:</label>
+	if (!container) {
+		console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
+		return;
+	}
+	// 📌 Limpiar el contenido previo antes de insertar el nuevo select
+	container.innerHTML = `<label>Selecciona Pregunta:</label>
                            <select id="${selectId}" class="form-control"></select>`;
-    const selectElement = document.getElementById(selectId);
+	const selectElement = document.getElementById(selectId);
 
-    const preguntas = JSON.parse(sessionStorage.getItem("preguntas")) || [];
-    const preguntasFiltradas = preguntas.filter(p => p.idTest === parseInt(idTest, 10));
+	const preguntas = JSON.parse(sessionStorage.getItem("preguntas")) || [];
+	const preguntasFiltradas = preguntas.filter(p => p.idTest === parseInt(idTest, 10));
 
-    if (preguntasFiltradas.length === 0) {
-        container.innerHTML = "<p class='text-danger'>No hay preguntas disponibles para este test.</p>";
-        return;
-    }
+	if (preguntasFiltradas.length === 0) {
+		container.innerHTML = "<p class='text-danger'>No hay preguntas disponibles para este test.</p>";
+		return;
+	}
+	// 📌 Insertar opciones en el select
+	selectElement.innerHTML = `<option value="">Seleccione una pregunta</option>`;
+	preguntasFiltradas.forEach(p => {
+		const option = document.createElement("option");
+		option.value = p.idPregunta;
+		option.textContent = p.textoPregunta;
+		selectElement.appendChild(option);
+	});
+	container.style.display = "block";
 
-    // 📌 Insertar opciones en el select
-    selectElement.innerHTML = `<option value="">Seleccione una pregunta</option>`;
-    preguntasFiltradas.forEach(p => {
-        const option = document.createElement("option");
-        option.value = p.idPregunta;
-        option.textContent = p.textoPregunta;
-        selectElement.appendChild(option);
-    });
-
-    console.log(`📌 Datos cargados en ${selectId}:`, preguntasFiltradas);
-    container.style.display = "block";
-
-    if (callback) callback();
+	if (callback) callback();
 }
-
-
-
 
 /***********************PRECARGA UN SELECT CON LAS RESPUESTAS FILTRADAS POR PREGUNTA **********************************************/
 
 function cargarSelectsRespuestas(accion) {
-    let containerId = "respuestaSelectContainer";
-    let selectId = "respuestaSelect";
-    let inputTextoRespuesta = document.getElementById("textoRespuesta"); // Input de texto de la respuesta
-    let inputTextoExplicacion = document.getElementById("textoExplicacion"); // Input de texto de la explicación
-    let inputNota = document.getElementById("nota"); // Select de nota (0 o 1)
-    let inputId = document.getElementById("elementId"); // Campo oculto con el ID
-    let materiaContainer = "materiaSelectContainer"; // Contenedor del select de materias
-    let materiaSelectId = "materiaSelect"; // ID del select de materias
-    let testContainer = "testSelectContainer"; // Contenedor del select de tests
-    let testSelectId = "testSelect"; // ID del select de tests
-    let preguntaContainer = "preguntaSelectContainer"; // Contenedor del select de preguntas
-    let preguntaSelectId = "preguntaSelect"; // ID del select de preguntas
+	const containerId = (accion === "eliminar") ? "selectEliminarContainer" : "respuestaSelectContainer";
+	const selectId = (accion === "eliminar") ? "selectEliminar" : "respuestaSelect";
+	const materiaContainer = (accion === "eliminar") ? "selectEliminarContainer" : "materiaSelectContainer";
+	const materiaSelectId = (accion === "eliminar") ? "selectEliminar" : "materiaSelect";
+	const testContainer = (accion === "eliminar") ? "selectEliminarContainer" : "testSelectContainer";
+	const testSelectId = (accion === "eliminar") ? "selectEliminar" : "testSelect";
+	let preguntaContainer = (accion === "eliminar") ? "selectEliminarContainer" : "preguntaSelectContainer";
+	let preguntaSelectId = (accion === "eliminar") ? "selectEliminar" : "preguntaSelect";
+	if (accion !== "editar") {
+		elementId.value = "";
+	}
+	const btnGuardar = document.querySelector("#dynamicForm button[type='submit']");
 
-    // 📌 Configuración visual según la acción
-    if (accion === "eliminar") {
-        containerId = "selectEliminarContainer";
-        selectId = "selectEliminar";
-        materiaContainer = "selectEliminarContainer"; // En eliminar, el select de materias va en `selectEliminarContainer`
-        materiaSelectId = "selectEliminar";
-        testContainer = "selectEliminarContainer"; // ✅ Ahora el test también se coloca en el contenedor de eliminar
-        testSelectId = "selectEliminarTest"; // ✅ Asegurar un ID distinto para evitar conflictos
-        preguntaContainer = "selectEliminarContainer"; // ✅ Ahora la pregunta también se coloca en el contenedor de eliminar
-        preguntaSelectId = "selectEliminarPregunta"; // ✅ Asegurar un ID distinto para evitar conflictos
-        inputTextoRespuesta.style.display = "none"; // Ocultar el input de respuesta en eliminar
-        inputTextoExplicacion.style.display = "none"; // Ocultar el input de explicación en eliminar
-        inputNota.style.display = "none"; // Ocultar el select de nota en eliminar
-        inputId.value = ""; // No se usa ID en eliminar
-        respuestaSelectContainer.style.display = "none"; // Ocultar el select de respuestas hasta seleccionar una pregunta
-    } else if (accion === "editar") {
-        inputTextoRespuesta.style.display = "block"; // Mostrar input en editar
-        inputTextoExplicacion.style.display = "block"; // Mostrar input en editar
-        inputNota.style.display = "block"; // Mostrar select de nota en editar
-        respuestaSelectContainer.style.display = "none"; // Ocultar respuestas hasta seleccionar pregunta
-    } else { // Caso "crear"
-        inputTextoRespuesta.style.display = "block"; // Mostrar input en crear
-        inputTextoExplicacion.style.display = "block"; // Mostrar input en crear
-        inputNota.style.display = "block"; // Mostrar select de nota en crear
-        inputId.value = ""; // Asegurar que no haya ID en crear
-        respuestaSelectContainer.style.display = "none"; // ❌ OCULTAR SELECT DE RESPUESTAS EN CREAR
-    }
+	if (btnGuardar) {
+		btnGuardar.disabled = true;
+	}
+	// ✅ **Cargar el select de materias en el contenedor correcto**
+	cargarMateriasEnSelect(materiaContainer, materiaSelectId, function() {
+		document.getElementById(materiaSelectId).addEventListener("change", function() {
+			const idMateria = this.value;
 
-    // ✅ **Cargar el select de materias en el contenedor correcto**
-    cargarMateriasEnSelect(materiaContainer, materiaSelectId, function () {
-        document.getElementById(materiaSelectId).addEventListener("change", function () {
-            let idMateria = this.value;
-            if (idMateria) {
-                document.getElementById(testContainer).style.display = "block"; // Mostrar el select de tests
-                cargarTestsEnSelectFiltrado(testContainer, testSelectId, idMateria, function () {
-                    document.getElementById(testSelectId).addEventListener("change", function () {
-                        let idTest = this.value;
-                        if (idTest) {
-                            document.getElementById(preguntaContainer).style.display = "block"; // Mostrar el select de preguntas
-                            cargarPreguntasEnSelectFiltrado(preguntaContainer, preguntaSelectId, idTest, function () {
-                                document.getElementById(preguntaSelectId).addEventListener("change", function () {
-                                    let idPregunta = this.value;
-                                    if (idPregunta && (accion === "editar" || accion === "eliminar")) {
-                                        respuestaSelectContainer.style.display = "block"; // ✅ Solo en editar/eliminar se muestra respuestas
-                                        cargarRespuestasEnSelectFiltrado(containerId, selectId, idPregunta, function () {
-                                            if (accion === "editar") {
-                                                document.getElementById(selectId).addEventListener("change", function () {
-                                                    let idRespuestaSeleccionada = this.value;
-                                                    let respuestaSeleccionada = this.options[this.selectedIndex].text;
+			if (idMateria) {
+				// Cargamos Tests filtrados
+				cargarTestsEnSelectFiltrado(testContainer, testSelectId, idMateria, function() {
+					document.getElementById(testSelectId).addEventListener("change", function() {
+						const idTest = this.value;
+						if (idTest) {
+							// Cargamos Preguntas filtradas
+							cargarPreguntasEnSelectFiltrado(preguntaContainer, preguntaSelectId, idTest, function() {
+								document.getElementById(preguntaSelectId).addEventListener("change", function() {
+									const idPregunta = this.value;
+									if (accion === "crear" && btnGuardar) {
+										btnGuardar.disabled = false;
+									}
+									if (idPregunta && (accion === "editar" || accion === "eliminar")) {
+										// Finalmente, cargamos Respuestas filtradas
+										cargarRespuestasEnSelectFiltrado(containerId, selectId, idPregunta, function() {
+											if (accion === "editar") {
+												// Escuchamos el cambio en el select de Respuestas
+												document.getElementById(selectId).addEventListener("change", function() {
+													const idRespuestaSeleccionada = this.value;
+													const respuestaSeleccionada = this.options[this.selectedIndex]?.text || "";
 
-                                                    if (idRespuestaSeleccionada) {
-                                                        inputId.value = idRespuestaSeleccionada; // Guardar el ID de la respuesta
-                                                        // Precargar valores en los inputs de respuesta
-                                                        const respuestas = JSON.parse(sessionStorage.getItem("respuestas")) || [];
-                                                        const respuesta = respuestas.find(r => r.idRespuesta == idRespuestaSeleccionada);
-                                                        if (respuesta) {
-                                                            inputTextoRespuesta.value = respuesta.textoRespuesta || "";
-                                                            inputTextoExplicacion.value = respuesta.textoExplicacion || "";
-                                                            inputNota.value = respuesta.nota || "0";
-                                                        }
-                                                    } else {
-                                                        inputId.value = "";
-                                                        inputTextoRespuesta.value = "";
-                                                        inputTextoExplicacion.value = "";
-                                                        inputNota.value = "0";
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    } else {
-                                        respuestaSelectContainer.style.display = "none"; // ❌ Asegurar que respuestas se oculta en crear
-                                    }
-                                });
-                            });
-                        }
-                    });
-                });
-            }
-        });
-    });
+													if (idRespuestaSeleccionada) {
+														// Se ha seleccionado una respuesta existente
+														elementId.value = idRespuestaSeleccionada;
+
+														// Rellenamos el texto de Respuesta, Explicación y Nota
+														const respuestas = JSON.parse(sessionStorage.getItem("respuestas")) || [];
+														const respuesta = respuestas.find(
+															r => r.idRespuesta == idRespuestaSeleccionada
+														);
+														if (respuesta) {
+															inputTextoRespuesta.value = respuesta.textoRespuesta || "";
+															inputTextoExplicacion.value = respuesta.textoExplicacion || "";
+															nota.value = respuesta.nota || "0";
+														}
+
+														// Habilitamos el botón Guardar
+														if (btnGuardar) {
+															btnGuardar.disabled = false;
+														}
+													} else {
+														// No se seleccionó ninguna respuesta
+														elementId.value = "";
+														inputTextoRespuesta.value = "";
+														inputTextoExplicacion.value = "";
+														nota.value = "0";
+
+														// Volvemos a deshabilitar Guardar
+														if (btnGuardar) {
+															btnGuardar.disabled = true;
+														}
+													}
+												});
+											}
+										});
+									} else {
+										// El usuario ha cambiado algo que anula la selección de respuesta
+										elementId.value = "";
+										inputTextoRespuesta.value = "";
+										inputTextoExplicacion.value = "";
+										nota.value = "0";
+										if (accion === "editar" && btnGuardar) {
+											btnGuardar.disabled = true;
+										}
+									}
+								});
+							});
+						} else {
+							// No se seleccionó Test
+							elementId.value = "";
+							if (accion === "editar" && btnGuardar) {
+								btnGuardar.disabled = true;
+							}
+						}
+					});
+				});
+			} else {
+				// No se seleccionó Materia
+				elementId.value = "";
+				if (accion === "editar" && btnGuardar) {
+					btnGuardar.disabled = true;
+				}
+			}
+		});
+	});
 }
-
-function cargarSelectsRespuestas(accion) {
-    let containerId = "respuestaSelectContainer";
-    let selectId = "respuestaSelect";
-    let inputTextoRespuesta = document.getElementById("textoRespuesta"); // Input de texto de la respuesta
-    let inputTextoExplicacion = document.getElementById("textoExplicacion"); // Input de texto de la explicación
-    let inputNota = document.getElementById("nota"); // Select de nota (0 o 1)
-    let inputId = document.getElementById("elementId"); // Campo oculto con el ID
-    let materiaContainer = "materiaSelectContainer"; // Contenedor del select de materias
-    let materiaSelectId = "materiaSelect"; // ID del select de materias
-    let testContainer = "testSelectContainer"; // Contenedor del select de tests
-    let testSelectId = "testSelect"; // ID del select de tests
-    let preguntaContainer = "preguntaSelectContainer"; // Contenedor del select de preguntas
-    let preguntaSelectId = "preguntaSelect"; // ID del select de preguntas
-
-    // 📌 Configuración visual según la acción
-    if (accion === "eliminar") {
-        containerId = "selectEliminarContainer";
-        selectId = "selectEliminar";
-        materiaContainer = "selectEliminarContainer"; // En eliminar, el select de materias va en `selectEliminarContainer`
-        materiaSelectId = "selectEliminar";
-        testContainer = "selectEliminarContainer"; // ✅ Ahora el test también se coloca en el contenedor de eliminar
-        testSelectId = "selectEliminarTest"; // ✅ Asegurar un ID distinto para evitar conflictos
-        preguntaContainer = "selectEliminarContainer"; // ✅ Ahora la pregunta también se coloca en el contenedor de eliminar
-        preguntaSelectId = "selectEliminarPregunta"; // ✅ Asegurar un ID distinto para evitar conflictos
-        inputTextoRespuesta.style.display = "none"; // Ocultar el input de respuesta en eliminar
-        inputTextoExplicacion.style.display = "none"; // Ocultar el input de explicación en eliminar
-        inputNota.style.display = "none"; // Ocultar el select de nota en eliminar
-        inputId.value = ""; // No se usa ID en eliminar
-        respuestaSelectContainer.style.display = "none"; // Ocultar el select de respuestas hasta seleccionar una pregunta
-    } else if (accion === "editar") {
-        inputTextoRespuesta.style.display = "block"; // Mostrar input en editar
-        inputTextoExplicacion.style.display = "block"; // Mostrar input en editar
-        inputNota.style.display = "block"; // Mostrar select de nota en editar
-        respuestaSelectContainer.style.display = "none"; // Ocultar respuestas hasta seleccionar pregunta
-    } else { // Caso "crear"
-        inputTextoRespuesta.style.display = "block"; // Mostrar input en crear
-        inputTextoExplicacion.style.display = "block"; // Mostrar input en crear
-        inputNota.style.display = "block"; // Mostrar select de nota en crear
-        inputId.value = ""; // Asegurar que no haya ID en crear
-        respuestaSelectContainer.style.display = "none"; // ❌ OCULTAR SELECT DE RESPUESTAS EN CREAR
-    }
-
-    // ✅ **Cargar el select de materias en el contenedor correcto**
-    cargarMateriasEnSelect(materiaContainer, materiaSelectId, function () {
-        document.getElementById(materiaSelectId).addEventListener("change", function () {
-            let idMateria = this.value;
-            if (idMateria) {
-                document.getElementById(testContainer).style.display = "block"; // Mostrar el select de tests
-                cargarTestsEnSelectFiltrado(testContainer, testSelectId, idMateria, function () {
-                    document.getElementById(testSelectId).addEventListener("change", function () {
-                        let idTest = this.value;
-                        if (idTest) {
-                            document.getElementById(preguntaContainer).style.display = "block"; // Mostrar el select de preguntas
-                            cargarPreguntasEnSelectFiltrado(preguntaContainer, preguntaSelectId, idTest, function () {
-                                document.getElementById(preguntaSelectId).addEventListener("change", function () {
-                                    let idPregunta = this.value;
-                                    if (idPregunta && (accion === "editar" || accion === "eliminar")) {
-                                        respuestaSelectContainer.style.display = "block"; // ✅ Solo en editar/eliminar se muestra respuestas
-                                        cargarRespuestasEnSelectFiltrado(containerId, selectId, idPregunta, function () {
-                                            if (accion === "editar") {
-                                                document.getElementById(selectId).addEventListener("change", function () {
-                                                    let idRespuestaSeleccionada = this.value;
-                                                    let respuestaSeleccionada = this.options[this.selectedIndex].text;
-
-                                                    if (idRespuestaSeleccionada) {
-                                                        inputId.value = idRespuestaSeleccionada; // Guardar el ID de la respuesta
-                                                        // Precargar valores en los inputs de respuesta
-                                                        const respuestas = JSON.parse(sessionStorage.getItem("respuestas")) || [];
-                                                        const respuesta = respuestas.find(r => r.idRespuesta == idRespuestaSeleccionada);
-                                                        if (respuesta) {
-                                                            inputTextoRespuesta.value = respuesta.textoRespuesta || "";
-                                                            inputTextoExplicacion.value = respuesta.textoExplicacion || "";
-                                                            inputNota.value = respuesta.nota || "0";
-                                                        }
-                                                    } else {
-                                                        inputId.value = "";
-                                                        inputTextoRespuesta.value = "";
-                                                        inputTextoExplicacion.value = "";
-                                                        inputNota.value = "0";
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    } else {
-                                        respuestaSelectContainer.style.display = "none"; // ❌ Asegurar que respuestas se oculta en crear
-                                    }
-                                });
-                            });
-                        }
-                    });
-                });
-            }
-        });
-    });
-}
-
-
 
 function cargarRespuestasEnSelectFiltrado(containerId, selectId, idPregunta, callback) {
-    const container = document.getElementById(containerId);
+	const container = document.getElementById(containerId);
 
-    if (!container) {
-        console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
-        return;
-    }
+	if (!container) {
+		console.error(`❌ El contenedor con ID "${containerId}" no existe.`);
+		return;
+	}
 
-    // 📌 Limpiar el contenido previo antes de insertar el nuevo select
-    container.innerHTML = `<label>Selecciona Respuesta:</label>
+	// 📌 Limpiar el contenido previo antes de insertar el nuevo select
+	container.innerHTML = `<label>Selecciona Respuesta:</label>
                            <select id="${selectId}" class="form-control"></select>`;
-    const selectElement = document.getElementById(selectId);
+	const selectElement = document.getElementById(selectId);
 
-    const respuestas = JSON.parse(sessionStorage.getItem("respuestas")) || [];
-    const respuestasFiltradas = respuestas.filter(r => r.idPregunta === parseInt(idPregunta, 10));
+	const respuestas = JSON.parse(sessionStorage.getItem("respuestas")) || [];
+	const respuestasFiltradas = respuestas.filter(r => r.idPregunta === parseInt(idPregunta, 10));
 
-    if (respuestasFiltradas.length === 0) {
-        container.innerHTML = "<p class='text-danger'>No hay respuestas disponibles para esta pregunta.</p>";
-        return;
-    }
+	if (respuestasFiltradas.length === 0) {
+		container.innerHTML = "<p class='text-danger'>No hay respuestas disponibles para esta pregunta.</p>";
+		return;
+	}
 
-    // 📌 Insertar opciones en el select
-    selectElement.innerHTML = `<option value="">Seleccione una respuesta</option>`;
-    respuestasFiltradas.forEach(r => {
-        const option = document.createElement("option");
-        option.value = r.idRespuesta;
-        option.textContent = r.textoRespuesta;
-        selectElement.appendChild(option);
-    });
+	// 📌 Insertar opciones en el select
+	selectElement.innerHTML = `<option value="">Seleccione una respuesta</option>`;
+	respuestasFiltradas.forEach(r => {
+		const option = document.createElement("option");
+		option.value = r.idRespuesta;
+		option.textContent = r.textoRespuesta;
+		selectElement.appendChild(option);
+	});
+	container.style.display = "block";
 
-    console.log(`📌 Datos cargados en ${selectId}:`, respuestasFiltradas);
-    container.style.display = "block";
-
-    if (callback) callback();
+	if (callback) callback();
 }
-
-
-
-
 
 
 /************************FUNCION PARA CREAR MATERIA*********************************************/
 
 function crearMateria() {
-	modalLabel.textContent = "NUEVA MATERIA";
-	inputNuevoElemento.textContent = "Nombre de la materia:";
-	// Borra el contenido interno y oculta el contenedor del select
 	materiaSelectContainer.innerHTML = "";
-	// Muestra el contenedor del input para escribir el nombre
-	document.getElementById("nombreElementoContainer").style.display = "block";
-	document.getElementById("nombreElemento").value = "";
-	document.getElementById("elementId").value = "";
+	nombreElemento.value = "";
+	elementId.value = "";
 }
 /*************************FUNCION PARA EDITAR********************************************/
 function editarMateria() {
-	document.getElementById("elementId").value = "";
+	elementId.value = "";
 	cargarSelectsMaterias("editar");
 }
 /************************************CREA TEST*********************************/
 
 function crearTest() {
-	document.getElementById("elementId").value = "";
-	modalLabel.textContent = "NUEVO TEST";
-	inputNuevoElemento.textContent = "Nombre del test:";
-	// Para crear un test, se requiere seleccionar la materia y luego escribir el nombre
+	elementId.value = "";
 	cargarSelectsTests("crear");
 }
 /****************************EDITA TEST*****************************************/
 
 function editarTest() {
-
-	document.getElementById("elementId").value = "";
+	elementId.value = "";
 	cargarSelectsTests("editar");
 }
 /*****************************CREA PREGUNTA****************************************/
 function crearPregunta() {
-	document.getElementById("elementId").value = "";
-	modalLabel.textContent = "NUEVA PREGUNTA";
-	inputNuevoElemento.textContent = "Contenido de la pregunta:";
+	elementId.value = "";
 	cargarSelectsPreguntas("crear")
 }
 /****************************EDITAA PREGGUNTA*****************************************/
 function editarPregunta() {
-
-	document.getElementById("elementId").value = "";
+	elementId.value = "";
 	cargarSelectsPreguntas("editar");
 }
 /********************************CREA RESPPUESTA*************************************/
 function crearRespuesta() {
-	document.getElementById("elementId").value = "";
-	modalLabel.textContent = "NUEVA RESPUESTA";
-	document.getElementById("nombreElementoContainer").style.display = "none";
+	elementId.value = "";
 	cargarSelectsRespuestas("crear");
-	respuestasContainer.style.display = "block"
-	respuestaLabel.style.display = "block"
-	explicacionLabel.style.display = "block"
-	notaLabel.style.display = "block"
-	textoRespuesta.style.display = "block"
-	textoExplicacion.style.display = "block"
-	nota.style.display = "block"
-	respuestasLista.style.display = "block";
-	document.getElementById("respuestasContainer").style.display = "block";
 }
 /******************************EDITA RESPUESTAA***************************************/
 function editarRespuesta() {
-	document.getElementById("elementId").value = "";
-	document.getElementById("nombreElementoContainer").style.display = "none";
+	elementId.value = "";
 	cargarSelectsRespuestas("editar");
-	respuestasContainer.style.display = "block"
-	respuestaLabel.style.display = "block"
-	explicacionLabel.style.display = "block"
-	notaLabel.style.display = "block"
-	textoRespuesta.style.display = "block"
-	textoExplicacion.style.display = "block"
-	nota.style.display = "block"
-	//respuestasLista.style.display = "block";
 }
 
 /**************************FUNCION DE GUARDADO EN BASE DE DATOS*******************************************/
 window.guardarDatos = function() {
-    if (!selectedSection) {
-        mostrarMensajeModal("error", "❌ No hay una sección seleccionada.");
-        return;
-    }
+	if (!selectedSection) {
+		mostrarMensajeModal("error", "❌ No hay una sección seleccionada.");
+		return;
+	}
 
-    const id = document.getElementById("elementId")?.value || null;
-    const nombre = document.getElementById("nombreElemento")?.value?.trim() || "";
+	const id = elementId?.value || null;
+	const nombre = nombreElemento?.value?.trim() || "";
 
-    if (!nombre && selectedSection !== "respuestasSection") {
-        mostrarMensajeModal("error", "⚠ Debes ingresar un nombre.");
-        return;
-    }
+	if (!nombre && selectedSection !== "respuestasSection") {
+		mostrarMensajeModal("error", "⚠ Debes ingresar un nombre.");
+		return;
+	}
+	if (selectedSection === "respuestasSection") {
+		const respuestaVal = textoRespuesta.value.trim();
+		const explicacionVal = textoExplicacion.value.trim();
+		const notaVal = nota.value;
 
-    let payload = {};
-    let apiUrl = `/admin/${selectedSection.replace('Section', '')}`;
+		if (!respuestaVal) {
+			mostrarMensajeModal("error", "⚠ Debes ingresar un texto de respuesta.");
+			return;
+		}
 
-    switch (selectedSection) {
-        case "materiasSection":
-            payload = { idMateria: id, nombreMateria: nombre };
-            break;
-        case "testsSection":
-            payload = { idTest: id, nombreTest: nombre, idMateria: parseInt(document.getElementById("materiaSelect")?.value || 0) };
-            break;
-        case "preguntasSection":
-            payload = { idPregunta: id, textoPregunta: nombre, idTest: parseInt(document.getElementById("testSelect")?.value || 0) };
-            break;
-        case "respuestasSection":
-            payload = {
-                idRespuesta: id,
-                textoRespuesta: document.getElementById("textoRespuesta")?.value?.trim() || "",
-                textoExplicacion: document.getElementById("textoExplicacion")?.value?.trim() || "",
-                nota: parseFloat(document.getElementById("nota")?.value) || 0,
-                idPregunta: parseInt(document.getElementById("preguntaSelect")?.value || 0)
-            };
-            break;
-        default:
-            mostrarMensajeModal("error", "❌ Sección no reconocida.");
-            return;
-    }
+		if (!explicacionVal) {
+			mostrarMensajeModal("error", "⚠ Debes ingresar una explicación.");
+			return;
+		}
 
-    console.log(`📡 Enviando datos a ${apiUrl}`, payload);
+		if (notaVal === "" || isNaN(parseFloat(notaVal))) {
+			mostrarMensajeModal("error", "⚠ Debes seleccionar una nota válida (0 o 1).");
+			return;
+		}
+	}
 
-    if (id) apiUrl += `/${id}`;
+	let payload = {};
+	let apiUrl = `/admin/${selectedSection.replace('Section', '')}`;
 
-    sendRequest(apiUrl, id ? "PUT" : "POST", payload)
-        .then(() => {
-            mostrarMensajeModal("success", id ? "✅ Elemento actualizado correctamente." : "✅ Elemento creado correctamente.", true);
-            setTimeout(() => cargarDatosDesdeBackend(), 2500); // 🔄 Actualizar los datos después de cerrar el modal
-        })
-        .catch(error => {
-            mostrarMensajeModal("error", `❌ Error al guardar: ${error.message}`);
-        });
+	switch (selectedSection) {
+		case "materiasSection":
+			payload = { idMateria: id, nombreMateria: nombre };
+			break;
+		case "testsSection":
+			payload = { idTest: id, nombreTest: nombre, idMateria: parseInt(document.getElementById("materiaSelect")?.value || 0) };
+			break;
+		case "preguntasSection":
+			payload = { idPregunta: id, textoPregunta: nombre, idTest: parseInt(document.getElementById("testSelect")?.value || 0) };
+			break;
+		case "respuestasSection":
+			payload = {
+				idRespuesta: id,
+				textoRespuesta: inputTextoRespuesta?.value?.trim() || "",
+				textoExplicacion: inputTextoExplicacion?.value?.trim() || "",
+				nota: parseFloat(nota?.value) || 0,
+				idPregunta: parseInt(document.getElementById("preguntaSelect")?.value || 0)
+			};
+			break;
+		default:
+			mostrarMensajeModal("error", "❌ Sección no reconocida.");
+			return;
+	}
+
+
+
+	if (id) apiUrl += `/${id}`;
+
+	sendRequest(apiUrl, id ? "PUT" : "POST", payload)
+		.then(() => {
+			mostrarMensajeModal("success", id ? "✅ Elemento actualizado correctamente." : "✅ Elemento creado correctamente.", true);
+			setTimeout(() => cargarDatosDesdeBackend(), 2500); // 🔄 Actualizar los datos después de cerrar el modal
+		})
+		.catch(error => {
+			mostrarMensajeModal("error", `❌ Error al guardar: ${error.message}`);
+		});
 };
 
 
 
 /************************MOSTRAR ESTADOS ACTIVO / INACTIVO*********************************************/
 window.mostrarListaEstados = function() {
-    let estadoContainer = document.getElementById("estadoContainer");
-    let filtroMateriaContainer = document.getElementById("materiaSelectContainer");
-    let selectMateria = document.getElementById("filterMateria");
-    let listaEstados = document.getElementById("listaEstados");
+	let estadoContainer = document.getElementById("estadoContainer");
+	let filtroMateriaContainer = document.getElementById("materiaSelectContainer");
+	let selectMateria = document.getElementById("filterMateria");
+	let listaEstados = document.getElementById("listaEstados");
+	let filterMateriaLabel = document.getElementById("filterMateriaLabel")
+	let filterMateriaContainer = document.getElementById("filterMateriaContainer")
 
-    if (!estadoContainer || !filtroMateriaContainer || !selectMateria || !listaEstados) {
-        console.error("❌ No se encontraron los elementos necesarios en el DOM.");
-        return;
-    }
+	if (!estadoContainer || !filtroMateriaContainer || !selectMateria || !listaEstados) {
+		console.error("❌ No se encontraron los elementos necesarios en el DOM.");
+		return;
+	}
 
-    estadoContainer.style.display = "block";
-    listaEstados.innerHTML = "";
+	estadoContainer.style.display = "block";
+	listaEstados.innerHTML = "";
 
-    if (selectedSection === "testsSection") {
-        // Si estamos en Tests, mostramos el filtro de Materias
-        filtroMateriaContainer.style.display = "block";
-        cargarMaterias();
-    } else {
-        // Si estamos en Materias, ocultamos el filtro y mostramos las materias directamente
-        filtroMateriaContainer.style.display = "none";
-        cargarListaEstados(); 
-    }
+	if (selectedSection === "testsSection") {
+		filtroMateriaContainer.style.display = "block";
+		filterMateriaLabel.style.display = "block";
+		selectMateria.style.display = "block";
+		filterMateriaContainer.style.margin = "10px"
+		cargarMateriasEstados();
+		cargarListaEstados();
+	} else {
+		// Si estamos en Materias, ocultamos el filtro y mostramos las materias directamente
+		filterMateriaLabel.style.display = "none";
+		selectMateria.style.display = "none";
+		cargarListaEstados();
+	}
 };
 
-function cargarMaterias() {
-    const selectMateria = document.getElementById("filterMateria");
+function cargarMateriasEstados() {
+	const selectMateria = document.getElementById("filterMateria");
 
-    if (!selectMateria) {
-        console.error("❌ No se encontró el select de materias.");
-        return;
-    }
+	if (!selectMateria) {
+		console.error("❌ No se encontró el select de materias.");
+		return;
+	}
 
-    selectMateria.innerHTML = `<option value="">Todas las Materias</option>`; // Opción por defecto
+	selectMateria.innerHTML = `<option value="">Todas las Materias</option>`; // Opción por defecto
 
-    const materias = JSON.parse(sessionStorage.getItem("materias")) || [];
+	const materias = JSON.parse(sessionStorage.getItem("materias")) || [];
 
-    if (materias.length === 0) {
-        selectMateria.innerHTML = "<option value=''>No hay materias disponibles</option>";
-        return;
-    }
+	if (materias.length === 0) {
+		selectMateria.innerHTML = "<option value=''>No hay materias disponibles</option>";
+		return;
+	}
 
-    materias.forEach(m => {
-        const option = document.createElement("option");
-        option.value = m.idMateria;
-        option.textContent = m.nombreMateria;
-        selectMateria.appendChild(option);
-    });
+	materias.forEach(m => {
+		const option = document.createElement("option");
+		option.value = m.idMateria;
+		option.textContent = m.nombreMateria;
+		option.style.margin = "10px"
+		selectMateria.appendChild(option);
+	});
 
-    // Evento para actualizar la lista de tests al cambiar la materia seleccionada
-    selectMateria.addEventListener("change", function () {
-        let idMateriaSeleccionada = this.value;
-        cargarListaEstados(idMateriaSeleccionada);
-    });
+	// Evento para actualizar la lista de tests al cambiar la materia seleccionada
+	selectMateria.addEventListener("change", function() {
+		let idMateriaSeleccionada = this.value;
+		cargarListaEstados(idMateriaSeleccionada);
+	});
 }
 
 function cargarListaEstados(idMateria = "") {
-    let listaEstados = document.getElementById("listaEstados");
-    listaEstados.innerHTML = "";
+	errorCambioEstado.style.display = "none"
+	mensajeCambioEstado.style.display = "none"
+	listaEstados.innerHTML = "";
 
-    let storageKey, idField, nameField;
+	let storageKey, idField, nameField;
 
-    if (selectedSection === "testsSection") {
-        storageKey = "tests";
-        idField = "idTest";
-        nameField = "nombreTest";
-    } else {
-        storageKey = "materias";
-        idField = "idMateria";
-        nameField = "nombreMateria";
-    }
+	if (selectedSection === "testsSection") {
+		storageKey = "tests";
+		idField = "idTest";
+		nameField = "nombreTest";
+	} else {
+		storageKey = "materias";
+		idField = "idMateria";
+		nameField = "nombreMateria";
+	}
 
-    let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
+	let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
 
-    // Si estamos en "Tests" y hay una materia seleccionada, filtramos los tests por esa materia
-    if (selectedSection === "testsSection" && idMateria) {
-        data = data.filter(test => test.idMateria == idMateria);
-    }
+	// Si estamos en "Tests" y hay una materia seleccionada, filtramos los tests por esa materia
+	if (selectedSection === "testsSection" && idMateria) {
+		data = data.filter(test => test.idMateria == idMateria);
+	}
 
-    if (data.length === 0) {
-        listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
-        return;
-    }
+	if (data.length === 0) {
+		listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
+		return;
+	}
 
-    let estadosIniciales = {};
+	let estadosIniciales = {};
 
-    data.forEach(item => {
-        estadosIniciales[item[idField]] = item.activa;
-        const estado = item.activa ? "checked" : "";
+	data.forEach(item => {
+		estadosIniciales[item[idField]] = item.activa;
+		const estado = item.activa ? "checked" : "";
 
-        let div = document.createElement("div");
-        div.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
-        div.innerHTML = `
+		let div = document.createElement("div");
+		div.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+		div.innerHTML = `
             <span>${item[nameField]}</span>
             <div class="form-check form-switch">
                 <input class="form-check-input estado-toggle" type="checkbox" data-id="${item[idField]}" ${estado}>
             </div>
         `;
 
-        listaEstados.appendChild(div);
-    });
+		listaEstados.appendChild(div);
+	});
 
-    document.getElementById("estadoContainer").style.display = "block";
+	document.getElementById("estadoContainer").style.display = "block";
 
-    document.querySelectorAll(".estado-toggle").forEach(toggle => {
-        toggle.addEventListener("change", function() {
-            const id = this.getAttribute("data-id");
-            const nuevoEstado = this.checked;
+	document.querySelectorAll(".estado-toggle").forEach(toggle => {
+		toggle.addEventListener("change", function() {
+			const id = this.getAttribute("data-id");
+			const nuevoEstado = this.checked;
 
-            if (nuevoEstado !== estadosIniciales[id]) {
-                document.getElementById("guardarCambiosEstado").style.display = "block";
-            } else {
-                let algunCambio = [...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")]);
-                document.getElementById("guardarCambiosEstado").style.display = algunCambio ? "block" : "none";
-            }
-        });
-    });
+			if (nuevoEstado !== estadosIniciales[id]) {
+				guardarCambiosEstado.style.display = "block";
+			} else {
+				let algunCambio = [...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")]);
+				guardarCambiosEstado.style.display = algunCambio ? "block" : "none";
+			}
+		});
+	});
 
-    window.estadosIniciales = estadosIniciales;
+	window.estadosIniciales = estadosIniciales;
 }
 
 window.guardarCambiosEstados = function() {
-    let cambios = [];
+	let cambios = [];
 
-    document.querySelectorAll(".estado-toggle").forEach(toggle => {
-        const id = toggle.getAttribute("data-id");
-        const estadoNuevo = toggle.checked;
+	document.querySelectorAll(".estado-toggle").forEach(toggle => {
+		const id = toggle.getAttribute("data-id");
+		const estadoNuevo = toggle.checked;
 
-        if (estadoNuevo !== window.estadosIniciales[id]) {
-            cambios.push({ id, activa: estadoNuevo });
-        }
-    });
+		if (estadoNuevo !== window.estadosIniciales[id]) {
+			cambios.push({ id, activa: estadoNuevo });
+		}
+	});
 
-    if (cambios.length === 0) {
-        alert("⚠ No hay cambios para guardar.");
-        return;
-    }
+	if (cambios.length === 0) {
+		alert("⚠ No hay cambios para guardar.");
+		return;
+	}
 
-    let promesas = cambios.map(cambio => {
-        let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
-        apiUrl += cambio.id + "/toggle-activa";
+	let promesas = cambios.map(cambio => {
+		let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
+		apiUrl += cambio.id + "/toggle-activa";
 
-        return sendRequest(apiUrl, "PUT", { activa: cambio.activa }).then(() => {
-            console.log(`✅ Estado cambiado para ${cambio.id}: ${cambio.activa}`);
-        });
-    });
+		return sendRequest(apiUrl, "PUT", { activa: cambio.activa }).then(() => {
 
-    Promise.all(promesas).then(() => {
-        alert("✅ Cambios guardados correctamente.");
-        actualizarSessionStorage(selectedSection);
-        document.getElementById("guardarCambiosEstado").style.display = "none";
-    }).catch(error => {
-        console.error("❌ Error al actualizar estados:", error);
-        alert("❌ Ocurrió un error al guardar los cambios.");
-    });
+		});
+	});
+
+	Promise.all(promesas).then(() => {
+		mensajeCambioEstado.style.display = "block"
+		mensajeCambioEstado.innerText= "✅ Cambios de estado guardados correctamente."
+		cargarDatosDesdeBackend()
+		
+	}).catch(error => {
+		errorCambioEstado.style.display = "block"
+				errorCambioEstado.innerText= "✅ Error al cambiar los estados. "
+		console.error("❌ Error al actualizar estados:", error);
+	});
+	setTimeout(() => {
+		estadoContainer.style.display = "none";
+	}, 2500); 
+	
 };
 
+function getSectionConfig(sectionId) {
+	let config = {};
 
+	switch (sectionId) {
+		case "materiasSection":
+			config = {
+				storageKey: "materias",
+				idField: "idMateria",
+				nameField: "nombreMateria",
+				loadFn: cargarSelectsMaterias
+			};
+			break;
+		case "testsSection":
+			config = {
+				storageKey: "tests",
+				idField: "idTest",
+				nameField: "nombreTest",
+				loadFn: cargarSelectsTests
+			};
+			break;
+		case "preguntasSection":
+			config = {
+				storageKey: "preguntas",
+				idField: "idPregunta",
+				nameField: "textoPregunta",
+				loadFn: cargarSelectsPreguntas
+			};
+			break;
+		case "respuestasSection":
+			config = {
+				storageKey: "respuestas",
+				idField: "idRespuesta",
+				nameField: "textoRespuesta",
+				loadFn: cargarSelectsRespuestas
+			};
+			break;
+		default:
+			console.error("❌ Sección no reconocida:", sectionId);
+			return null;
+	}
 
-//
-//
-//
-//window.mostrarListaEstados = function() {
-//
-//	listaEstados.innerHTML = "";
-//
-//	let storageKey, idField, nameField, apiUrl;
-//
-//	switch (selectedSection) {
-//		case "materiasSection":
-//			storageKey = "materias";
-//			idField = "idMateria";
-//			nameField = "nombreMateria";
-//			apiUrl = "/materias/";
-//			break;
-//		case "testsSection":
-//			storageKey = "tests";
-//			idField = "idTest";
-//			nameField = "nombreTest";
-//			apiUrl = "/tests/";
-//			break;
-//		default:
-//			alert("⚠ No puedes modificar el estado de este tipo de elemento.");
-//			return;
-//	}
-//
-//	let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
-//
-//	if (data.length === 0) {
-//		listaEstados.innerHTML = "<p class='text-danger'>⚠ No hay elementos disponibles.</p>";
-//		return;
-//	}
-//
-//	let estadosIniciales = {};
-//
-//	data.forEach(item => {
-//		estadosIniciales[item[idField]] = item.activa;
-//		const estado = item.activa ? "checked" : "";
-//		listaEstados.innerHTML += `
-//            <div class="list-group-item d-flex justify-content-between align-items-center">
-//                <span>${item[nameField]}</span>
-//                <div class="form-check form-switch">
-//                    <input class="form-check-input estado-toggle" type="checkbox" data-id="${item[idField]}" ${estado}>
-//                </div>
-//            </div>
-//        `;
-//	});
-//
-//	document.getElementById("estadoContainer").style.display = "block";
-//
-//	document.querySelectorAll(".estado-toggle").forEach(toggle => {
-//		toggle.addEventListener("change", () => {
-//			const id = toggle.getAttribute("data-id");
-//			if (toggle.checked !== estadosIniciales[id]) {
-//				document.getElementById("guardarCambiosEstado").style.display = "block";
-//			} else {
-//				if (![...document.querySelectorAll(".estado-toggle")].some(t => t.checked !== estadosIniciales[t.getAttribute("data-id")])) {
-//					document.getElementById("guardarCambiosEstado").style.display = "none";
-//				}
-//			}
-//		});
-//	});
-//
-//	window.estadosIniciales = estadosIniciales;
-//};
-
-
-/*************************GUARDA TODOS LOS CAMBIOS DE ESTADO ********************************************/
-//
-//window.guardarCambiosEstados = function() {
-//	const toggles = document.querySelectorAll(".estado-toggle");
-//	let cambios = [];
-//
-//	toggles.forEach(toggle => {
-//		const id = toggle.getAttribute("data-id");
-//		const estadoNuevo = toggle.checked;
-//
-//		if (estadoNuevo !== window.estadosIniciales[id]) {
-//			cambios.push({ id, activa: estadoNuevo });
-//		}
-//	});
-//
-//	if (cambios.length === 0) {
-//		alert("⚠ No hay cambios para guardar.");
-//		return;
-//	}
-//
-//	cambios.forEach(cambio => {
-//		let apiUrl = selectedSection === "materiasSection" ? "/admin/materias/" : "/admin/tests/";
-//		apiUrl += cambio.id + "/toggle-activa";
-//
-//		sendRequest(apiUrl, "PUT").then(() => {
-//			console.log(`✅ Estado cambiado para ${cambio.id}: ${cambio.activa}`);
-//		});
-//	});
-//
-//	alert("✅ Cambios guardados correctamente.");
-//	actualizarSessionStorage(selectedSection);
-//	document.getElementById("guardarCambiosEstado").style.display = "none";
-//};
+	return config;
+}
 
 
 
 /*************************ABRE EL MODAL PARA ELIMINAR********************************************/
 function abrirEliminarModal(sectionId) {
-	let storageKey, idField, nameField;
-	switch (sectionId) {
-		case "materiasSection":
-			storageKey = "materias";
-			idField = "idMateria";
-			nameField = "nombreMateria";
-			cargarSelectsMaterias("eliminar");
-			break;
-		case "testsSection":
-			storageKey = "tests";
-			idField = "idTest";
-			nameField = "nombreTest";
-			cargarSelectsTests("eliminar");
-			break;
-		case "preguntasSection":
-			storageKey = "preguntas";
-			idField = "idPregunta";
-			nameField = "textoPregunta";
-			cargarSelectsPreguntas("eliminar");
-			break;
-		case "respuestasSection":
-			storageKey = "respuestas";
-			idField = "idRespuesta";
-			nameField = "textoRespuesta";
-			cargarSelectsRespuestas("eliminar");
-			break;
-		default:
-			console.error("❌ Sección no reconocida:", sectionId);
-			return;
+	const apartado = getSectionConfig(sectionId);
+	if (!apartado) return;
+
+	const { storageKey, idField, nameField, loadFn } = apartado;
+
+	if (typeof loadFn === "function") {
+		loadFn("eliminar");
 	}
 	const data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
 	if (data.length === 0) {
 		selectEliminarContainer.innerHTML = "<p class='text-danger'>No hay elementos disponibles para eliminar.</p>";
 		return;
 	}
-	document.getElementById("mensajeEliminar").textContent = "";
-	   document.getElementById("mensajeEliminar").style.display = "none";
-	   document.getElementById("advertenciaEliminar").style.display = "block";
-	   document.getElementById("btnCancelarEliminar").style.display = "inline-block";
-	   document.getElementById("btnConfirmarEliminar").style.display = "inline-block";
+	mensajeEliminar.textContent = "";
+	mensajeEliminar.style.display = "none";
+	advertenciaEliminar.style.display = "block";
+	btnCancelarEliminar.style.display = "inline-block";
+	btnConfirmarEliminar.style.display = "inline-block";
+	const modalEliminar = new bootstrap.Modal(document.getElementById("modalEliminar"), {
+		backdrop: "static",
+		keyboard: false
+	});
 
-	   const modalEliminar = new bootstrap.Modal(document.getElementById("modalEliminar"), {
-	       backdrop: "static",
-	       keyboard: false
-	   });
-
-	   modalEliminar.show();
-	   document.getElementById("btnConfirmarEliminar").onclick = function() {
-	       confirmarEliminar(modalEliminar);
-	   };
 	modalEliminar.show();
-	document.getElementById("btnConfirmarEliminar").onclick = function() {
+	btnConfirmarEliminar.onclick = function() {
 		confirmarEliminar(modalEliminar);
 	};
+
 }
 /**********************ELIMINAR ELEMENTO***********************************************/
 
 window.eliminarElemento = function() {
-	console.log("🗑 Eliminando elemento en:", selectedSection);
 
+	const apartado = getSectionConfig(sectionId);
+	if (!apartado) return;
 
-	selectEliminar.innerHTML = ""; // Limpiar opciones previas
-
-	let storageKey, idField, nameField;
-
-	switch (selectedSection) {
-		case "materiasSection":
-			storageKey = "materias";
-			idField = "idMateria";
-			nameField = "nombreMateria";
-			break;
-		case "testsSection":
-			storageKey = "tests";
-			idField = "idTest";
-			nameField = "nombreTest";
-			break;
-		case "preguntasSection":
-			storageKey = "preguntas";
-			idField = "idPregunta";
-			nameField = "textoPregunta";
-			break;
-		case "respuestasSection":
-			storageKey = "respuestas";
-			idField = "idRespuesta";
-			nameField = "textoRespuesta";
-			break;
-		default:
-			console.error("❌ Sección no reconocida:", selectedSection);
-			return;
-	}
-
+	const { storageKey, idField, nameField, loadFn } = apartado;
 	let data = JSON.parse(sessionStorage.getItem(storageKey)) || [];
-	console.log("🔹 Datos cargados desde sesión para eliminar:", data);
 
 	if (data.length === 0) {
 		alert("⚠ No hay elementos disponibles para eliminar.");
@@ -1268,7 +1090,6 @@ window.eliminarElemento = function() {
 
 	// Llenar select con elementos disponibles
 	llenarSelect("selectEliminar", storageKey, idField, nameField);
-	console.log("📌 Opciones cargadas en selectEliminar:", data);
 
 	// Mostrar el contenedor del select
 	selectEliminarContainer.style.display = "block";
@@ -1280,102 +1101,96 @@ window.eliminarElemento = function() {
 	});
 
 	modalEliminar.show();
-	console.log("📌 Modal de eliminación abierto correctamente.");
 
 	// Asegurar que el botón de confirmación está vinculado correctamente
-	document.getElementById("btnConfirmarEliminar").onclick = function() {
+	btnConfirmarEliminar.onclick = function() {
 		confirmarEliminar(modalEliminar);
 	};
 };
 
 window.confirmarEliminar = function(modalEliminar) {
-    const selectEliminar = document.getElementById("selectEliminar");
-    const idSeleccionado = selectEliminar.value;
-    const mensajeEliminar = document.getElementById("mensajeEliminar");
-    const advertenciaEliminar = document.getElementById("advertenciaEliminar");
-    const btnCancelarEliminar = document.getElementById("btnCancelarEliminar");
-    const btnConfirmarEliminar = document.getElementById("btnConfirmarEliminar");
+	const selectEliminar = document.getElementById("selectEliminar");
+	const idSeleccionado = selectEliminar.value;
+	console.log(idSeleccionado)
+	if (!idSeleccionado) {
+		advertenciaEliminar.innerHTML = "<p>⚠ Debes seleccionar un elemento para eliminar. </p>" +
+			"<p>IMPORTANTE:: Recuerda que esta acción no se puede deshacer.</p>";
 
-    if (!idSeleccionado) {
-        alert("⚠ Debes seleccionar un elemento para eliminar.");
-        return;
-    }
+		return;
+	}
+	advertenciaEliminar.textContent = "⚠ Importante: Esta acción no se puede deshacer.";
+	advertenciaEliminar.style.textDecorationLine = "underline"
 
-    console.log("🗑 Confirmando eliminación de ID:", idSeleccionado);
-    const apiUrl = `/admin/${selectedSection.replace("Section", "")}/${idSeleccionado}`;
+	const apiUrl = `/admin/${selectedSection.replace("Section", "")}/${idSeleccionado}`;
 
-    sendRequest(apiUrl, "DELETE").then((response) => {
-        if (response !== undefined) {
-            console.log(`✅ Elemento ${idSeleccionado} eliminado correctamente.`);
+	sendRequest(apiUrl, "DELETE").then((response) => {
+		if (response !== undefined) {
 
-            // **Actualizar datos en sessionStorage**
-            actualizarSessionStorage(selectedSection);
 
-            // **Ocultar los botones y mostrar el mensaje de éxito**
-            advertenciaEliminar.style.display = "none";
-            btnCancelarEliminar.style.display = "none";
-            btnConfirmarEliminar.style.display = "none";
-            mensajeEliminar.textContent = "✅ Elemento eliminado correctamente.";
-            mensajeEliminar.style.display = "block";
+			// **Actualizar datos en sessionStorage**
+			cargarDatosDesdeBackend()
 
-            // **Cerrar el modal después de 1.5 segundos**
-            setTimeout(() => {
-                modalEliminar.hide();
-                console.log("📌 Modal de eliminación cerrado.");
-            }, 1500);
-        } else {
-            console.error("❌ No se pudo eliminar el elemento.");
-        }
-    }).catch(error => {
-        console.error("❌ Error al eliminar:", error);
-    });
+			// **Ocultar los botones y mostrar el mensaje de éxito**
+			advertenciaEliminar.style.display = "none";
+			btnCancelarEliminar.style.display = "none";
+			btnConfirmarEliminar.style.display = "none";
+			mensajeEliminar.textContent = "✅ Elemento eliminado correctamente.";
+			mensajeEliminar.style.display = "block";
+
+			// **Cerrar el modal después de 1.5 segundos**
+			setTimeout(() => {
+				modalEliminar.hide();
+
+			}, 1500);
+		} else {
+			console.error("❌ No se pudo eliminar el elemento.");
+		}
+	}).catch(error => {
+		console.error("❌ Error al eliminar:", error);
+	});
 };
 
 function mostrarMensajeModal(tipo, mensaje, cerrar = false) {
-    let modalMensaje = document.getElementById("modalMensaje");
-    let modalMensajeTexto = document.getElementById("modalMensajeTexto");
-    let modalFormulario = document.getElementById("modalFormulario");
-    
-    // Capturar los elementos dentro del modal
-    let modalBody = modalFormulario ? modalFormulario.querySelector(".modal-body") : null;
-    let modalFooter = modalFormulario ? modalFormulario.querySelector(".modal-footer") : null;
+	// Capturar los elementos dentro del modal
+	let modalBody = modalFormulario ? modalFormulario.querySelector(".modal-body") : null;
+	let modalFooter = modalFormulario ? modalFormulario.querySelector(".modal-footer") : null;
 
-    if (!modalMensaje || !modalMensajeTexto) {
-        console.error("❌ No se encontró el contenedor del mensaje en el modal.");
-        return;
-    }
+	if (!modalMensaje || !modalMensajeTexto) {
+		console.error("❌ No se encontró el contenedor del mensaje en el modal.");
+		return;
+	}
 
-    // ✅ Mostrar el mensaje antes de cerrar el modal
-    modalMensajeTexto.textContent = mensaje;
-    modalMensaje.style.display = "block";
-    modalMensaje.style.color = tipo === "error" ? "red" : "green";
+	// ✅ Mostrar el mensaje antes de cerrar el modal
+	modalMensajeTexto.textContent = mensaje;
+	modalMensaje.style.display = "block";
+	modalMensaje.style.color = tipo === "error" ? "red" : "green";
 
-    // Ocultar el contenido del formulario solo si el tipo es "success"
-    if (tipo === "success" && modalBody && modalFooter) {
-        modalBody.style.display = "none";  
-        modalFooter.style.display = "none"; 
-    }
+	// Ocultar el contenido del formulario solo si el tipo es "success"
+	if (tipo === "success" && modalBody && modalFooter) {
+		modalBody.style.display = "none";
+		modalFooter.style.display = "none";
+	}
 
-    // ✅ Esperar unos segundos antes de cerrar el modal
-    if (cerrar) {
-        setTimeout(() => {
-            // Mostrar el mensaje de éxito/fracaso un poco antes de cerrar
-            modalMensaje.style.display = "block";
+	// ✅ Esperar unos segundos antes de cerrar el modal
+	if (cerrar) {
+		setTimeout(() => {
+			// Mostrar el mensaje de éxito/fracaso un poco antes de cerrar
+			modalMensaje.style.display = "block";
 
-            // Ocultar el modal después de 2 segundos
-            setTimeout(() => {
-                let modal = bootstrap.Modal.getInstance(modalFormulario);
-                if (modal) {
-                    modal.hide();
-                }
+			// Ocultar el modal después de 2 segundos
+			setTimeout(() => {
+				let modal = bootstrap.Modal.getInstance(modalFormulario);
+				if (modal) {
+					modal.hide();
+				}
 
-                // Restaurar los estilos solo si existen
-                if (modalBody) modalBody.style.display = "block";
-                if (modalFooter) modalFooter.style.display = "block";
-                modalMensaje.style.display = "none"; // Ocultar mensaje después de cerrar el modal
-            }, 2000);
-        }, 500); // ⏳ Mostrar el mensaje durante 0.5s antes de ocultarlo
-    }
+				// Restaurar los estilos solo si existen
+				if (modalBody) modalBody.style.display = "block";
+				if (modalFooter) modalFooter.style.display = "block";
+				modalMensaje.style.display = "none"; // Ocultar mensaje después de cerrar el modal
+			}, 2000);
+		}, 500); // ⏳ Mostrar el mensaje durante 0.5s antes de ocultarlo
+	}
 }
 
 

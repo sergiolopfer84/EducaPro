@@ -93,3 +93,14 @@ body {
     border-radius: 5px;
     border: 1px solid #ced4da;
 }
+
+/*Mensajes*/
+
+#mensajeCambioEstado{
+	display: none;
+	line-height: 40px;
+	min-height: 40px;
+	font-variant: small-caps;
+	font-weight: 600;
+	font-size: 20px;
+}

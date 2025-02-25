@@ -15,34 +15,31 @@ import java.util.stream.Collectors;
 @RequestMapping("/preguntas")
 public class PreguntaController {
 
-    private final PreguntaService preguntaService;
+	private final PreguntaService preguntaService;
 
-    public PreguntaController(PreguntaService preguntaService) {
-        this.preguntaService = preguntaService;
-    }
+	public PreguntaController(PreguntaService preguntaService) {
+		this.preguntaService = preguntaService;
+	}
 
-    // ✅ Obtener todas las preguntas
-    @GetMapping
-    public ResponseEntity<List<Pregunta>> obtenerPreguntas() {
-        return ResponseEntity.ok(preguntaService.getPreguntas());
-    }
+	// ✅ Obtener todas las preguntas
+	@GetMapping
+	public ResponseEntity<List<Pregunta>> obtenerPreguntas() {
+		return ResponseEntity.ok(preguntaService.getPreguntas());
+	}
 
-    // ✅ Obtener preguntas de un test específico y almacenar respuestas en sesión
-    @GetMapping("/test/{idTest}")
-    public ResponseEntity<List<Pregunta>> obtenerPreguntasPorTest(
-            @PathVariable int idTest,
-            HttpSession session) {
+	// ✅ Obtener preguntas de un test específico y almacenar respuestas en sesión
+	@GetMapping("/test/{idTest}")
+	public ResponseEntity<List<Pregunta>> obtenerPreguntasPorTest(@PathVariable int idTest, HttpSession session) {
 
-        List<Pregunta> preguntas = preguntaService.getPreguntasConRespuestas(idTest);
+		List<Pregunta> preguntas = preguntaService.getPreguntasConRespuestas(idTest);
 
-        // Guardar respuestas en sesión de forma más eficiente
-        List<Respuesta> respuestas = preguntas.stream()
-                .flatMap(p -> p.getRespuestas().stream())
-                .collect(Collectors.toList());
-        System.out.println("Guardando en sesión respuestasTest_" + idTest + ": " + respuestas);
+		// Guardar respuestas en sesión de forma más eficiente
+		List<Respuesta> respuestas = preguntas.stream().flatMap(p -> p.getRespuestas().stream())
+				.collect(Collectors.toList());
+		System.out.println("Guardando en sesión respuestasTest_" + idTest + ": " + respuestas);
 
-        session.setAttribute("respuestasTest_" + idTest, respuestas);
+		session.setAttribute("respuestasTest_" + idTest, respuestas);
 
-        return ResponseEntity.ok(preguntas);
-    }
+		return ResponseEntity.ok(preguntas);
+	}
 }

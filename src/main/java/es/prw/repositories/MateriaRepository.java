@@ -11,10 +11,6 @@ import java.util.Optional;
 @Repository
 public interface MateriaRepository extends JpaRepository<Materia, Integer> {
 
-    @Transactional(readOnly = true)
-    Optional<Materia> findByNombreMateria(String nombreMateria); 
-    
-	
 	  List<Materia> findByActivaTrue();
 	  
 	  List<Materia> findByActivaFalse();

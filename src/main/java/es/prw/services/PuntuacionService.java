@@ -19,67 +19,49 @@ import java.util.Optional;
 @Service
 public class PuntuacionService {
 
-    private final PuntuacionRepository puntuacionRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final TestRepository testRepository;
+	private final PuntuacionRepository puntuacionRepository;
+	private final UsuarioRepository usuarioRepository;
+	private final TestRepository testRepository;
 
-    // Inyección de dependencias por constructor
-    public PuntuacionService(PuntuacionRepository puntuacionRepository, UsuarioRepository usuarioRepository, TestRepository testRepository) {
-        this.puntuacionRepository = puntuacionRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.testRepository = testRepository;
-    }
+	// Inyección de dependencias por constructor
+	public PuntuacionService(PuntuacionRepository puntuacionRepository, UsuarioRepository usuarioRepository,
+			TestRepository testRepository) {
+		this.puntuacionRepository = puntuacionRepository;
+		this.usuarioRepository = usuarioRepository;
+		this.testRepository = testRepository;
+	}
 
-    // Guardar una nueva puntuación
-    @Transactional
-    public Optional<Puntuacion> savePuntuacion(Integer idUsuario, int idTest, double notaConseguida) {
-        Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
-        Optional<Test> test = testRepository.findById(idTest);
+	// Guardar una nueva puntuación
+	@Transactional
+	public Optional<Puntuacion> savePuntuacion(Integer idUsuario, int idTest, double notaConseguida) {
+		Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+		Optional<Test> test = testRepository.findById(idTest);
 
-        if (usuario.isPresent() && test.isPresent()) {
-            Puntuacion puntuacion = new Puntuacion();
-            puntuacion.setUsuario(usuario.get());
-            puntuacion.setTest(test.get());
-            puntuacion.setNotaObtenida(notaConseguida); // Corregido: antes era `setNotaConseguida`
-            puntuacion.setFecha(new Date());
+		if (usuario.isPresent() && test.isPresent()) {
+			Puntuacion puntuacion = new Puntuacion();
+			puntuacion.setUsuario(usuario.get());
+			puntuacion.setTest(test.get());
+			puntuacion.setNotaObtenida(notaConseguida);
+			puntuacion.setFecha(new Date());
 
-            return Optional.of(puntuacionRepository.save(puntuacion));
-        }
-        return Optional.empty();
-    }
+			return Optional.of(puntuacionRepository.save(puntuacion));
+		}
+		return Optional.empty();
+	}
 
-    // Obtener puntuaciones de un usuario por materia
-    @Transactional(readOnly = true)
-    public List<Puntuacion> getPuntuacionesPorMateria(Integer idUsuario, int idMateria) {
-        return puntuacionRepository.findPuntuacionesByUsuario(idUsuario)
-                .stream()
-                .filter(p -> p.getTest() != null &&
-                             p.getTest().getMateria() != null &&
-                             p.getTest().getMateria().getIdMateria().equals(idMateria))
-                .toList();
-    }
+	// Obtener puntuaciones de un usuario por materia
+	@Transactional(readOnly = true)
+	public List<Puntuacion> getPuntuacionesPorMateria(Integer idUsuario, int idMateria) {
+		return puntuacionRepository.findPuntuacionesByUsuario(idUsuario).stream().filter(p -> p.getTest() != null
+				&& p.getTest().getMateria() != null && p.getTest().getMateria().getIdMateria().equals(idMateria))
+				.toList();
+	}
 
-    // Obtener últimas 2 puntuaciones de un usuario en un test
-    public List<Double> getUltimasPuntuacionesByTest(Integer idUsuario, int idTest) {
-        List<Double> puntuaciones = puntuacionRepository.findUltimasPuntuacionesByUsuarioAndTest(idUsuario, idTest, PageRequest.of(0, 10)); // Recupera más por seguridad
-        return puntuaciones.size() > 2 ? puntuaciones.subList(0, 2) : puntuaciones;
-    }
-
-    // Obtener todas las puntuaciones de un usuario
-    @Transactional(readOnly = true)
-    public List<Puntuacion> getPuntuacionesByUsuario(Integer idUsuario) {
-        return puntuacionRepository.findPuntuacionesByUsuario(idUsuario);
-    }
-    
-    @Transactional(readOnly = true)
-    public MateriaProgresoDTO obtenerProgresoMateriaEspecifica(Integer idUsuario, Integer idMateria) {
-        Materia materia = testRepository.findMateriaById(idMateria)
-                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + idMateria));
-
-        int totalTests = testRepository.countByMateria(materia);
-        int testsAprobados = puntuacionRepository.countAprobadosByMateria(idMateria);
-
-        return new MateriaProgresoDTO(materia.getNombreMateria(), totalTests, testsAprobados);
-    }
+	// Obtener últimas 2 puntuaciones de un usuario en un test
+	public List<Double> getUltimasPuntuacionesByTest(Integer idUsuario, int idTest) {
+		List<Double> puntuaciones = puntuacionRepository.findUltimasPuntuacionesByUsuarioAndTest(idUsuario, idTest,
+				PageRequest.of(0, 10));
+		return puntuaciones.size() > 2 ? puntuaciones.subList(0, 2) : puntuaciones;
+	}
 
 }

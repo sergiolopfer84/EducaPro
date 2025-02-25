@@ -58,9 +58,7 @@ public class AsistenteController {
 
 		// Construir infoProgreso con bucle dinámico
 		StringBuilder infoProgreso = new StringBuilder();
-		infoProgreso.append("El usuario ")
-				.append(usuarioReal.getNombre())
-				.append(" pregunta por su progreso.\n\n");
+		infoProgreso.append("El usuario ").append(usuarioReal.getNombre()).append(" pregunta por su progreso.\n\n");
 
 		if (notasPorMateria.isEmpty()) {
 			infoProgreso.append("No hay registros de tests.");
@@ -68,33 +66,28 @@ public class AsistenteController {
 			infoProgreso.append("Aquí están sus notas recientes:\n");
 			// Iteramos por cada materia
 			for (Map.Entry<String, Map<String, List<Double>>> materiaEntry : notasPorMateria.entrySet()) {
-			    String nombreMateria = materiaEntry.getKey();
-			    Map<String, List<Double>> testsMateria = materiaEntry.getValue();
+				String nombreMateria = materiaEntry.getKey();
+				Map<String, List<Double>> testsMateria = materiaEntry.getValue();
 
-			    infoProgreso.append("\nMateria: ").append(nombreMateria).append("\n");
+				infoProgreso.append("\nMateria: ").append(nombreMateria).append("\n");
 
-			    // Iteramos por cada test dentro de la materia
-			    for (Map.Entry<String, List<Double>> testEntry : testsMateria.entrySet()) {
-			        String nombreTest = testEntry.getKey();
-			        List<Double> notas = testEntry.getValue();
+				// Iteramos por cada test dentro de la materia
+				for (Map.Entry<String, List<Double>> testEntry : testsMateria.entrySet()) {
+					String nombreTest = testEntry.getKey();
+					List<Double> notas = testEntry.getValue();
 
-			        // Creamos una copia de la lista y la invertimos
-			        List<Double> notasInvertidas = new ArrayList<>(notas);
-			        Collections.reverse(notasInvertidas);
+					// Creamos una copia de la lista y la invertimos
+					List<Double> notasInvertidas = new ArrayList<>(notas);
+					Collections.reverse(notasInvertidas);
 
-			        infoProgreso.append("   - ")
-			                    .append(nombreTest).append(": ")
-			                    .append(notasInvertidas).append("\n");
-			    }
+					infoProgreso.append("   - ").append(nombreTest).append(": ").append(notasInvertidas).append("\n");
+				}
 			}
 
-			
 		}
 
-		Map<String, Object> datosChat = Map.of(
-				"usuario", usuarioReal.getNombre(),
-				"mensaje", mensaje,
-				"infoProgreso", infoProgreso.toString());
+		Map<String, Object> datosChat = Map.of("usuario", usuarioReal.getNombre(), "mensaje", mensaje, "infoProgreso",
+				infoProgreso.toString());
 
 		// Debug: Ver qué datos está recibiendo la IA
 		System.out.println("JSON enviado a la IA: " + datosChat);
@@ -112,9 +105,9 @@ public class AsistenteController {
 
 	private int obtenerIdMateriaPorNombre(String materia) {
 		return switch (materia.toLowerCase()) {
-			case "geografía" -> 1;
-			case "biología" -> 2;
-			default -> -1;
+		case "geografía" -> 1;
+		case "biología" -> 2;
+		default -> -1;
 		};
 	}
 }

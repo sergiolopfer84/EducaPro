@@ -64,11 +64,19 @@
 				</div>
 				<div id="estadoContainer" class="admin-section" style="display: none;">
 					<h3>Activar/Inactivar Materias/Tests</h3>
-					<label for="filterMateria">Filtrar por Materia:</label>
+					<div id="filterMateriaContainer">
+					<label  id="filterMateriaLabel" for="filterMateria">Filtrar por Materia:</label>
 					<select id="filterMateria" class="form-control">
 					    <option value="">Todas las Materias</option>
 					</select>
-
+											
+					</div>
+					<div id="mensajeCambioEstado" class="text-success">
+						
+					</div>
+					<div id="errorCambioEstado" class="text-success">
+											
+										</div>
 					<div id="listaEstados" class="list-group"></div>
 					<button id="guardarCambiosEstado" class="btn btn-primary mt-3" onclick="guardarCambiosEstados()"
 						style="display:none;">
@@ -184,9 +192,6 @@
 		</div>
 	</div>
 
-	<div id="modalMensaje" class="alert text-center" style="display: none;">
-	    <p id="modalMensajeTexto"></p>
-	</div>
 
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

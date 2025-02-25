@@ -15,12 +15,12 @@ public class NotaHistorialDTO {
     private List<Double> notas;
 
     public NotaHistorialDTO() {
-        this.notas = Collections.emptyList(); // Evita valores nulos
+        this.notas = Collections.emptyList(); 
     }
 
     public NotaHistorialDTO(String test, List<Double> notas) {
         this.test = test;
-        this.notas = (notas != null) ? notas : Collections.emptyList(); // Asegura que la lista nunca sea nula
+        this.notas = (notas != null) ? notas : Collections.emptyList(); 
     }
 
     public String getTest() {

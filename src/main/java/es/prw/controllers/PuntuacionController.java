@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import es.prw.dtos.EvaluacionDTO;
+import es.prw.dtos.MateriaProgresoDTO;
 import es.prw.models.Puntuacion;
 import es.prw.models.Respuesta;
 import es.prw.models.Usuario;
@@ -22,147 +23,119 @@ import java.util.*;
 @RequestMapping("/puntuaciones")
 public class PuntuacionController {
 
-    private final PuntuacionService puntuacionService;
-    private final ProgresoService progresoService;
-    private final UsuarioRepository usuarioRepository;
+	private final PuntuacionService puntuacionService;
+	private final ProgresoService progresoService;
+	private final UsuarioRepository usuarioRepository;
 
-    public PuntuacionController(PuntuacionService puntuacionService, ProgresoService progresoService, UsuarioRepository usuarioRepository) {
-        this.puntuacionService = puntuacionService;
-        this.progresoService = progresoService;
-        this.usuarioRepository = usuarioRepository;
-    }
+	public PuntuacionController(PuntuacionService puntuacionService, ProgresoService progresoService,
+			UsuarioRepository usuarioRepository) {
+		this.puntuacionService = puntuacionService;
+		this.progresoService = progresoService;
+		this.usuarioRepository = usuarioRepository;
+	}
 
-    // ✅ Guardar puntuación de un test
-    @PostMapping("/guardar")
-    public ResponseEntity<Map<String, String>> guardarPuntuacion(@RequestParam Integer idUsuario, @RequestParam int idTest, @RequestParam double nota) {
-        return puntuacionService.savePuntuacion(idUsuario, idTest, nota)
-                .map(p -> ResponseEntity.ok(Map.of("message", "Puntuación guardada correctamente.")))
-                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "No se pudo guardar la puntuación.")));
-    }
+	@GetMapping("/progreso")
+	public ResponseEntity<List<MateriaProgresoDTO>> obtenerProgresoMateriasUsuarioAutenticado(
+			Authentication authentication) {
+		// Obtener usuario autenticado
+		Usuario usuario = obtenerUsuarioDesdeAuth(authentication);
 
-    // ✅ Obtener todas las puntuaciones de un usuario
-    @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<List<Puntuacion>> obtenerPuntuacionesUsuario(@PathVariable Integer idUsuario) {
-        List<Puntuacion> puntuaciones = puntuacionService.getPuntuacionesByUsuario(idUsuario);
-        return puntuaciones.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(puntuaciones);
-    }
+		System.out.println("usuario en progreso: " + usuario.getIdUsuario());
+		// Obtener su progreso en materias
+		List<MateriaProgresoDTO> progresoMaterias = progresoService.obtenerProgresoMaterias(usuario.getIdUsuario());
 
-    // ✅ Obtener puntuaciones de un usuario en una materia
-    @GetMapping("/materia/{idUsuario}/{idMateria}")
-    public ResponseEntity<List<Puntuacion>> obtenerPuntuacionesMateria(@PathVariable Integer idUsuario, @PathVariable int idMateria) {
-        List<Puntuacion> puntuaciones = puntuacionService.getPuntuacionesPorMateria(idUsuario, idMateria);
-        return puntuaciones.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(puntuaciones);
-    }
+		return progresoMaterias.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(progresoMaterias);
+	}
 
-    // ✅ Obtener últimas puntuaciones de un test (para un usuario)
-    @GetMapping("/test/{idTest}")
-    public ResponseEntity<List<Double>> obtenerUltimasPuntuacionesTest(HttpSession session, @PathVariable int idTest) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+	// ✅ Obtener última y penúltima puntuación de un test
+	@GetMapping("/ultimaPuntuacion")
+	public ResponseEntity<Map<String, Object>> getUltimaPuntuacion(@RequestParam int idTest,
+			Authentication authentication) {
+		Usuario usuario = obtenerUsuarioDesdeAuth(authentication);
 
-        List<Double> notas = puntuacionService.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest);
-        return notas.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(notas);
-    }
+		List<Double> notas = puntuacionService.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest);
 
-    // ✅ Obtener última y penúltima puntuación de un test
-    @GetMapping("/ultimaPuntuacion")
-    public ResponseEntity<Map<String, Object>> getUltimaPuntuacion(@RequestParam int idTest, Authentication authentication) {
-        Usuario usuario = obtenerUsuarioDesdeAuth(authentication);
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("ultimaNota", notas.isEmpty() ? null : notas.get(0));
+		response.put("penultimaNota", notas.size() > 1 ? notas.get(1) : null);
 
-        List<Double> notas = puntuacionService.getUltimasPuntuacionesByTest(usuario.getIdUsuario(), idTest);
+		return ResponseEntity.ok(response);
+	}
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("ultimaNota", notas.isEmpty() ? null : notas.get(0));
-        response.put("penultimaNota", notas.size() > 1 ? notas.get(1) : null);
+	// ✅ Evaluar respuestas de un test y guardar la puntuación
 
-        return ResponseEntity.ok(response);
-    }
+	@PostMapping("/calcularNota")
+	public ResponseEntity<Map<String, Object>> calcularNota(@RequestBody EvaluacionDTO evaluacion,
+			HttpSession session) {
+		// 1. Verificar que haya autenticación
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Usuario no autenticado"));
+		}
 
+		// 2. Extraer el principal como User (de Spring Security)
+		org.springframework.security.core.userdetails.User springUser = (org.springframework.security.core.userdetails.User) authentication
+				.getPrincipal();
+		String email = springUser.getUsername();
 
-    // ✅ Evaluar respuestas de un test y guardar la puntuación
+		// 3. Buscar tu entidad Usuario real con ese email
+		Usuario usuarioReal = usuarioRepository.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
 
-    @PostMapping("/calcularNota")
-    public ResponseEntity<Map<String, Object>> calcularNota(
-            @RequestBody EvaluacionDTO evaluacion,
-            HttpSession session)
-    {
-        // 1. Verificar que haya autenticación
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Usuario no autenticado"));
-        }
+		// 4. Recuperar las respuestas en la sesión
+		@SuppressWarnings("unchecked")
+		List<Respuesta> respuestasDelTest = (List<Respuesta>) session
+				.getAttribute("respuestasTest_" + evaluacion.getIdTest());
+		if (respuestasDelTest == null) {
+			return ResponseEntity.badRequest()
+					.body(Map.of("error", "No se encontraron respuestas en sesión para este test"));
+		}
 
-        // 2. Extraer el principal como User (de Spring Security)
-        org.springframework.security.core.userdetails.User springUser =
-                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-        String email = springUser.getUsername();
+		// 5. Calcular la nota filtrando las elegidas
+		double notaTotal = 0.0;
+		for (Respuesta r : respuestasDelTest) {
+			if (evaluacion.getRespuestas().contains(r.getIdRespuesta())) {
+				notaTotal += r.getNota();
+			}
+		}
 
-        // 3. Buscar tu entidad Usuario real con ese email
-        Usuario usuarioReal = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
+		// 6. Guardar la puntuación en la BD (asumiendo que tienes un método
+		// savePuntuacion)
+		var optPuntuacion = puntuacionService.savePuntuacion(usuarioReal.getIdUsuario(), evaluacion.getIdTest(),
+				notaTotal);
 
-        // 4. Recuperar las respuestas en la sesión
-        @SuppressWarnings("unchecked")
-        List<Respuesta> respuestasDelTest =
-                (List<Respuesta>) session.getAttribute("respuestasTest_" + evaluacion.getIdTest());
-        if (respuestasDelTest == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "No se encontraron respuestas en sesión para este test"));
-        }
+		// 7. Construir la respuesta
+		if (optPuntuacion.isPresent()) {
+			return ResponseEntity.ok(Map.of("nota", optPuntuacion.get().getNotaObtenida()));
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("error", "Error al guardar la puntuación"));
+		}
+	}
 
-        // 5. Calcular la nota filtrando las elegidas
-        double notaTotal = 0.0;
-        for (Respuesta r : respuestasDelTest) {
-            if (evaluacion.getRespuestas().contains(r.getIdRespuesta())) {
-                notaTotal += r.getNota();
-            }
-        }
+	// ✅ Obtener progreso en tests de un usuario
+	@GetMapping("/progresoTests")
+	public ResponseEntity<Map<String, Map<String, List<Double>>>> obtenerProgresoTests(Authentication authentication) {
+		Usuario usuario = obtenerUsuarioDesdeAuth(authentication);
+		return ResponseEntity.ok(progresoService.obtenerProgresoTests(usuario.getIdUsuario()));
+	}
 
-        // 6. Guardar la puntuación en la BD (asumiendo que tienes un método savePuntuacion)
-        var optPuntuacion = puntuacionService.savePuntuacion(
-                usuarioReal.getIdUsuario(),
-                evaluacion.getIdTest(),
-                notaTotal
-        );
+	// Método corregido en PuntuacionController
+	private Usuario obtenerUsuarioDesdeAuth(Authentication authentication) {
+		if (authentication == null) {
+			throw new RuntimeException("Usuario no autenticado");
+		}
 
-        // 7. Construir la respuesta
-        if (optPuntuacion.isPresent()) {
-            return ResponseEntity.ok(Map.of("nota", optPuntuacion.get().getNotaObtenida()));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al guardar la puntuación"));
-        }
-    }
+		Object principal = authentication.getPrincipal();
 
+		if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
+			String email = springUser.getUsername();
 
-    // ✅ Obtener progreso en tests de un usuario
-    @GetMapping("/progresoTests")
-    public ResponseEntity<Map<String, Map<String, List<Double>>>> obtenerProgresoTests(Authentication authentication) {
-        Usuario usuario = obtenerUsuarioDesdeAuth(authentication);
-        return ResponseEntity.ok(progresoService.obtenerProgresoTests(usuario.getIdUsuario()));
-    }
+			return usuarioRepository.findByEmail(email)
+					.orElseThrow(() -> new RuntimeException("Usuario no encontrado en la BD: " + email));
+		}
 
-    // 🔹 Método privado para obtener usuario autenticado
- // Método corregido en PuntuacionController
-    private Usuario obtenerUsuarioDesdeAuth(Authentication authentication) {
-        if (authentication == null) {
-            throw new RuntimeException("Usuario no autenticado");
-        }
-
-        Object principal = authentication.getPrincipal();
-        
-        if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
-            String email = springUser.getUsername();
-            
-            return usuarioRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado en la BD: " + email));
-        }
-
-        throw new RuntimeException("No se pudo obtener el usuario autenticado");
-    }
+		throw new RuntimeException("No se pudo obtener el usuario autenticado");
+	}
 
 }

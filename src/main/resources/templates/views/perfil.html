@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+ 
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 	<!-- Librería para gráficas -->
@@ -38,23 +40,29 @@
     <p><strong>Email:</strong> <span id="perfil-email"></span></p>
     <p><strong>Rol:</strong> <span id="perfil-rol"></span></p>
 
-    <h2>Cambiar Contraseña</h2>
-    <form id="changePasswordForm" method="post">
-		
-		<label>Nueva Contraseña:</label>
-		<input type="password" id="newPassword">
-		<button type="button" class="toggle-password" data-target="newPassword">
-		    <i class="fa fa-eye"></i>
-		</button>
+	<h2>Cambiar Contraseña</h2>
+	<button id="toggleFormButton" class="btn2">Cambiar Contraseña</button>
 
-		<label>Confirmar Contraseña:</label>
-		<input type="password" id="confirmPassword">
-		<button type="button" class="toggle-password" data-target="confirmPassword">
-		    <i class="fa fa-eye"></i>
-		</button>
-        <button type="submit" class="btn">Actualizar Contraseña</button>
-        <p id="passwordMessage"></p>
-    </form>
+	<form id="changePasswordForm" method="post" style="display: none;">
+	    <label for="newPassword">Nueva Contraseña:</label>
+	    <div class="password-container">
+	        <input type="password" id="newPassword" autocomplete="current-password">
+	        <button type="button" class="toggle-password" data-target="newPassword">
+	            <i class="fa fa-eye"></i>
+	        </button>
+	    </div>
+
+	    <label for="confirmPassword">Confirmar Contraseña:</label>
+	    <div class="password-container">
+	        <input type="password" id="confirmPassword" autocomplete="new-password">
+	        <button type="button" class="toggle-password" data-target="confirmPassword">
+	            <i class="fa fa-eye"></i>
+	        </button>
+	    </div>
+
+	    <button type="submit" class="btn2">Actualizar Contraseña</button>
+	    <p id="passwordMessage"></p>
+	</form>
 
     <h2>Progreso en Materias</h2>
     <div id="materia-progresos"></div>

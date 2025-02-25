@@ -37,10 +37,10 @@ public class SecurityConfiguration {
 				  .ignoringRequestMatchers("/api/asistente") )
 				 
         .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/","/home","/auth/register", "/auth/login", "/styles/**", "/img/**", "/js/**").permitAll()
+                .requestMatchers("/","/auth/register", "/auth/login", "/styles/**", "/img/**", "/js/**").permitAll()
                 .requestMatchers("/api/asistente", "/chat.html").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/usuarios/api/current-user").authenticated()
+                .requestMatchers("/usuarios/api/current-user","/home").authenticated()
                 .anyRequest().authenticated()
         )
         .formLogin(form -> form

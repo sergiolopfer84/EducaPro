@@ -21,8 +21,8 @@ public class MateriaProgresoDTO {
 
     public MateriaProgresoDTO(String materia, int totalTests, int testsAprobados) {
         this.materia = materia;
-        this.totalTests = Math.max(0, totalTests); // Evita valores negativos
-        this.testsAprobados = Math.max(0, testsAprobados); // Evita valores negativos
+        this.totalTests = Math.max(0, totalTests);
+        this.testsAprobados = Math.max(0, testsAprobados); 
         calcularPorcentajeAprobados();
     }
 

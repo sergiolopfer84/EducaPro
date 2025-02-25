@@ -10,8 +10,8 @@ import java.util.List;
 public interface PreguntaRepository extends JpaRepository<Pregunta, Integer> {
 
     @Transactional(readOnly = true)
-    List<Pregunta> findByTestIdTest(Integer idTest); // Alternativa más eficiente
+    List<Pregunta> findByTestIdTest(Integer idTest); 
 
     @Transactional(readOnly = true)
-    List<Pregunta> findByTest(Pregunta test); // Si prefieres usar el objeto completo
+    List<Pregunta> findByTest(Pregunta test); 
 }

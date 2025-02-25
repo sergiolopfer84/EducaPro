@@ -23,91 +23,74 @@ import java.util.Map;
 @CrossOrigin
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UsuarioService usuarioService;
-    private final UsuarioRepository usuarioRepository;
-    private final LoginAttemptService loginAttemptService; // Agregamos la variable
+	private final AuthenticationManager authenticationManager;
+	private final UsuarioService usuarioService;
+	private final UsuarioRepository usuarioRepository;
+	private final LoginAttemptService loginAttemptService; 
 
-    // Inyección de dependencias en el constructor
-    public AuthController(AuthenticationManager authenticationManager, 
-                          UsuarioService usuarioService, 
-                          UsuarioRepository usuarioRepository,
-                          LoginAttemptService loginAttemptService) { // Agregamos aquí
-        this.authenticationManager = authenticationManager;
-        this.usuarioService = usuarioService;
-        this.usuarioRepository = usuarioRepository;
-        this.loginAttemptService = loginAttemptService; // Inicializamos
-    }
+	public AuthController(AuthenticationManager authenticationManager, UsuarioService usuarioService,
+			UsuarioRepository usuarioRepository, LoginAttemptService loginAttemptService) { 
+		this.authenticationManager = authenticationManager;
+		this.usuarioService = usuarioService;
+		this.usuarioRepository = usuarioRepository;
+		this.loginAttemptService = loginAttemptService; 
+	}
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody Usuario usuario) {
-        boolean isRegistered = usuarioService.registerUser(usuario.getNombre(), usuario.getEmail(), usuario.getPass())
-                .isPresent();
+	@PostMapping("/register")
+	public ResponseEntity<Map<String, String>> register(@RequestBody Usuario usuario) {
+		boolean isRegistered = usuarioService.registerUser(usuario.getNombre(), usuario.getEmail(), usuario.getPass())
+				.isPresent();
 
-        Map<String, String> response = new HashMap<>();
-        if (isRegistered) {
-            response.put("message", "Usuario registrado exitosamente");
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("error", "El email ya está en uso");
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
+		Map<String, String> response = new HashMap<>();
+		if (isRegistered) {
+			response.put("message", "Usuario registrado exitosamente");
+			return ResponseEntity.ok(response);
+		} else {
+			response.put("error", "El email ya está en uso");
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials, HttpSession session) {
-        String email = credentials.get("email");
-        String password = credentials.get("password");
+	@PostMapping("/login")
+	public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials,
+			HttpSession session) {
+		String email = credentials.get("email");
+		String password = credentials.get("password");
 
-        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "El email y la contraseña no pueden estar vacíos."));
-        }
+		if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(Map.of("error", "El email y la contraseña no pueden estar vacíos."));
+		}
 
-        // Verificamos si el usuario está bloqueado antes de intentar autenticación
-        if (loginAttemptService.isBlocked(email)) {
-            long remainingTime = loginAttemptService.getRemainingLockTime(email);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "Demasiados intentos fallidos. Inténtalo de nuevo en " + remainingTime + " segundos."));
-        }
+		// Verificamos si el usuario está bloqueado antes de intentar autenticación
+		if (loginAttemptService.isBlocked(email)) {
+			long remainingTime = loginAttemptService.getRemainingLockTime(email);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error",
+					"Demasiados intentos fallidos. Inténtalo de nuevo en " + remainingTime + " segundos."));
+		}
 
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
+		try {
+			Authentication auth = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-            // Si la autenticación es exitosa, obtenemos el usuario desde la BD
-            Usuario usuario = usuarioRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado en la base de datos"));
+			// Si la autenticación es exitosa, obtenemos el usuario desde la BD
+			Usuario usuario = usuarioRepository.findByEmail(email)
+					.orElseThrow(() -> new RuntimeException("Usuario no encontrado en la base de datos"));
 
-            // Reiniciar intentos fallidos si el login es exitoso
-            loginAttemptService.loginSucceeded(email);
+			// Reiniciar intentos fallidos si el login es exitoso
+			loginAttemptService.loginSucceeded(email);
 
-            // Guardamos el usuario en la sesión
-            session.setAttribute("usuario", usuario);
-            session.setMaxInactiveInterval(1800); // 30 minutos de sesión activa
+			// Guardamos el usuario en la sesión
+			session.setAttribute("usuario", usuario);
+			session.setMaxInactiveInterval(1800); // 30 minutos de sesión activa
 
-            return ResponseEntity.ok(Map.of("message", "Inicio de sesión exitoso."));
-        } catch (AuthenticationException ex) {
-            // Registrar intento fallido
-            loginAttemptService.loginFailed(email);
+			return ResponseEntity.ok(Map.of("message", "Inicio de sesión exitoso."));
+		} catch (AuthenticationException ex) {
+			// Registrar intento fallido
+			loginAttemptService.loginFailed(email);
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Credenciales incorrectas."));
-        }
-    }
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Credenciales incorrectas."));
+		}
+	}
 
-    @GetMapping("/checkSession")
-    public ResponseEntity<Map<String, String>> checkSession() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body(Map.of("error", "No hay usuario en sesión"));
-        }
-
-        String email = authentication.getName();
-        return usuarioRepository.findByEmail(email)
-                .map(usuario -> ResponseEntity.ok(Map.of("message", "Usuario en sesión: " + usuario.getNombre())))
-                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado")));
-    }
 }

@@ -13,31 +13,31 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
-    private final UsuarioRepository usuarioRepository;
+	private final UsuarioRepository usuarioRepository;
 
-    public GlobalControllerAdvice(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
+	public GlobalControllerAdvice(UsuarioRepository usuarioRepository) {
+		this.usuarioRepository = usuarioRepository;
+	}
 
-    @ModelAttribute
-    public void addUserToModel(Model model, @AuthenticationPrincipal User springUser) {
-        if (springUser != null) {
-            System.out.println("Usuario autenticado: " + springUser.getUsername()); // LOG para depuración
+	@ModelAttribute
+	public void addUserToModel(Model model, @AuthenticationPrincipal User springUser) {
+		if (springUser != null) {
+			System.out.println("Usuario autenticado: " + springUser.getUsername());
 
-            Usuario usuario = usuarioRepository.findByEmail(springUser.getUsername()).orElse(null);
+			Usuario usuario = usuarioRepository.findByEmail(springUser.getUsername()).orElse(null);
 
-            if (usuario == null) {
-                System.out.println("⚠️ ERROR: No se encontró el usuario en la base de datos.");
-            } else {
-                System.out.println("✅ Usuario cargado correctamente: " + usuario.getEmail());
-            }
+			if (usuario == null) {
+				System.out.println("⚠️ ERROR: No se encontró el usuario en la base de datos.");
+			} else {
+				System.out.println("✅ Usuario cargado correctamente: " + usuario.getEmail());
+			}
 
-            model.addAttribute("usuario", usuario);
-        }
-    }
+			model.addAttribute("usuario", usuario);
+		}
+	}
 
-    @ModelAttribute("httpServletRequest")
-    public HttpServletRequest getRequest(HttpServletRequest request) {
-        return request;
-    }
+	@ModelAttribute("httpServletRequest")
+	public HttpServletRequest getRequest(HttpServletRequest request) {
+		return request;
+	}
 }
